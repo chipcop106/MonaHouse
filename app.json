@@ -1,0 +1,17 @@
+{
+  "name": "MonaHouse",
+  "displayName": "MonaHouse",
+  "expo": {
+    "name": "MonaHouse",
+    "slug": "MonaHouse",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
