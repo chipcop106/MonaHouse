@@ -2,5 +2,5 @@
 
 ### Change logs:
 ```sh
-- __18/05/2020__ : Thêm màn hình dọn vào phòng mới
+- 18/05/2020 : Thêm màn hình dọn vào phòng mới
 ```
