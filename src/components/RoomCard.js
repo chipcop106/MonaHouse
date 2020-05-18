@@ -5,17 +5,19 @@ import {
   StyleSheet, View, Text, TouchableOpacity,
 } from 'react-native';
 import {
-  Card, OverflowMenu, MenuItem, Icon, Avatar, Button, ButtonGroup
+  Card, OverflowMenu, MenuItem, Icon, Avatar, Button, ButtonGroup,
 } from '@ui-kitten/components';
 import LinearGradient from 'react-native-linear-gradient';
-import { color } from '../config';
 import Dash from 'react-native-dash';
-const renderItemHeader = (headerprops, roomInfo) => {
-  const [selectedIndex, setSelectedIndex] = useState(null);
-  const [visible, setVisible] = useState(false);
+import { color } from '../config';
+import { useNavigation } from '@react-navigation/native';
 
+
+
+const renderItemHeader = (headerprops, roomInfo, navigation) => {
+ 
+  const [visible, setVisible] = useState(false);
   const onItemSelect = (index) => {
-    setSelectedIndex(index);
     setVisible(false);
   };
 
@@ -28,99 +30,133 @@ const renderItemHeader = (headerprops, roomInfo) => {
         <Text style={styles.roomName}>{roomInfo.item.name}</Text>
       </View>
       <OverflowMenu
+        backdropStyle={styles.backdrop}
         anchor={renderToggleMenuHeader}
         visible={visible}
-        selectedIndex={selectedIndex}
         onSelect={onItemSelect}
         onBackdropPress={() => setVisible(false)}
       >
-        <MenuItem title="Users" />
-        <MenuItem title="Orders" />
-        <MenuItem title="Transactions" />
+        <MenuItem
+          onPress={() => navigation.navigate('RoomDetail', { id: '1' })}
+          title="Chi tiết"
+          accessoryLeft={() => <Icon name="info-outline" fill={color.darkColor} style={styles.iconButton} />}
+        />
+        <MenuItem
+          onPress={() => navigation.navigate('ElectrictCollect', { id: '1' })}
+          title="Ghi điện"
+          accessoryLeft={() => <Icon name="flash-outline" fill={color.darkColor} style={styles.iconButton} />}
+        />
       </OverflowMenu>
     </View>
   );
 };
 
-const renderItemFooter = (footerProps) => (
+const renderItemFooter = (footerProps, navigation) => (
   <View style={styles.footerAction}>
-    <Button style={styles.actionButton} appearance="outline" status="primary" size="small" accessoryLeft={() => <Icon name="log-in-outline" fill={color.blueColor} style={styles.iconButton} />}>
+    <Button
+      onPress={() => navigation.navigate('RoomGoIn', { id: '1' })}
+      style={styles.actionButton}
+      appearance="outline"
+      status="primary"
+      size="small"
+      accessoryLeft={() => <Icon name="log-in-outline" fill={color.primary} style={styles.iconButton} />}
+    >
       Dọn vào
     </Button>
-    <Button style={styles.actionButton} appearance="outline" status="danger" size="small" accessoryLeft={() => <Icon name="log-out-outline" fill={color.redColor} style={styles.iconButton} />}>
+    <Button
+      onPress={() => navigation.navigate('RoomGoOut', { id: '1' })}
+      style={styles.actionButton}
+      appearance="outline"
+      status="danger"
+      size="small"
+      accessoryLeft={() => <Icon name="log-out-outline" fill={color.redColor} style={styles.iconButton} />}
+    >
       Dọn ra
     </Button>
-    <Button style={styles.actionButton} appearance="outline" status="success" size="small" accessoryLeft={() => <Icon name="credit-card-outline" fill={color.greenColor} style={styles.iconButton} />}>
+    <Button
+      onPress={() => navigation.navigate('MoneyCollect', { id: '1' })}
+      style={styles.actionButton}
+      appearance="outline"
+      status="success"
+      size="small"
+      accessoryLeft={() => <Icon name="credit-card-outline" fill={color.greenColor} style={styles.iconButton} />}
+    >
       Thu tiền
     </Button>
 
   </View>
 );
 
-const RoomCard = ({ roomInfo }) => (
-  <Card
-    appearance="filled"
-    style={styles.item}
-    status="basic"
-    header={(headerProps) => renderItemHeader(headerProps, roomInfo)}
-    footer={renderItemFooter}
-  >
-    <View style={styles.cardBody}>
-      <View style={[styles.renter, styles.space]}>
-        <Avatar style={styles.renterAvatar} size="large" source={{ uri: roomInfo.item.imageSrc }} />
-        <Text style={styles.renterName}>Trương Văn Lam</Text>
-      </View>
-      <View style={[styles.space, styles.infoWrap]}>
-        <View style={styles.info}>
-          <Text style={styles.infoLabel}>Giá (tháng)</Text>
-          <Text style={styles.infoValue}>2.500.000</Text>
+const RoomCard = ({ roomInfo }) => {
+  const navigation = useNavigation();
+  return (
+    <Card
+      appearance="filled"
+      style={styles.item}
+      status="basic"
+      header={(headerProps) => renderItemHeader(headerProps, roomInfo, navigation)}
+      footer={(footerProps) => renderItemFooter(footerProps, navigation)}
+    >
+      <View style={styles.cardBody}>
+        <View style={[styles.renter, styles.space]}>
+          <Avatar style={styles.renterAvatar} size="large" source={{ uri: roomInfo.item.imageSrc }} />
+          <Text style={styles.renterName}>Trương Văn Lam</Text>
         </View>
-        <View style={[styles.info]}>
-          <Text style={styles.infoLabel}>Ngày dọn ra dự kiến </Text>
-          <Text style={styles.infoValue}>15/04/2021</Text>
+        <View style={[styles.space, styles.infoWrap]}>
+          <View style={styles.info}>
+            <Text style={styles.infoLabel}>Giá (tháng)</Text>
+            <Text style={styles.infoValue}>2.500.000</Text>
+          </View>
+          <View style={[styles.info]}>
+            <Text style={styles.infoLabel}>Ngày dọn ra dự kiến </Text>
+            <Text style={styles.infoValue}>15/04/2021</Text>
+          </View>
         </View>
-      </View>
-      <View style={[styles.space, styles.statusWrap]}>
-        <View style={styles.status}>
-          <LinearGradient colors={color.gradients.success} style={styles.badge}>
-            <Text style={styles.badgeText}>
-              Đang thuê
+        <View style={[styles.space, styles.statusWrap]}>
+          <View style={styles.status}>
+            <LinearGradient colors={color.gradients.success} style={styles.badge}>
+              <Text style={styles.badgeText}>
+                Đang thuê
+              </Text>
+            </LinearGradient>
+          </View>
+          <View style={styles.status}>
+            <LinearGradient colors={color.gradients.danger} style={styles.badge}>
+              <Text style={styles.badgeText}>
+                Chưa thu tiền
+              </Text>
+            </LinearGradient>
+          </View>
+          <View style={styles.status}>
+            <LinearGradient colors={color.gradients.danger} style={styles.badge}>
+              <Text style={styles.badgeText}>
+                Chưa ghi điện nước
+              </Text>
+            </LinearGradient>
+          </View>
+        </View>
+        <View style={[styles.balanceInfo]}>
+          <View style={styles.balance}>
+            <Text style={styles.balanceText}>
+              Dư:
+              <Text style={styles.balanceValue}> 5.925.000 đ</Text>
             </Text>
-          </LinearGradient>
-        </View>
-        <View style={styles.status}>
-          <LinearGradient colors={color.gradients.danger} style={styles.badge}>
-            <Text style={styles.badgeText}>
-              Chưa thu tiền
-            </Text>
-          </LinearGradient>
-        </View>
-        <View style={styles.status}>
-          <LinearGradient colors={color.gradients.danger} style={styles.badge}>
-            <Text style={styles.badgeText}>
-              Chưa ghi điện nước
-            </Text>
-          </LinearGradient>
+          </View>
+          <TouchableOpacity style={styles.touchButton}>
+            <Icon name="plus-circle-outline" fill={color.darkColor} style={styles.iconButton} />
+            <Text style={styles.textButton}>Thêm phí</Text>
+          </TouchableOpacity>
         </View>
       </View>
-      <View style={[styles.balanceInfo]}>
-        <View style={styles.balance}>
-          <Text style={styles.balanceText}>
-            Dư:
-            <Text style={styles.balanceValue}> 5.925.000 đ</Text>
-          </Text>
-        </View>
-        <TouchableOpacity style={styles.touchButton}>
-          <Icon name="plus-circle-outline" fill={color.darkColor} style={styles.iconButton} />
-          <Text style={styles.textButton}>Thêm phí</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </Card>
-);
+    </Card>
+  );
+};
 
 
 const styles = StyleSheet.create({
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
   headerWrap: {
     backgroundColor: color.primary,
     flexDirection: 'row',
@@ -182,6 +218,7 @@ const styles = StyleSheet.create({
   },
   statusWrap: {
     flexDirection: 'row',
+    marginHorizontal: -5
   },
   status: {
     marginHorizontal: 5,
@@ -224,7 +261,7 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   actionButton: {
-    padding: 5
+    padding: 5,
   },
   cardBody: {
   },

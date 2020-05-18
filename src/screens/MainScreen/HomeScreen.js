@@ -108,7 +108,7 @@ const HomeScreen = () => {
   };
 
   useEffect(() => {
-    //   console.log(motelState);
+    console.log(motelState);
     if (motelState.Code === 2) {
       alert('Token hết hạn, vui lòng đăng nhập lại...');
       signOut();
@@ -211,6 +211,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   summaryWrap: {
+    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'stretch',
@@ -244,6 +245,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 15,
   },
+
 });
 
 export default HomeScreen;

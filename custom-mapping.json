@@ -146,6 +146,13 @@
                                     "captionIconTintColor": "text-disabled-color"
                                 }
                             }
+                        },
+                        "basic":{
+                            "state":{
+                                "disabled":{
+                                    "labelColor": "text-hint-color"
+                                }
+                            }
                         }
                     },
                 }

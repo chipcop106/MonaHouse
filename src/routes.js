@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -21,6 +22,8 @@ import ElectrictCollectScreen from './screens/RoomScreen/ElectrictCollectScreen'
 import MoneyCollectScreen from './screens/RoomScreen/MoneyCollectScreen';
 import RoomManagementScreen from './screens/RoomScreen/RoomManagementScreen';
 import SettingScreen from './screens/MainScreen/SettingScreen';
+import RoomGoOutScreen from './screens/RoomScreen/RoomGoOutScreen';
+import RoomGoInScreen from './screens/RoomScreen/RoomGoInScreen';
 
 export const isMountedRef = React.createRef();
 
@@ -116,6 +119,12 @@ const RoomStack = () => {
         headerTitleStyle: {
           color: '#fff',
         },
+        headerBackTitle: 'Back',
+        headerBackTitleStyle: {
+          color: color.primary
+        },
+        headerLeftContainerStyle: { paddingLeft: 10 },
+        headerBackImage: () => <Icon name="arrow-back-outline" fill={color.primary} style={{...styles.tabIcon, marginRight: 5}} />,
       }}
     >
       <Stack.Screen
@@ -141,10 +150,52 @@ const RoomStack = () => {
           title: 'Thu tiền',
         }}
       />
+      <Stack.Screen
+        name="RoomGoIn"
+        component={RoomGoInScreen}
+        options={{
+          title: 'Thông tin phòng, ki ốt',
+        }}
+      />
+      <Stack.Screen
+        name="RoomGoOut"
+        component={RoomGoOutScreen}
+        options={{
+          title: 'Dọn ra',
+        }}
+      />
     </Stack.Navigator>
   );
 };
 
+
+const SettingStack = () => {
+  const Stack = createStackNavigator();
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShow: true,
+        headerStyle: styles.headerStyle,
+        headerTitleStyle: {
+          color: '#fff',
+        },
+      }}
+    >
+      <Stack.Screen
+        name="Setting"
+        component={SettingScreen}
+        options={{
+          title: 'Cài đặt',
+          headerTitleStyle: {
+            color: '#fff',
+            fontSize: 30,
+          },
+          headerTitleAlign: 'left',
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
 
 const BottomNavigator = () => {
   const BottomTab = createMaterialBottomTabNavigator();
@@ -220,8 +271,8 @@ const BottomNavigator = () => {
       />
 
       <BottomTab.Screen
-        name="Setting"
-        component={SettingScreen}
+        name="SettingStack"
+        component={SettingStack}
         options={{
           tabBarLabel: 'Cài đặt',
           tabBarIcon: ({ color }) => (

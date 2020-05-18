@@ -290,19 +290,25 @@ PODS:
     - SwiftyJSON (= 5.0)
   - RNCMaskedView (0.1.10):
     - React
-  - RNCPicker (1.4.0):
-    - React
   - RNGestureHandler (1.6.1):
     - React
+  - RNImageCropPicker (0.31.1):
+    - React-Core
+    - React-RCTImage
+    - RNImageCropPicker/QBImagePickerController (= 0.31.1)
+    - TOCropViewController
+  - RNImageCropPicker/QBImagePickerController (0.31.1):
+    - React-Core
+    - React-RCTImage
+    - TOCropViewController
   - RNReanimated (1.8.0):
     - React
   - RNScreens (2.7.0):
     - React
   - RNSVG (9.13.3):
     - React
-  - RNVectorIcons (6.6.0):
-    - React
   - SwiftyJSON (5.0.0)
+  - TOCropViewController (2.5.2)
   - UMAppLoader (1.0.2)
   - UMBarCodeScannerInterface (5.1.0)
   - UMCameraInterface (5.1.0)
@@ -367,12 +373,11 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - RNCharts (from `../node_modules/react-native-charts-wrapper`)
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
-  - "RNCPicker (from `../node_modules/@react-native-community/picker`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - UMAppLoader (from `../node_modules/unimodules-app-loader/ios`)
   - UMBarCodeScannerInterface (from `../node_modules/unimodules-barcode-scanner-interface/ios`)
   - UMCameraInterface (from `../node_modules/unimodules-camera-interface/ios`)
@@ -393,6 +398,7 @@ SPEC REPOS:
     - boost-for-react-native
     - Charts
     - SwiftyJSON
+    - TOCropViewController
 
 EXTERNAL SOURCES:
   BVLinearGradient:
@@ -477,18 +483,16 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-charts-wrapper"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
-  RNCPicker:
-    :path: "../node_modules/@react-native-community/picker"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNImageCropPicker:
+    :path: "../node_modules/react-native-image-crop-picker"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  RNVectorIcons:
-    :path: "../node_modules/react-native-vector-icons"
   UMAppLoader:
     :path: "../node_modules/unimodules-app-loader/ios"
   UMBarCodeScannerInterface:
@@ -562,13 +566,13 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 6d99641f8e6f15d169d695d8ef184bf187903f11
   RNCharts: d364ca2085e24edb9ee0390d3fb7209257daa44c
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
-  RNCPicker: 27350bff586cd1b43b5816c16718514d61394f01
   RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
+  RNImageCropPicker: 38865ab4af1b0b2146ad66061196bc0184946855
   RNReanimated: 955cf4068714003d2f1a6e2bae3fb1118f359aff
   RNScreens: cf198f915f8a2bf163de94ca9f5bfc8d326c3706
   RNSVG: f6177f8d7c095fada7cfee2e4bb7388ba426064c
-  RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
+  TOCropViewController: e9da34f484aedd4e5d5a8ab230ba217cfe16c729
   UMAppLoader: ee77a072f9e15128f777ccd6d2d00f52ab4387e6
   UMBarCodeScannerInterface: 9dc692b87e5f20fe277fa57aa47f45d418c3cc6c
   UMCameraInterface: 625878bbf2ba188a8548675e1d1d2e438a653e6d

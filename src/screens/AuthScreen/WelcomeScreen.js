@@ -8,7 +8,7 @@ const WelcomeScreen = ({navigation}) => {
     useEffect(() => {
         signInLocalToken();
     }, [])
-    return <View><Text style={{fontSize:48}}>Welcome Screen</Text></View>;
+    return <View><Text style={{fontSize:48}}>Welcome Screen nè</Text></View>;
 }
 
 const styles = StyleSheet.create({
