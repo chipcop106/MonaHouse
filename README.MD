@@ -2,5 +2,5 @@
 
 ### Change logs:
 ```sh
-- <b>18/05/2020</b> : Thêm màn hình dọn vào phòng mới
+- __18/05/2020__ : Thêm màn hình dọn vào phòng mới
 ```
