@@ -17,6 +17,8 @@ import ReportRoomTypeScreen from './screens/MainScreen/ReportRoomTypeScreen';
 import WelcomeScreen from './screens/AuthScreen/WelcomeScreen';
 import RoomScreen from './screens/RoomScreen/RoomManagementScreen';
 import { Context as AuthContext, Provider as AuthProvider } from './context/AuthContext';
+import { Provider as GoOutProvider } from "./context/RoomGoOutContext";
+
 import { color } from './config';
 import ElectrictCollectScreen from './screens/RoomScreen/ElectrictCollectScreen';
 import MoneyCollectScreen from './screens/RoomScreen/MoneyCollectScreen';
