@@ -42,18 +42,22 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
     handleValueChange(state);
   }, [state]);
 
-  const handleChoosePhoto = async (key, multiple = false) => {
-    const options = {
-      cropping: true,
-      cropperToolbarTitle: 'Chỉnh sửa ảnh',
-      maxFiles: 10,
-      compressImageMaxWidth: 1280,
-      compressImageMaxHeight: 768,
-      mediaType: 'photo',
-    };
-    ImagePicker.openPicker(options).then((images) => {
-      dispatch({ field: key, value:images });
-    });
+  const handleChoosePhoto = async (key) => {
+    try {
+      const options = {
+        cropping: true,
+        cropperToolbarTitle: 'Chỉnh sửa ảnh',
+        maxFiles: 10,
+        compressImageMaxWidth: 1280,
+        compressImageMaxHeight: 768,
+        mediaType: 'photo',
+      };
+      ImagePicker.openPicker(options).then((images) => {
+        dispatch({ field: key, value:images });
+      });
+    } catch (error) {
+      
+    }
   };
 
   return (
