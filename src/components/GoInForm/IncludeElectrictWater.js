@@ -8,24 +8,30 @@ import {
 import ImagePicker from 'react-native-image-crop-picker';
 import { sizes, color } from '../../config';
 
-const initialState = {
-  electrictNumber: '',
-  electrictPrice: '',
-  electrictPriceInclude: '',
-  electrictImage: null,
-  waterNumber: '',
-  waterPrice: '',
-  waterPriceInclude: '',
-  waterImage: null,
-  services: [],
-};
+// const initialState = {
+//   electrictNumber: '',
+//   electrictPrice: '',
+//   electrictPriceInclude: '',
+//   electrictImage: null,
+//   waterNumber: '',
+//   waterPrice: '',
+//   waterPriceInclude: '',
+//   waterImage: null,
+// };
+
+IncludeElectrictWater.defaultProps = {
+  index: 0,
+  waterTitle: "Số nước",
+  electrictTitle: "Số điện",
+  priceDisplay: true
+}
 
 const reducer = (state, { field, value }) => ({
   ...state,
   [field]: value,
 });
 
-export default function IncludeElectrictWater({ index }) {
+function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay, handleValueChange, initialState }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const onChange = (key, value) => {
@@ -33,10 +39,10 @@ export default function IncludeElectrictWater({ index }) {
   };
 
   useEffect(() => {
-    // console.log(state);
+    handleValueChange(state);
   }, [state]);
 
-  const handleChoosePhoto = async (key) => {
+  const handleChoosePhoto = async (key, multiple = false) => {
     const options = {
       cropping: true,
       cropperToolbarTitle: 'Chỉnh sửa ảnh',
@@ -57,7 +63,7 @@ export default function IncludeElectrictWater({ index }) {
           <View style={[styles.formRow, styles.halfCol]}>
             <Input
               textStyle={styles.textInput}
-              label="Số điện"
+              label={electrictTitle}
               placeholder="0"
               value={state.electrictNumber}
               onChangeText={(nextValue) => onChange('electrictNumber', nextValue)}
@@ -68,7 +74,7 @@ export default function IncludeElectrictWater({ index }) {
           <View style={[styles.formRow, styles.halfCol]}>
             <Input
               textStyle={styles.textInput}
-              label="Số nước"
+              label={waterTitle}
               placeholder="0"
               value={state.waterNumber}
               onChangeText={(nextValue) => onChange('waterNumber', nextValue)}
@@ -76,7 +82,9 @@ export default function IncludeElectrictWater({ index }) {
               keyboardType="numeric"
             />
           </View>
-          <View style={[styles.formRow, styles.halfCol]}>
+          {priceDisplay && (
+            <>
+     <View style={[styles.formRow, styles.halfCol]}>
             <Input
               textStyle={styles.textInput}
               label="Giá điện / kW"
@@ -98,6 +106,9 @@ export default function IncludeElectrictWater({ index }) {
               keyboardType="numeric"
             />
           </View>
+          </>
+          )}
+     
           <View style={[styles.formRow, styles.halfCol]}>
             {state.electrictImage && (
             <Image
@@ -294,3 +305,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
 });
+
+
+
+export default IncludeElectrictWater;
