@@ -46,7 +46,7 @@ const RenderForm = () => {
 };
 
 const RoomGoInScreen = ({ navigation }) => {
-  const { state: RoomGoinState, changeStepForm } = useContext(RoomGoInContext);
+  const { state: RoomGoinState, changeStepForm, resetState } = useContext(RoomGoInContext);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -66,6 +66,8 @@ const RoomGoInScreen = ({ navigation }) => {
   const sendFormData = (state) => {
     const { dataForm } = state;
     alert(JSON.stringify(dataForm));
+    navigation.pop();
+    resetState();
   };
 
 

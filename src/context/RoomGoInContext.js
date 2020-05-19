@@ -1,6 +1,49 @@
 import { IndexPath } from "@ui-kitten/components";
 import CreateDataContext from "./CreateDataContext";
 
+const initialState = {
+  step: 0,
+  dataForm: [{
+    roomPrice: "",
+    dateGoIn: "",
+    timeRent: "12",
+    timeTypeIndex: new IndexPath(0),
+    roomInfo: {
+      electrictNumber: '',
+      electrictPrice: '',
+      electrictPriceInclude: '',
+      electrictImage: null,
+      waterNumber: '',
+      waterPrice: '',
+      waterPriceInclude: '',
+      waterImage: null,
+    },
+    electrictIndex: new IndexPath(0),
+    services: [],
+  },
+  {
+    fullName: "",
+    phoneNumber: "",
+    email: "",
+    provinceIndex: new IndexPath(0),
+    numberPeople: "",
+    relationshipIndex: new IndexPath(0),
+    note: "",
+    licenseImages: [],
+    cityLists: [],
+  },
+  {
+    depositTypeIndex: new IndexPath(0),
+    preDepositTimeIndex: new IndexPath(0),
+    totalDeposit: "3.000.000",
+    prePaymentTimeIndex: new IndexPath(0),
+    totalPrepay: "30.000.000",
+    actuallyReceived: "4.000.000",
+    paymentTypeIndex: new IndexPath(0),
+    paymentNote: "Đây là ghi chú",
+  }],
+}
+
 const goInReducer = (prevstate, action) => {
   switch (action.type) {
     case "STEP_STATE_CHANGE": {
@@ -40,6 +83,10 @@ const goInReducer = (prevstate, action) => {
       };
     }
 
+    case "RESET_STATE": {
+      return initialState;
+    }
+
     default: {
       return prevstate;
     }
@@ -59,11 +106,15 @@ const onChangeService = (dispatch) => (value) => {
   dispatch({ type: "SERVICE_CHANGE", payload: value });
 };
 
+const resetState = (dispatch) => (value) => {
+  dispatch({ type: "RESET_STATE"});
+};
+
 
 export const { Context, Provider } = CreateDataContext(
   goInReducer,
   {
-    changeStepForm, changeStateFormStep, onChangeService,
+    changeStepForm, changeStateFormStep, onChangeService, resetState
   },
   {
     step: 0,
