@@ -17,16 +17,6 @@ const goInReducer = (prevstate, action) => {
       };
     }
 
-    case "STEP_STATE": {
-      const newFormState = prevstate.dataForm.map((item, index) => {
-        if (index === prevstate.step) { return action.payload.stepState; } return item;
-      });
-      return {
-        ...prevstate,
-        dataForm: newFormState,
-      };
-    }
-
     case "UPDATE_STEP": {
       const currentStep = prevstate.step;
       const stepChange = action.payload.stepValueChange;
