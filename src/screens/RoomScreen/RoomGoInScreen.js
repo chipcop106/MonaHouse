@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useEffect, useContext } from "react";
+import React, { useLayoutEffect, useContext } from "react";
 import {
   Text, StyleSheet, View, ScrollView, TouchableOpacity,
 } from "react-native";
