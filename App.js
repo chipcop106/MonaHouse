@@ -11,7 +11,7 @@ import { Provider as MotelProvider } from "./src/context/MotelContext";
 import { default as mapping } from "./custom-mapping.json";
 import { default as themeCustom } from "./light-theme-custom.json";
 import { Provider as RoomGoInProvider } from "./src/context/RoomGoInContext";
-
+import { Provider as RoomGoOutProvider } from "./src/context/RoomGoOutContext";
 const App = () => (
   <RootStack />
 );
@@ -26,8 +26,11 @@ export default () => (
       <AuthProvider>
         <MotelProvider>
           <RoomGoInProvider>
-            <App />
+            <RoomGoOutProvider>
+              <App />
+            </RoomGoOutProvider>
           </RoomGoInProvider>
+         
           <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} />
           <StatusBar barStyle="light-content" />
         </MotelProvider>
