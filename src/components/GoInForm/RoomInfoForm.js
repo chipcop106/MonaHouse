@@ -79,7 +79,7 @@ const RoomInfoForm = () => {
                   : null}
               </Select>
             </View>
-            <IncludeElectrictWater index={stateRoomInfo.electrictIndex?.row ?? (new IndexPath(0).row)} />
+            <IncludeElectrictWater initialState={stateRoomInfo.roomInfo} handleValueChange={(value) => changeStateFormStep("roomInfo", value)} index={stateRoomInfo.electrictIndex?.row ?? (new IndexPath(0).row)} />
           </View>
         </View>
         <View style={styles.serviceTitle}>

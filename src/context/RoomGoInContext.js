@@ -1,6 +1,5 @@
 import { IndexPath } from "@ui-kitten/components";
 import CreateDataContext from "./CreateDataContext";
-import { getCity } from "../api/AccountAPI";
 
 const goInReducer = (prevstate, action) => {
   switch (action.type) {
@@ -83,6 +82,16 @@ export const { Context, Provider } = CreateDataContext(
       dateGoIn: "",
       timeRent: "12",
       timeTypeIndex: new IndexPath(0),
+      roomInfo: {
+        electrictNumber: '',
+        electrictPrice: '',
+        electrictPriceInclude: '',
+        electrictImage: null,
+        waterNumber: '',
+        waterPrice: '',
+        waterPriceInclude: '',
+        waterImage: null,
+      },
       electrictIndex: new IndexPath(0),
       services: [],
     },

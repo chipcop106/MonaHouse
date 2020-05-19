@@ -17,6 +17,7 @@ const titleHeader = ["Thông tin phòng, ki ốt", "Thông tin người thuê", 
 const RenderForm = () => {
   const { state: RoomGoinState, changeStateFormStep, stepStateChange } = useContext(RoomGoInContext);
   const { step, dataForm } = RoomGoinState;
+  
   return (
     <>
       {step === 0
