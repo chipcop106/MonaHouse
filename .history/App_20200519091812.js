@@ -15,6 +15,8 @@ import { Provider as RoomGoInProvider } from "./src/context/RoomGoInContext";
 const App = () => (
   <RootStack />
 );
+
+
 export default () => (
   <>
     <IconRegistry icons={EvaIconsPack} />
