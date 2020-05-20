@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useEffect, useContext } from "react";
+import React, { useLayoutEffect, useContext } from "react";
 import {
   Text, StyleSheet, View, ScrollView, TouchableOpacity, KeyboardAvoidingView
 } from "react-native";
@@ -17,6 +17,7 @@ const titleHeader = ["Thông tin phòng, ki ốt", "Thông tin người thuê", 
 const RenderForm = () => {
   const { state: RoomGoinState, changeStateFormStep, stepStateChange } = useContext(RoomGoInContext);
   const { step, dataForm } = RoomGoinState;
+  
   return (
     <>
       {step === 0
@@ -45,7 +46,7 @@ const RenderForm = () => {
 };
 
 const RoomGoInScreen = ({ navigation }) => {
-  const { state: RoomGoinState, changeStepForm } = useContext(RoomGoInContext);
+  const { state: RoomGoinState, changeStepForm, resetState } = useContext(RoomGoInContext);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -65,6 +66,8 @@ const RoomGoInScreen = ({ navigation }) => {
   const sendFormData = (state) => {
     const { dataForm } = state;
     alert(JSON.stringify(dataForm));
+    navigation.pop();
+    resetState();
   };
 
 

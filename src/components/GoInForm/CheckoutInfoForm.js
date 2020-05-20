@@ -1,11 +1,11 @@
-import React, { useReducer, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import {
-  Text, StyleSheet, View, TouchableOpacity,
+  Text, StyleSheet, View,
 } from "react-native";
 import {
-  Input, Datepicker, Layout, Select, SelectItem, IndexPath, Button, Icon, Divider,
+  Input, Select, SelectItem, Divider,
 } from "@ui-kitten/components";
-import { sizes, color } from "../../config";
+import { color } from "../../config";
 import { Context as RoomGoInContext } from "../../context/RoomGoInContext";
 import { pad } from "../../utils";
 
@@ -19,10 +19,6 @@ const preDepositTime = prePaymentTime.map((item, index) => `${pad(index + 1)} th
 const depositType = ["Cọc giữ tới hết hạn hợp đồng", "Cọc trừ dần tính từ tháng thứ"];
 
 const paymentType = ["Chuyển khoản", "Tiền mặt"];
-// const reducer = (state, { field, value }) => ({
-//   ...state,
-//   [field]: value,
-// });
 
 const CheckoutInfoForm = () => {
   const { state: RoomGoInState, changeStateFormStep } = useContext(RoomGoInContext);
@@ -208,9 +204,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 15,
   },
-  container: {
-    flex: 1,
-  },
   formWrap: {
     paddingHorizontal: 10,
     marginHorizontal: -10,
@@ -228,32 +221,6 @@ const styles = StyleSheet.create({
   },
   fullWidth: {
     flexBasis: "98%",
-  },
-  serviceWrap: {
-    paddingBottom: 0,
-    marginBottom: 30,
-  },
-  serviceTitle: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  addServiceBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  addServiceBtnText: {
-    marginLeft: 5,
-    color: color.primary,
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  emptyText: {
-    marginBottom: 15,
-    color: color.redColor,
-    textAlign: "center",
-    fontSize: 14,
   },
   rowInfo: {
     flexDirection: "row",

@@ -1,4 +1,7 @@
 import { Platform } from "react-native";
+import {NativeDateService} from '@ui-kitten/components';
+
+const currentYear = (new Date()).getFullYear();
 
 export const color = {
   primary: "#2BC7C7",
@@ -29,4 +32,9 @@ export const settings = {
   oneSignalKey: "92eed1ed-9a7c-4b5f-a73f-2178b8e994c5",
   deviceOS: ["", "ios", "android"].indexOf(Platform.OS).toString(),
   key: "VnVOQG0zODlNb25hRGV2",
+  formatDateService : new NativeDateService('en','DD/MM/YYYY'),
+  minRangeDatePicker: new Date(`01/01/${currentYear - 5}`),
+  maxRangeDatePicker: new Date(`01/01/${currentYear + 5}`),
 };
+
+
