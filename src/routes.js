@@ -26,7 +26,7 @@ import RoomManagementScreen from './screens/RoomScreen/RoomManagementScreen';
 import SettingScreen from './screens/MainScreen/SettingScreen';
 import RoomGoOutScreen from './screens/RoomScreen/RoomGoOutScreen';
 import RoomGoInScreen from './screens/RoomScreen/RoomGoInScreen';
-
+import { Host } from 'react-native-portalize';
 export const isMountedRef = React.createRef();
 
 export const navigationRef = React.createRef();
@@ -202,6 +202,7 @@ const BottomNavigator = () => {
   const BottomTab = createMaterialBottomTabNavigator();
 
   return (
+    <Host>
     <BottomTab.Navigator
       initialRouteName="Home"
       activeColor={color.primary}
@@ -282,6 +283,7 @@ const BottomNavigator = () => {
         }}
       />
     </BottomTab.Navigator>
+    </Host>
   );
 };
 
