@@ -30,7 +30,7 @@ export default () => (
           <RoomGoInProvider>
             <App />
           </RoomGoInProvider>
-          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} />
+          
           <StatusBar barStyle="light-content" />
         </MotelProvider>
       </AuthProvider>
