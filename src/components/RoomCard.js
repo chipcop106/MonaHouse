@@ -87,7 +87,7 @@ const renderItemFooter = (footerProps, navigation) => (
   </View>
 );
 
-const RoomCard = ({ roomInfo }) => {
+const RoomCard = ({ roomInfo, addFee }) => {
   const navigation = useNavigation();
   return (
     <Card
@@ -142,7 +142,9 @@ const RoomCard = ({ roomInfo }) => {
               <Text style={styles.balanceValue}> 5.925.000 đ</Text>
             </Text>
           </View>
-          <TouchableOpacity style={styles.touchButton}>
+          <TouchableOpacity 
+          onPress={addFee}
+          style={styles.touchButton}>
             <Icon name="plus-circle-outline" fill={color.darkColor} style={styles.iconButton} />
             <Text style={styles.textButton}>Thêm phí</Text>
           </TouchableOpacity>

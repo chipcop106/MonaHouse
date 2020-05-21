@@ -6,7 +6,7 @@ import GoOutCheckout from "../../components/GoOutForm/GoOutCheckout";
 import { Context as RoomGoOutContext } from '../../context/RoomGoOutContext'
 import { sizes, color } from '../../config'
 import AsyncStorage from '@react-native-community/async-storage'
-
+import UserInfo from '~/components/UserInfo';
 const titleHeader = ["Thông tin phòng, ki ốt", "Thông tin thanh toán"];
 
 const RenderForm = () => {
@@ -74,33 +74,7 @@ const RoomGoOutScreen = ({ navigation }) => {
     return (
         <Layout style={styles.container} level="3">
             <ScrollView>
-                <View style={styles.userSection}>
-                  
-                    <View style={[styles.section]}>
-
-                        <View style={ styles.userWrap}>
-                        <View style={styles.userInfo}>
-                            <Avatar 
-                            style={styles.avatar}
-                            shape="round"
-                            size="medium"
-                            source={userInfo.Avatar ? { uri: userInfo.Avatar } : require('../../../assets/user.png')}
-                            />
-                            <View style={{marginLeft: 10}}>
-                                <Text style={styles.userName}>Trương Văn Lam</Text>
-                                <Text style={styles.phoneNumber}>{userInfo.Phone ? userInfo.Phone : 'Chưa có'}</Text>
-                            </View>
-                            
-                        </View>
-                        <TouchableOpacity
-                            onPress={() => Linking.openURL(`tel:${userInfo.Phone}`)}
-                        >
-                            <Icon name="phone-outline" fill={color.primary} style={{width:30, height:30}}/>
-                        </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            
+            {userInfo ? (<UserInfo avatar={userInfo.Avatar} name={userInfo.FullName} phone={userInfo.Phone}/>) : <Text>Loading user info...</Text>}
                 <RenderForm />
                 <View
                     style={styles.mainWrap}
@@ -172,31 +146,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "700",
         marginBottom: 15,
-    },
-    userWrap:{
-        flexDirection: 'row',
-        alignItems:'center',
-        justifyContent:'space-between',
-        paddingTop:0,
-        marginBottom:0
-    },
-    userInfo:{
-        flexDirection: 'row',
-        alignItems:'center',
-        paddingVertical: 10,
-    },
-    userSection:{
-        marginBottom: 0,
-        paddingHorizontal: 15,
-        marginTop:15,
-    },
-    userName: {
-        fontSize:20,
-        fontWeight: '600',
-        marginBottom: 5,
-    },
-    userPhone: {
-        color:color.labelColor
     }
 });
 

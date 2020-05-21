@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useContext } from "react";
 import {
-  Text, StyleSheet, View, ScrollView, TouchableOpacity,
+  Text, StyleSheet, View, ScrollView, TouchableOpacity, KeyboardAvoidingView
 } from "react-native";
 import {
   Layout, Button, Icon,
@@ -73,8 +73,15 @@ const RoomGoInScreen = ({ navigation }) => {
 
   return (
 
-    <Layout style={styles.container} level="3">
-      <ScrollView>
+  <Layout style={styles.container} level="3">
+    <KeyboardAvoidingView style={{flex: 1}} 
+      behavior={Platform.OS === "ios" ? "position" : null} 
+      // keyboardVerticalOffset={-44}
+    >
+      <ScrollView style={{}} contentContainerStyle={{
+        justifyContent: "flex-end"
+        }}>
+        
         <RenderForm />
         <View
           style={styles.mainWrap}
@@ -82,6 +89,7 @@ const RoomGoInScreen = ({ navigation }) => {
           {
                         RoomGoinState.step < 2 ? (
                           <Button
+                          style={styles.btnFt}
                             onPress={() => changeStepForm(1)}
                             accessoryRight={() => (
                               <Icon
@@ -98,6 +106,7 @@ const RoomGoInScreen = ({ navigation }) => {
                         )
                           : (
                             <Button
+                              style={styles.btnFt}
                               onPress={() => sendFormData(RoomGoinState)}
                               accessoryLeft={() => (
                                 <Icon
@@ -113,10 +122,10 @@ const RoomGoInScreen = ({ navigation }) => {
                             </Button>
                           )
                     }
-
         </View>
       </ScrollView>
-    </Layout>
+    </KeyboardAvoidingView>
+  </Layout>
 
   );
 };
@@ -124,7 +133,7 @@ const RoomGoInScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   mainWrap: {
     paddingHorizontal: 15,
-    marginBottom: 15,
+    paddingBottom: 15,
   },
   container: {
     flex: 1,
@@ -138,6 +147,9 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontSize: 16,
   },
+  btnFt: {
+    // borderRadius: 0,
+  }
 });
 
 export default RoomGoInScreen;

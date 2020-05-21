@@ -15,8 +15,6 @@ import { Provider as RoomGoOutProvider } from "./src/context/RoomGoOutContext";
 const App = () => (
   <RootStack />
 );
-
-
 export default () => (
   <>
     <IconRegistry icons={EvaIconsPack} />
@@ -32,8 +30,6 @@ export default () => (
               <App />
             </RoomGoOutProvider>
           </RoomGoInProvider>
-         
-          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} />
           <StatusBar barStyle="light-content" />
         </MotelProvider>
       </AuthProvider>

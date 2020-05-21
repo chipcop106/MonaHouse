@@ -37,33 +37,33 @@ const instance = axios.create({
 })
 
 // Intercept all request
-// instance.interceptors.request.use(
-//     config => {
-//         console.log(
-//             `%c ${config.method.toUpperCase()} - ${getUrl(config)}:`,
-//             'color: #0086b3; font-weight: bold', config);
-//         return config;
-//     }, error => Promise.reject(error),
-// );
+instance.interceptors.request.use(
+    config => {
+        console.log(
+            `%c ${config.method.toUpperCase()} - ${getUrl(config)}:`,
+            'color: #0086b3; font-weight: bold', config);
+        return config;
+    }, error => Promise.reject(error),
+);
 
 // Intercept all responses
-// instance.interceptors.response.use(
-//     async response => {
-//         console.log(
-//             `%c ${response.status} - ${getUrl(response.config)}:`,
-//             'color: #008000; font-weight: bold',
-//             response,
-//         );
+instance.interceptors.response.use(
+    async response => {
+        console.log(
+            `%c ${response.status} - ${getUrl(response.config)}:`,
+            'color: #008000; font-weight: bold',
+            response,
+        );
        
-//         return response;
-//     }, error => {
-//         console.log(
-//             `%c ${error.response.status} - ${getUrl(error.response.config)}:`,
-//             'color: #a71d5d; font-weight: bold',
-//             error.response,
-//         ); 
-//         return Promise.reject(error);
-//     }
-// );
+        return response;
+    }, error => {
+        console.log(
+            `%c ${error.response.status} - ${getUrl(error.response.config)}:`,
+            'color: #a71d5d; font-weight: bold',
+            error.response,
+        ); 
+        return Promise.reject(error);
+    }
+);
 
 export default instance;
