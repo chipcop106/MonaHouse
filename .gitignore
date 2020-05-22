@@ -60,5 +60,9 @@ buck-out/
 
 # Expo
 .expo/*
+<<<<<<< HEAD
 yarn.lock
 .gitignore
+=======
+Monahouse.code-workspace
+>>>>>>> 4c67e5a2060efbc07ff595e2cf333e7c559533e3
