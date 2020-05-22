@@ -2,5 +2,6 @@
 
 ### Change logs:
 ```sh
+- 21/05/2020 : Màn hình dọn ra, thu tiền phòng, load room bằng api
 - 18/05/2020 : Thêm màn hình dọn vào phòng mới
 ```

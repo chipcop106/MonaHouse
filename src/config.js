@@ -15,6 +15,7 @@ export const color = {
   redColor: "#FF3D71",
   transparent: "transparent",
   labelColor: "#707070",
+  disabledTextColor: "rgba(131, 131, 131, 0.24)",
   gradients: {
     success: ["#00E096", "#00E096", "#00E096"],
     danger: ["#FF3D71", "#FF3D71", "#FF3D71"],

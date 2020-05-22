@@ -1,110 +1,156 @@
 /* eslint-disable react-native/no-color-literals */
-import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useState, createRef, useContext, useEffect } from "react";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import {
-  Icon, Input, List,
+    Icon, Input, List, IndexPath, Text
 } from "@ui-kitten/components";
-import CustomSelect from "../../components/common/CustomSelect";
-import RoomCard from "../../components/RoomCard";
-import { color } from "../../config";
+import CustomSelect from "~/components/common/CustomSelect";
+import RoomCard from "~/components/RoomCard";
+import { color } from "~/config";
+import { Modalize } from 'react-native-modalize';
+import { Portal } from 'react-native-portalize';
+import AddFeeModal from '~/components/AddFeeModal';
+import { Context as RoomContext } from '~/context/RoomContext';
+import { Context as MotelContext } from '~/context/MotelContext';
+import { Context as AuthContext } from '~/context/AuthContext';
+const monthOptions = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"];
 
-const HouseOptions = [{ id: 1, title: "319 C16 Lý Thường Kiệt", value: 1 }, { id: 2, title: "64 Út Tịch", value: 2 }];
-
-const DateOptions = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4"];
-
-const RoomData = [
-  { id: 1, name: "Phòng 01", imageSrc: "https://zicxa.com/hinh-anh/wp-content/uploads/2019/07/T%E1%BB%95ng-h%E1%BB%A3p-h%C3%ACnh-%E1%BA%A3nh-g%C3%A1i-xinh-d%E1%BB%85-th%C6%B0%C6%A1ng-cute-nh%E1%BA%A5t-6.jpg" },
-  { id: 2, name: "Phòng 02", imageSrc: "https://gamek.mediacdn.vn/thumb_w/690/2019/7/8/1-15625474669018688730.jpg" },
-];
 
 const RoomManagementScreen = (evaProps) => {
-  const [searchValue, setSearchValue] = useState("");
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const getSelectedIndex = (index) => {
-    //    console.log(index);
-  };
-  return (
-    <View style={styles.container}>
-      <View style={styles.filterWrap}>
-        <View style={styles.filterSelect}>
-          <View style={[styles.filter, styles.firstFilter]}>
-            <CustomSelect selectOptions={HouseOptions.map((option) => option.title)} getSelectedIndex={getSelectedIndex} icon="home" />
-          </View>
-          <View style={[styles.filter, styles.secondFilter]}>
-            <CustomSelect selectOptions={DateOptions} getSelectedIndex={getSelectedIndex} icon="calendar" />
-          </View>
-        </View>
-        <View style={styles.filterSearch}>
-          <Input
-            status="transparent"
-            placeholder="Tìm kiếm..."
-            value={searchValue}
-            onChangeText={(nextValue) => setSearchValue(nextValue)}
-            accessoryLeft={() => <Icon name="search" fill={color.whiteColor} style={styles.searchIcon} />}
-          />
-        </View>
-      </View>
+    const { signOut } = useContext(AuthContext)
+    const { state: roomState, getListRooms } = useContext(RoomContext);
+    const { state: modelState } = useContext(MotelContext);
+    const [searchValue, setSearchValue] = useState("");
+    const [selectedMotelIndex, setSelectedMotelIndex] = useState(new IndexPath(0));
+    const [selectedMonthIndex, setSelectedMonthIndex] = useState(new IndexPath(0));
+    const {listMotels} = modelState;
+    useEffect(() => {
+        try {
+            //console.log(listMotels);
+            getListRooms({
+                motelid:listMotels[selectedMotelIndex.row - 1]?.ID ?? 0,
+                month:selectedMonthIndex.row + 1
+            }, signOut)
+        } catch (error) {
+            console.log(error)
+        }
+     
+    },[selectedMotelIndex, selectedMonthIndex])
 
-      <View style={styles.contentContainer}>
-        <List
-          style={styles.listContainer}
-          contentContainerStyle={styles.contentCard}
-          data={RoomData}
-          renderItem={(room) => <RoomCard roomInfo={room} />}
-        />
-      </View>
-    </View>
-  );
+    // useEffect(() => {
+    //     console.log(roomState);
+    // }, [roomState])
+
+    const bsFee = createRef();
+
+    const openAddFeeModal = () => {
+        bsFee.current?.open();
+    };
+    return (
+        <View style={styles.container}>
+            <View style={styles.filterWrap}>
+                <View style={styles.filterSelect}>
+                    <View style={[styles.filter, styles.firstFilter]}>
+                        <CustomSelect 
+                        selectOptions={[{MotelName:"Tất cả"},...listMotels].map((motel) => motel.MotelName)} 
+                        getSelectedIndex={(index) => setSelectedMotelIndex(index)} 
+                        icon="home"
+                        />
+                    </View>
+                    <View style={[styles.filter, styles.secondFilter]}>
+                        <CustomSelect selectOptions={monthOptions} getSelectedIndex={(index) => setSelectedMonthIndex(index)} icon="calendar" />
+                    </View>
+                </View>
+                <View style={styles.filterSearch}>
+                    <Input
+                        status="transparent"
+                        placeholder="Tìm kiếm..."
+                        value={searchValue}
+                        onChangeText={setSearchValue}
+                        accessoryLeft={() => <Icon name="search" fill={color.whiteColor} style={styles.searchIcon} />}
+                    />
+                </View>
+            </View>
+
+            <View style={styles.contentContainer}>
+                <List
+                    keyExtractor={(room) => `${room.RoomID}`}
+                    style={styles.listContainer}
+                    contentContainerStyle={styles.contentCard}
+                    data={roomState.listRooms}
+                    renderItem={(room) => <RoomCard roomInfo={room} addFee={openAddFeeModal} />}
+                />
+                <Portal>
+                    <Modalize
+                        ref={bsFee}
+                        closeOnOverlayTap={false}
+                        adjustToContentHeight={true}
+                    >
+                        <View style={styles.bottomSheetContent}>
+                            <AddFeeModal />
+                        </View>
+                    </Modalize>
+                </Portal>
+            </View>
+
+        </View>
+
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+    container: {
+        flex: 1,
+    },
 
-  contentContainer: {
-    flexGrow: 1,
-    backgroundColor: "#ccc",
-  },
+    contentContainer: {
+        flexGrow: 1,
+        backgroundColor: "#ccc",
+    },
+    filterWrap: {
+        padding: 10,
+        backgroundColor: color.darkColor,
+    },
 
-  filterWrap: {
-    padding: 10,
-    backgroundColor: color.darkColor,
-  },
+    filterSelect: {
+        flexDirection: "row",
+    },
 
-  filterSelect: {
-    flexDirection: "row",
-  },
+    filter: {
+        flexGrow: 1,
+    },
 
-  filter: {
-    flexGrow: 1,
-  },
+    firstFilter: {
+        marginRight: 5,
+    },
 
-  firstFilter: {
-    marginRight: 5,
-  },
+    secondFilter: {
+        marginLeft: 5,
+    },
 
-  secondFilter: {
-    marginLeft: 5,
-  },
+    filterSearch: {
+        marginTop: 10,
+    },
 
-  filterSearch: {
-    marginTop: 10,
-  },
+    searchIcon: {
+        width: 20,
+        height: 20,
+    },
 
-  searchIcon: {
-    width: 20,
-    height: 20,
-  },
+    contentCard: {
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+    },
 
-  contentCard: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
+    listContainer: {
+        flex: 1,
+    },
 
-  listContainer: {
-    flex: 1,
-  },
+    bottomSheetContent: {
+        paddingHorizontal: 15,
+        paddingVertical: 30,
+        paddingBottom: 60
+    }
 });
 
 export default RoomManagementScreen;

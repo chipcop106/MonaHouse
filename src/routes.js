@@ -26,7 +26,8 @@ import RoomManagementScreen from './screens/RoomScreen/RoomManagementScreen';
 import SettingScreen from './screens/MainScreen/SettingScreen';
 import RoomGoOutScreen from './screens/RoomScreen/RoomGoOutScreen';
 import RoomGoInScreen from './screens/RoomScreen/RoomGoInScreen';
-
+import RoomDetailScreen from './screens/RoomScreen/RoomDetailScreen';
+import { Host } from 'react-native-portalize';
 export const isMountedRef = React.createRef();
 
 export const navigationRef = React.createRef();
@@ -165,6 +166,13 @@ const RoomStack = () => {
           title: 'Dọn ra',
         }}
       />
+       <Stack.Screen
+        name="RoomDetail"
+        component={RoomDetailScreen}
+        options={{
+          title: 'Chi tiết phòng 01',
+        }}
+      />
     </Stack.Navigator>
   );
 };
@@ -202,6 +210,7 @@ const BottomNavigator = () => {
   const BottomTab = createMaterialBottomTabNavigator();
 
   return (
+    <Host>
     <BottomTab.Navigator
       initialRouteName="Home"
       activeColor={color.primary}
@@ -282,6 +291,7 @@ const BottomNavigator = () => {
         }}
       />
     </BottomTab.Navigator>
+    </Host>
   );
 };
 

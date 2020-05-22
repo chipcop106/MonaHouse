@@ -7,7 +7,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { color } from '../../config';
 
-const CustomSelect = ({ icon, selectOptions, getSelectedIndex }) => {
+const CustomSelect = ({ icon, selectOptions, getSelectedIndex}) => {
   const [selectedIndex, setSelectedIndex] = useState(new IndexPath(0));
   return (
     <View style={styles.selectGroup}>

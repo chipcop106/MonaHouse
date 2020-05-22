@@ -6,7 +6,7 @@ import {
   Input, Datepicker, Select, SelectItem, IndexPath, Icon,
 } from "@ui-kitten/components";
 import Service from "./Service";
-import IncludeElectrictWater from "./IncludeElectrictWater";
+import IncludeElectrictWater from "~/components/IncludeElectrictWater";
 import { sizes, color } from "../../config";
 import { create_UUID as randomId } from "../../utils";
 import { Context as RoomGoInContext } from "../../context/RoomGoInContext";
