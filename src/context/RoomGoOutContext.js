@@ -1,50 +1,36 @@
 import { IndexPath } from "@ui-kitten/components";
 import CreateDataContext from "./CreateDataContext";
+import AsyncStorage from '@react-native-community/async-storage';
 
-const initialState = {
+const defaultState = {
   step: 0,
   dataForm: [{
     roomPrice: "",
-    dateGoIn: "",
-    timeRent: "12",
-    timeTypeIndex: new IndexPath(0),
+    dateGoIn: new Date("10/20/2019"),
+    dateGoOut: "",
+    constract:"20/10/2020",
     roomInfo: {
       electrictNumber: '',
-      electrictPrice: '',
+      electrictPrice: '5000',
       electrictPriceInclude: '',
       electrictImage: null,
       waterNumber: '',
-      waterPrice: '',
+      waterPrice: '3000',
       waterPriceInclude: '',
       waterImage: null,
     },
-    electrictIndex: new IndexPath(0),
-    services: [],
   },
   {
-    fullName: "",
-    phoneNumber: "",
-    email: "",
-    provinceIndex: new IndexPath(0),
-    numberPeople: "",
-    relationshipIndex: new IndexPath(0),
-    note: "",
-    licenseImages: [],
-    cityLists: [],
-  },
-  {
-    depositTypeIndex: new IndexPath(0),
-    preDepositTimeIndex: new IndexPath(0),
-    totalDeposit: "3.000.000",
-    prePaymentTimeIndex: new IndexPath(0),
-    totalPrepay: "30.000.000",
-    actuallyReceived: "4.000.000",
+    moneyLastMonth: '',
+    depositMoney:'',
+    depositType:'', 
+    checkoutDeposit: "",
+    actuallyReceived: "",
     paymentTypeIndex: new IndexPath(0),
-    paymentNote: "Đây là ghi chú",
   }],
 }
 
-const goInReducer = (prevstate, action) => {
+const goOutReducer = (prevstate, action) => {
   switch (action.type) {
     case "STEP_STATE_CHANGE": {
       const newFormState = prevstate.dataForm.map((item, index) => {
@@ -82,11 +68,9 @@ const goInReducer = (prevstate, action) => {
         dataForm: newFormState,
       };
     }
-
     case "RESET_STATE": {
-      return initialState;
+      return defaultState;
     }
-
     default: {
       return prevstate;
     }
@@ -102,60 +86,40 @@ const changeStateFormStep = (dispatch) => (field, value) => {
   dispatch({ type: "STEP_STATE_CHANGE", payload: { field, value } });
 };
 
-const onChangeService = (dispatch) => (value) => {
-  dispatch({ type: "SERVICE_CHANGE", payload: value });
-};
-
-const resetState = (dispatch) => (value) => {
+const clearState = (dispatch) => () =>{
   dispatch({ type: "RESET_STATE"});
-};
+}
 
 
 export const { Context, Provider } = CreateDataContext(
-  goInReducer,
+  goOutReducer,
   {
-    changeStepForm, changeStateFormStep, onChangeService, resetState
-  },
-  {
+    changeStepForm, changeStateFormStep, clearState
+  },{
     step: 0,
     dataForm: [{
       roomPrice: "",
-      dateGoIn: "",
-      timeRent: "12",
-      timeTypeIndex: new IndexPath(0),
+      dateGoIn: new Date("10/20/2019"),
+      dateGoOut: "",
+      constract:"20/10/2020",
       roomInfo: {
         electrictNumber: '',
-        electrictPrice: '',
+        electrictPrice: '5000',
         electrictPriceInclude: '',
         electrictImage: null,
         waterNumber: '',
-        waterPrice: '',
+        waterPrice: '3000',
         waterPriceInclude: '',
         waterImage: null,
       },
-      electrictIndex: new IndexPath(0),
-      services: [],
     },
     {
-      fullName: "",
-      phoneNumber: "",
-      email: "",
-      provinceIndex: new IndexPath(0),
-      numberPeople: "",
-      relationshipIndex: new IndexPath(0),
-      note: "",
-      licenseImages: [],
-      cityLists: [],
-    },
-    {
-      depositTypeIndex: new IndexPath(0),
-      preDepositTimeIndex: new IndexPath(0),
-      totalDeposit: "3.000.000",
-      prePaymentTimeIndex: new IndexPath(0),
-      totalPrepay: "30.000.000",
-      actuallyReceived: "4.000.000",
+      moneyLastMonth: '',
+      depositMoney:'',
+      depositType:'', 
+      checkoutDeposit: "",
+      actuallyReceived: "",
       paymentTypeIndex: new IndexPath(0),
-      paymentNote: "Đây là ghi chú",
     }],
   },
 );

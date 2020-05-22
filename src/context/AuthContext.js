@@ -8,28 +8,31 @@ const authReducer = (state, action) => {
         return {
             ...state,
             userToken: action.payload.token,
+            accountInfo: action.payload.account,
             isLoading: false,
         };
     case 'SIGN_IN':
         return {
             ...state,
             userToken: action.payload.token,
-            isSignout: false,
+            accountInfo: action.payload.account,
+            isLoading: false,
             errorMessage: '',
         };
     case 'SIGN_UP':
         return {
             ...state,
             userToken: action.payload.token,
+            accountInfo: action.payload.account,
             errorMessage: '',
         };
     case 'SIGN_OUT':
-
         return {
             ...state,
             userToken: null,
-            isSignout: true,
+            isLoading: false,
             errorMessage: '',
+            accountInfo:null
         };
     case 'ADD_ERROR':
         return {
@@ -46,6 +49,7 @@ const authReducer = (state, action) => {
             ...state,
             isSignout: true,
             userToken: null,
+            accountInfo: null
         };
     }
 };
@@ -60,16 +64,18 @@ const signInLocalToken = (dispatch) => async () => {
         token = await AsyncStorage.getItem('userToken');
         dispatch({ type: 'RESTORE_TOKEN', payload: { token } });
     } catch (err) {
-        alert('Token không tồn tại');
+        alert('Token da het han');
+        dispatch({ type: 'SIGN_OUT'});
     }
 };
 
 const signIn = (dispatch) => async (username, password) => {
     try {
         const res = await loginAccount({ username, password });
-        const { token } = res.Data;
+        const { token, account } = res.Data;
         await AsyncStorage.setItem('userToken', token);
-        dispatch({ type: 'SIGN_IN', payload: { token } });
+        await AsyncStorage.setItem('userInfo', JSON.stringify(account));
+        dispatch({ type: 'SIGN_IN', payload: { token, account } });
     } catch (error) {
         dispatch({ type: 'ADD_ERROR', payload: 'Tài khoản hoặc mật khẩu không đúng !!' });
     }
@@ -82,8 +88,13 @@ const signUp = (dispatch) => async (phone, name) => {
 
 
 const signOut = (dispatch) => async () => {
-    await AsyncStorage.setItem('userToken', '');
-    dispatch({ type: 'SIGN_OUT' });
+    try {
+        await AsyncStorage.multiRemove(['userToken', 'userInfo']);
+        dispatch({ type: 'SIGN_OUT' });
+    } catch (error) {
+        
+    }
+
 };
 
 const clearErrorMessage = (dispatch) => () => {
@@ -98,8 +109,8 @@ export const { Context, Provider } = CreateDataContext(
     },
     {
         isLoading: true,
-        isSignout: false,
         userToken: null,
         errorMessage: '',
+        accountInfo: null
     },
 );
