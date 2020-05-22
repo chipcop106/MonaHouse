@@ -3,11 +3,9 @@ import {
     StyleSheet, View,
 } from "react-native";
 import {
-    Input, Select, SelectItem, Icon, Text, Divider
+    Input, Select, SelectItem, Text, Divider
 } from "@ui-kitten/components";
-import IncludeElectrictWater from "../GoInForm/IncludeElectrictWater";
-import { sizes, color, settings } from "../../config";
-import { create_UUID as randomId } from "../../utils";
+import { color } from "../../config";
 import { Context as RoomGoOutContext } from "../../context/RoomGoOutContext";
 
 const paymentMethod = ['Tiền mặt', 'Chuyển khoản'];

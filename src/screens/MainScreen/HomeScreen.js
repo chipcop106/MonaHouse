@@ -103,20 +103,9 @@ const HomeScreen = () => {
 
   const pad = (n) => (n >= 10 ? n : `0${n}`);
 
-  const getData = async () => {
-    await getListMotels();
-  };
 
   useEffect(() => {
-    console.log(motelState);
-    if (motelState.Code === 2) {
-      alert('Token hết hạn, vui lòng đăng nhập lại...');
-      signOut();
-    }
-  }, [motelState]);
-
-  useEffect(() => {
-    getData();
+    getListMotels(signOut);
   }, []);
 
   return (

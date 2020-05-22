@@ -26,6 +26,7 @@ import RoomManagementScreen from './screens/RoomScreen/RoomManagementScreen';
 import SettingScreen from './screens/MainScreen/SettingScreen';
 import RoomGoOutScreen from './screens/RoomScreen/RoomGoOutScreen';
 import RoomGoInScreen from './screens/RoomScreen/RoomGoInScreen';
+import RoomDetailScreen from './screens/RoomScreen/RoomDetailScreen';
 import { Host } from 'react-native-portalize';
 export const isMountedRef = React.createRef();
 
@@ -163,6 +164,13 @@ const RoomStack = () => {
         component={RoomGoOutScreen}
         options={{
           title: 'Dọn ra',
+        }}
+      />
+       <Stack.Screen
+        name="RoomDetail"
+        component={RoomDetailScreen}
+        options={{
+          title: 'Chi tiết phòng 01',
         }}
       />
     </Stack.Navigator>
