@@ -30,30 +30,35 @@ const reducer = (prevstate, action) => {
 const ElectrictCollectScreen = ({ route }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const roomId = route.params?.roomId ?? null;
+    const {renter, room} = state;
+
     const onChangeValue = (newState) => {
         dispatch({ type: "STATE_CHANGE", payload: { newState } })
     }
 
-    // useEffect(() => {
-    //     const loadRoomInfo = async () => {
-    //         try {
-    //             const res = await getRoomById({roomid: roomId});
-    //         } catch (err) {
+    useEffect(() => {
+        const loadRoomInfo = async () => {
+            try {
+                const res = await getRoomById({roomid: roomId});
+                dispatch({ type: "STATE_CHANGE", payload: {newState: res.Data} })
+            } catch (err) {
                 
-    //         }
-    //     } 
+            }
+        } 
+        loadRoomInfo();
+    }, [])
 
-    //     loadRoomInfo();
-    // }, [])
-
+    useEffect(() =>{
+        console.log(state);
+    },[state]);
     return (
         <>
             <ScrollView>
                 <View style={styles.container}>
                     <UserInfo
-                        name="Truong Văn Lam"
-                        phone="0886706289"
-                        avatar={null}
+                        name={renter?.renter.FullName ?? 'Đang tải...'}
+                        phone={renter?.renter.Phone ?? 'Đang tải'}
+                        avatar={renter?.renter.LinkIMG ?? null}
                     />
                     <View style={styles.mainWrap}>
                         <View style={styles.section}>
