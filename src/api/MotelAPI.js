@@ -64,6 +64,15 @@ export const getMotels = async (params) => {
     return result;
 }
 
+/* 
+    int motelid || 0, 
+    int month, 
+    int year, 
+    string qsearch || "", 
+    int sortby || 0, 
+    int status || 0
+*/
+
 export const getMotelById = async params => {
     try {
         const token = await getAccessToken();

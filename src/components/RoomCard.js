@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import {
   StyleSheet, View, Text, TouchableOpacity,
 } from 'react-native';
@@ -11,24 +11,40 @@ import LinearGradient from 'react-native-linear-gradient';
 import Dash from 'react-native-dash';
 import { color } from '../config';
 import { useNavigation } from '@react-navigation/native';
+import { currencyFormat } from '~/utils';
 
-
+const noImageSrc = require('../../assets/user.png');
 
 const renderItemHeader = (headerprops, roomInfo, navigation) => {
- 
+  const { item } = roomInfo;
   const [visible, setVisible] = useState(false);
   const onItemSelect = (index) => {
+    switch (index.row) {
+      case 1: {
+        console.log(item.RoomID);
+        navigation.navigate('ElectrictCollect', { roomId: item.RoomID })
+      }
+    }
     setVisible(false);
   };
 
-  const renderToggleMenuHeader = () => (<TouchableOpacity onPress={() => setVisible(true)}><Icon name="more-vertical" fill={color.whiteColor} style={styles.iconMenu} /></TouchableOpacity>);
+  const renderToggleMenuHeader = () => (<TouchableOpacity style={{ position: 'absolute', right: 10, }} onPress={() => setVisible(true)}><Icon name="more-vertical" fill={color.whiteColor} style={styles.iconMenu} /></TouchableOpacity>);
 
-  // console.log(roomInfo);
   return (
-    <View {...headerprops} style={styles.headerWrap}>
-      <View>
-        <Text style={styles.roomName}>{roomInfo.item.name}</Text>
-      </View>
+    <View
+      {...headerprops}
+      style={styles.headerWrap}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('RoomDetail')}
+      >
+        <Text
+          style={styles.roomName}
+          ellipsizeMode="tail"
+          numberOfLines={1}
+        >
+          {item.RoomName}
+        </Text>
+      </TouchableOpacity>
       <OverflowMenu
         backdropStyle={styles.backdrop}
         anchor={renderToggleMenuHeader}
@@ -37,12 +53,10 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
         onBackdropPress={() => setVisible(false)}
       >
         <MenuItem
-          onPress={() => navigation.navigate('RoomDetail', { id: '1' })}
           title="Chi tiết"
           accessoryLeft={() => <Icon name="info-outline" fill={color.darkColor} style={styles.iconButton} />}
         />
         <MenuItem
-          onPress={() => navigation.navigate('ElectrictCollect', { id: '1' })}
           title="Ghi điện"
           accessoryLeft={() => <Icon name="flash-outline" fill={color.darkColor} style={styles.iconButton} />}
         />
@@ -51,106 +65,147 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
   );
 };
 
-const renderItemFooter = (footerProps, navigation) => (
-  <View style={styles.footerAction}>
-    <Button
-      onPress={() => navigation.navigate('RoomGoIn', { id: '1' })}
-      style={styles.actionButton}
-      appearance="outline"
-      status="primary"
-      size="small"
-      accessoryLeft={() => <Icon name="log-in-outline" fill={color.primary} style={styles.iconButton} />}
-    >
-      Dọn vào
-    </Button>
-    <Button
-      onPress={() => navigation.navigate('RoomGoOut', { id: '1' })}
-      style={styles.actionButton}
-      appearance="outline"
-      status="danger"
-      size="small"
-      accessoryLeft={() => <Icon name="log-out-outline" fill={color.redColor} style={styles.iconButton} />}
-    >
-      Dọn ra
-    </Button>
-    <Button
-      onPress={() => navigation.navigate('MoneyCollect', { id: '1' })}
-      style={styles.actionButton}
-      appearance="outline"
-      status="success"
-      size="small"
-      accessoryLeft={() => <Icon name="credit-card-outline" fill={color.greenColor} style={styles.iconButton} />}
-    >
-      Thu tiền
-    </Button>
+const renderItemFooter = (footerProps, roomInfo, navigation) => {
+  const { item } = roomInfo;
+  return (
 
-  </View>
-);
+    <View style={styles.footerAction}>
+      <Button
+        onPress={() => navigation.navigate('RoomGoIn', { id: '1' })}
+        style={styles.actionButton}
+        appearance="outline"
+        status="primary"
+        size="small"
+        disabled={item.StatusRoomID !== 1}
+        accessoryLeft={() => <Icon name="log-in-outline" fill={item.StatusRoomID !== 1 ? color.disabledTextColor : color.primary} style={styles.iconButton} />}
+      >
+        Dọn vào
+          </Button>
+      <Button
+        onPress={() => navigation.navigate('RoomGoOut', { id: '1' })}
+        style={styles.actionButton}
+        appearance="outline"
+        status="danger"
+        size="small"
+        disabled={item.StatusRoomID === 1}
+        accessoryLeft={() => <Icon name="log-out-outline" fill={item.StatusRoomID === 1 ? color.disabledTextColor : color.redColor} style={styles.iconButton} />}
+      >
+        Dọn ra
+          </Button>
+      <Button
+        onPress={() => navigation.navigate('MoneyCollect', { id: '1' })}
+        style={styles.actionButton}
+        appearance="outline"
+        status="success"
+        size="small"
+        disabled={item.StatusRoomID === 1}
+        accessoryLeft={() => <Icon name="credit-card-outline" fill={item.StatusRoomID === 1 ? color.disabledTextColor : color.greenColor} style={styles.iconButton} />}
+      >
+        Thu tiền
+          </Button>
+
+    </View>
+  );
+}
 
 const RoomCard = ({ roomInfo, addFee }) => {
   const navigation = useNavigation();
+  const { item } = roomInfo;
   return (
-    <Card
-      appearance="filled"
-      style={styles.item}
-      status="basic"
-      header={(headerProps) => renderItemHeader(headerProps, roomInfo, navigation)}
-      footer={(footerProps) => renderItemFooter(footerProps, navigation)}
-    >
-      <View style={styles.cardBody}>
-        <View style={[styles.renter, styles.space]}>
-          <Avatar style={styles.renterAvatar} size="large" source={{ uri: roomInfo.item.imageSrc }} />
-          <Text style={styles.renterName}>Trương Văn Lam</Text>
-        </View>
-        <View style={[styles.space, styles.infoWrap]}>
-          <View style={styles.info}>
-            <Text style={styles.infoLabel}>Giá (tháng)</Text>
-            <Text style={styles.infoValue}>2.500.000</Text>
+    <>
+
+      <Card
+        appearance="filled"
+        style={styles.item}
+        status="basic"
+        header={(headerProps) => renderItemHeader(headerProps, roomInfo, navigation)}
+        footer={(footerProps) => renderItemFooter(footerProps, roomInfo, navigation)}
+      >
+        <View style={styles.cardBody}>
+          <View style={[styles.renter, styles.space]}>
+            <Avatar style={styles.renterAvatar} size="large" source={item.Avatar ? { url: item.Avatar } : noImageSrc} />
+            <Text style={styles.renterName}>{item.Renter ? item.Renter : 'Chưa có khách'}</Text>
           </View>
-          <View style={[styles.info]}>
-            <Text style={styles.infoLabel}>Ngày dọn ra dự kiến </Text>
-            <Text style={styles.infoValue}>15/04/2021</Text>
+          <View style={[styles.space, styles.infoWrap]}>
+            <View style={styles.info}>
+              <Text style={styles.infoLabel}>Giá (tháng)</Text>
+              <Text style={styles.infoValue}>{currencyFormat(item.RoomPrice)}</Text>
+            </View>
+            <View style={[styles.info]}>
+              <Text style={styles.infoLabel}>Ngày dọn ra dự kiến </Text>
+              <Text style={styles.infoValue}>{item.RenterDateOut ? item.RenterDateOut : 'Chưa có'}</Text>
+            </View>
           </View>
-        </View>
-        <View style={[styles.space, styles.statusWrap]}>
-          <View style={styles.status}>
-            <LinearGradient colors={color.gradients.success} style={styles.badge}>
-              <Text style={styles.badgeText}>
-                Đang thuê
+          <View style={[styles.space, styles.statusWrap]}>
+            <View style={styles.status}>
+              {item.StatusRoomID === 2 ? (
+                <LinearGradient colors={color.gradients.success} style={styles.badge}>
+                  <Text style={styles.badgeText}>
+                    Đang thuê
+                    </Text>
+                </LinearGradient>
+              )
+                : (
+                  <LinearGradient colors={color.gradients.danger} style={styles.badge}>
+                    <Text style={styles.badgeText}>
+                      Trống
+                    </Text>
+                  </LinearGradient>
+                )
+              }
+
+            </View>
+            <View style={styles.status}>
+              {item.StatusColletID === 5 &&
+                (<LinearGradient colors={color.gradients.danger} style={styles.badge}>
+                  <Text style={styles.badgeText}>
+                    Chưa thu tiền
+                    </Text>
+                </LinearGradient>)
+              }
+              {item.StatusColletID === 6 &&
+                (<LinearGradient colors={color.gradients.success} style={styles.badge}>
+                  <Text style={styles.badgeText}>
+                    Đã thu tiền
+                    </Text>
+                </LinearGradient>)
+              }
+            </View>
+            <View style={styles.status}>
+              {item.StatusWEID === 7 && (
+                <LinearGradient colors={color.gradients.danger} style={styles.badge}>
+                  <Text style={styles.badgeText}>
+                    Chưa ghi điện nước
+                    </Text>
+                </LinearGradient>
+              )}
+              {item.StatusWEID === 8 && (
+                <LinearGradient colors={color.gradients.success} style={styles.badge}>
+                  <Text style={styles.badgeText}>
+                    Đã ghi điện nước
+                    </Text>
+                </LinearGradient>
+              )}
+            </View>
+          </View>
+          <View style={[styles.balanceInfo]}>
+            <View style={styles.balance}>
+              <Text style={styles.balanceText}>
+                Dư:
+              <Text style={styles.balanceValue}> {currencyFormat(item.MoneyDebtID)} đ</Text>
               </Text>
-            </LinearGradient>
-          </View>
-          <View style={styles.status}>
-            <LinearGradient colors={color.gradients.danger} style={styles.badge}>
-              <Text style={styles.badgeText}>
-                Chưa thu tiền
-              </Text>
-            </LinearGradient>
-          </View>
-          <View style={styles.status}>
-            <LinearGradient colors={color.gradients.danger} style={styles.badge}>
-              <Text style={styles.badgeText}>
-                Chưa ghi điện nước
-              </Text>
-            </LinearGradient>
+            </View>
+            <TouchableOpacity
+              onPress={addFee}
+              style={styles.touchButton}>
+              <Icon name="plus-circle-outline" fill={color.darkColor} style={styles.iconButton} />
+              <Text style={styles.textButton}>Thêm phí</Text>
+            </TouchableOpacity>
           </View>
         </View>
-        <View style={[styles.balanceInfo]}>
-          <View style={styles.balance}>
-            <Text style={styles.balanceText}>
-              Dư:
-              <Text style={styles.balanceValue}> 5.925.000 đ</Text>
-            </Text>
-          </View>
-          <TouchableOpacity 
-          onPress={addFee}
-          style={styles.touchButton}>
-            <Icon name="plus-circle-outline" fill={color.darkColor} style={styles.iconButton} />
-            <Text style={styles.textButton}>Thêm phí</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Card>
+      </Card>
+
+    </>
   );
 };
 
@@ -167,11 +222,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
+    position: 'relative'
   },
   roomName: {
     fontSize: 20,
     fontWeight: '700',
     color: color.whiteColor,
+    paddingRight: 45,
   },
   item: {
     marginBottom: 20,
@@ -269,4 +326,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RoomCard;
+export default memo(RoomCard);

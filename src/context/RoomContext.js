@@ -1,6 +1,9 @@
-import CreateDataContext from './CreateDataContext';
-import {getRoom} from '../api/MotelAPI';
-import AsyncStorage from '@react-native-community/async-storage';
+import CreateDataContext from '~/context/CreateDataContext';
+import { getRoomsByMotelId } from '../api/MotelAPI';
+
+const currentTime = new Date();
+const currentMonth = currentTime.getMonth() + 1;
+const currentYear = currentTime.getFullYear();
 
 const roomReducer = (prevstate, action) => {
 
@@ -8,28 +11,37 @@ const roomReducer = (prevstate, action) => {
     case 'GET_ROOM':
       return {
         ...prevstate,
-        ...action.payload
+        listRooms: action.payload
       }
     default:
-      return {...prevstate}
+      return prevstate
   }
 };
 
 
-const getListRooms = (dispatch) => async () =>{
+const getListRooms = (dispatch) => async ({ motelid = 0,
+  month = currentMonth,
+  year = currentYear,
+  qsearch = "",
+  sortby = 0,
+  status = 0}, callback) => {
   try {
-    const res = await getMotels();
-    //console.log(res);
-    dispatch({ type: 'GET_ROOM',payload:res});
-   
+    const res = await getRoomsByMotelId({ motelid, month, year, qsearch, sortby, status });
+    if(res.Code === 2 ) {
+      alert('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!')
+      callback();
+    }
+    dispatch({ type: 'GET_ROOM', payload: res.Data });
   } catch (error) {
-    console.log(error.message);
+    alert(JSON.stringify(error));
   }
 }
 
 
 export const { Context, Provider } = CreateDataContext(
   roomReducer,
-  {getListRooms},
-  {listMotels:[]},
+  {
+    getListRooms
+  },
+  { listRooms: [] },
 );

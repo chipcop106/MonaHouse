@@ -119,7 +119,7 @@ export const convertNumberToText = (number) => {
   return result;
 };
 
-export const currencyFormat = (value) => value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+export const currencyFormat = (value) => value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 
 export const randomDataChart = (length, min, max, currency) => {

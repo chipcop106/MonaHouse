@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useReducer, useEffect, memo } from 'react';
 import {
   View, Image, StyleSheet, Text,
 } from 'react-native';
@@ -6,7 +6,7 @@ import {
   Input, Button, Icon,
 } from '@ui-kitten/components';
 import ImagePicker from 'react-native-image-crop-picker';
-import { sizes, color } from '../../config';
+import { sizes, color } from '~/config';
 
 // const initialState = {
 //   electrictNumber: '',
@@ -312,4 +312,4 @@ const styles = StyleSheet.create({
 
 
 
-export default IncludeElectrictWater;
+export default memo(IncludeElectrictWater);

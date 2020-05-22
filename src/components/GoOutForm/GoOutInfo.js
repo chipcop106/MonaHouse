@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import {
-    StyleSheet, View, TouchableOpacity,
+    StyleSheet, View,
 } from "react-native";
 import {
-    Input, Datepicker, Select, SelectItem, Icon, Text, IndexPath
+    Input, Datepicker, Text, IndexPath
 } from "@ui-kitten/components";
-import IncludeElectrictWater from "../GoInForm/IncludeElectrictWater";
+import IncludeElectrictWater from "../IncludeElectrictWater";
 import { sizes, color, settings } from "../../config";
 import { create_UUID as randomId } from "../../utils";
 import { Context as RoomGoOutContext } from "../../context/RoomGoOutContext";

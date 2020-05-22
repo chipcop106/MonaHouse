@@ -20,13 +20,16 @@ const motelReducer = (prevstate, action) => {
 };
 
 
-const getListMotels = (dispatch) => async () => {
+const getListMotels = (dispatch) => async (callback) => {
   try {
     const res = await getMotels();
-    //console.log(res);
+    if(res.Code === 2 ) {
+      alert('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!')
+      callback();
+    }
     if (res.Data) {
       dispatch({ type: 'GET_MOTEL', payload: res.Data });
-    } else {
+    } else{
       dispatch({ type: 'SET_ERROR', payload: res });
     }
   } catch (error) {

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  StyleSheet, View, Text, Dimensions,
+  StyleSheet, Text, Dimensions,
 } from 'react-native';
 import { Card } from '@ui-kitten/components';
 import { color } from '../config';

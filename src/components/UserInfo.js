@@ -1,10 +1,9 @@
-import React from 'react';
+import React, {memo} from 'react';
 import { StyleSheet, View, TouchableOpacity, Linking } from 'react-native';
 import { Text, Avatar, Icon } from '@ui-kitten/components';
 import { color } from "~/config";
 
 const UserInfo = ({ avatar, name, phone }) => {
-    console.log({ avatar, name, phone });
     return (
         <View style={styles.userSection}>
             <View style={[styles.section]}>
@@ -66,4 +65,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default UserInfo;
+export default memo(UserInfo);

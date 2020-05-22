@@ -12,6 +12,7 @@ import { default as mapping } from "./custom-mapping.json";
 import { default as themeCustom } from "./light-theme-custom.json";
 import { Provider as RoomGoInProvider } from "./src/context/RoomGoInContext";
 import { Provider as RoomGoOutProvider } from "./src/context/RoomGoOutContext";
+import { Provider as RoomProvider } from "./src/context/RoomContext";
 const App = () => (
   <RootStack />
 );
@@ -25,11 +26,13 @@ export default () => (
     >
       <AuthProvider>
         <MotelProvider>
-          <RoomGoInProvider>
-            <RoomGoOutProvider>
-              <App />
-            </RoomGoOutProvider>
-          </RoomGoInProvider>
+          <RoomProvider>
+            <RoomGoInProvider>
+              <RoomGoOutProvider>
+                <App />
+              </RoomGoOutProvider>
+            </RoomGoInProvider>
+          </RoomProvider>
           <StatusBar barStyle="light-content" />
         </MotelProvider>
       </AuthProvider>
