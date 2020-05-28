@@ -16,9 +16,70 @@ import {Context as authCt} from '~/context/AuthContext';
 
 
 import { sizes, color } from '~/config';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
 
 
 const SettingScreen = () => {
+	const { signOut } = useContext(authCt);
+	const navidation = useNavigation();
+	const [stateData, dispatchData] = React.useReducer(
+		(prevState, action) => {
+			switch (action.type) {
+				case 'CHANGEIMG':
+					return{
+						...prevState,
+						imgRecognition: action.value
+					};
+				case 'CHANGETEXT':
+					return{
+						...prevState,
+						textRecognitionValue: action.value
+					};
+				case 'processed':
+					return{
+						...prevState,
+						processedValue: action.value
+					};
+				case 'IMG_SOURCE':
+					return{
+						...prevState,
+						imgSource: action.value
+					};
+				default: 
+					return {...prevState }
+			}
+		}, {
+			textRecognitionValue: '',
+			imgRecognition: [],
+			processedValue: '',
+			imgSource: ''
+
+		}
+	);
+	const onPressWithParrams = key => {
+		navidation.navigate('', {});
+	}
+
+	return (
+		<View style={styles.container}>
+			<ScrollView contentContainerStyle={{ paddingVertical: 15 }}>
+				<View style={styles.itemWrap}>
+					<TouchableOpacity
+						style={styles.itemInner}
+						onPress={ () => onPressWithParrams("") }
+					>
+						<Text style={[styles.textColor, styles.textSettingSize]}>Cấu hình điện nước</Text>
+					</TouchableOpacity>
+				</View>
+				
+			</ScrollView>
+
+		</View>
+	)
+};
+
+const DemoMLKitVision = () => {
 	const { signOut } = useContext(authCt);
 	const navidation = useNavigation();
 	const [stateData, dispatchData] = React.useReducer(
@@ -87,8 +148,8 @@ const SettingScreen = () => {
 			// multiple: true,
 			// maxFiles: 10,
 			compressImageMaxWidth: 1280,
-			compressImageMaxHeight: 768,
-			mediaType: "photo",
+			compressImageMaxHeight: 768,    
+			mediaType: "photo",  
 			cropping: true,
 		};
 		try {
@@ -101,11 +162,11 @@ const SettingScreen = () => {
 			const processed = await processDocument(localFile);
 			console.log('Finished processing file.');
 			dispatchData({type: 'processed', value: processed})
+			dispatchData({type: 'IMG_SOURCE', value: localFile})
 		} catch (error) {
 			alert(error);
 		}
 	};
-
 
 	return (
 		<View style={styles.container}>
@@ -181,7 +242,25 @@ const styles = StyleSheet.create({
 		marginBottom: 5,
 		borderRadius: 4,
 		marginRight: 5,
-	  },
+	},
+	itemWrap: {
+		backgroundColor: 'rgba(28,28,30,.4)'
+	},
+	itemInner:{
+		paddingHorizontal: 15,
+		paddingVertical: 10,
+		minHeight: 50,
+		justifyContent: "space-between",
+		flexDirection: "row",
+		alignItems: "center"
+	},
+	textColor: {
+		color: "#fff",
+		fontWeight: "bold"
+	},
+	textSettingSize: {
+		fontSize: 16
+	}
 });
 
 export default SettingScreen;
