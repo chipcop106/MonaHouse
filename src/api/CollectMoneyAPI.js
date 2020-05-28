@@ -1,10 +1,10 @@
-import instance,{getAccessToken} from './instanceAPI';
+import instance, { getAccessToken } from "./instanceAPI";
 
 const path = `/CollectMoneyApi`;
 
 /*Lấy list phương thức thanh toán*/
 
-export const getPaymentMethod = async params => {
+export const getPaymentMethod = async (params) => {
     let result;
     try {
         const token = await getAccessToken();
@@ -14,7 +14,7 @@ export const getPaymentMethod = async params => {
         result = error;
     }
     return result;
-}
+};
 
 /*Thu tiền khách
 string token, 
@@ -27,22 +27,22 @@ int payment,
 
 */
 
-export const collectMoney = async params => {
+export const collectMoney = async (params) => {
     let result;
     try {
         const token = await getAccessToken();
-        let res = await instance.get(`${path}/collectmoney`,{
-            params:{
+        let res = await instance.get(`${path}/collectmoney`, {
+            params: {
                 ...params,
-                token
-            }
+                token,
+            },
         });
         result = res.data;
     } catch (error) {
         result = error;
     }
     return result;
-}
+};
 
 /*Lấy lịch sử thanh toán khách đó, phòng đó
 
@@ -51,19 +51,19 @@ int roomid,
 
 */
 
-export const getPaymentHistory = async params => {
+export const getPaymentHistory = async (params) => {
     let result;
     try {
         const token = await getAccessToken();
-        let res = await instance.get(`${path}/gethistorycolletmoney`,{
-            params:{
+        let res = await instance.get(`${path}/gethistorycolletmoney`, {
+            params: {
                 ...params,
-                token
-            }
+                token,
+            },
         });
         result = res.data;
     } catch (error) {
         result = error;
     }
     return result;
-}
+};
