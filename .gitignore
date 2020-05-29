@@ -124,3 +124,4 @@ buck-out/
 .expo/*
 Monahouse.code-workspace
 ios/MonaHouse.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+yarn.lock
