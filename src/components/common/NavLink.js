@@ -3,11 +3,20 @@ import { Text, TouchableOpacity, StyleSheet, Image, View } from "react-native";
 import { Icon } from "@ui-kitten/components";
 import { useNavigation } from "@react-navigation/native";
 import { color } from "./../../config";
-const NavLink = ({ title, routeName, imageUrl, borderBottom, icon }) => {
+const NavLink = ({
+    title,
+    routeName,
+    imageUrl,
+    borderBottom = false,
+    icon,
+    params = {},
+    containerStyle = {},
+}) => {
     const navigation = useNavigation();
     return (
         <TouchableOpacity
-            onPress={() => navigation.navigate({ name: routeName })}
+            style={containerStyle}
+            onPress={() => navigation.navigate({ name: routeName, params: {} })}
         >
             <View
                 style={

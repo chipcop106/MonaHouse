@@ -1,9 +1,9 @@
-import React, {memo} from 'react';
-import { StyleSheet, View, TouchableOpacity, Linking } from 'react-native';
-import { Text, Avatar, Icon } from '@ui-kitten/components';
+import React, { memo } from "react";
+import { StyleSheet, View, TouchableOpacity, Linking } from "react-native";
+import { Text, Avatar, Icon } from "@ui-kitten/components";
 import { color } from "~/config";
-
-const UserInfo = ({ avatar, name, phone }) => {
+import gbStyle from "~/GlobalStyleSheet";
+const UserInfo = ({ avatar, name, phone, balance }) => {
     return (
         <View style={styles.userSection}>
             <View style={[styles.section]}>
@@ -13,23 +13,37 @@ const UserInfo = ({ avatar, name, phone }) => {
                             style={styles.avatar}
                             shape="round"
                             size="medium"
-                            source={avatar ? { uri: avatar } : require('~/../assets/user.png')}
+                            source={
+                                avatar
+                                    ? { uri: avatar }
+                                    : require("~/../assets/user.png")
+                            }
                         />
-                        <View style={{ marginLeft: 10 }}>
+                        <View style={gbStyle.mLeft10}>
                             <Text style={styles.userName}>{name}</Text>
-                            <Text style={styles.phoneNumber}>{phone ? phone : 'Chưa có'}</Text>
+                            <Text style={styles.phoneNumber}>
+                                {balance
+                                    ? `Số dư: ${balance}`
+                                    : phone
+                                    ? phone
+                                    : "Chưa có"}
+                            </Text>
                         </View>
                     </View>
                     <TouchableOpacity
                         onPress={() => Linking.openURL(`tel:${phone}`)}
                     >
-                        <Icon name="phone-outline" fill={color.primary} style={{ width: 30, height: 30 }} />
+                        <Icon
+                            name="phone-outline"
+                            fill={color.primary}
+                            style={{ width: 30, height: 30 }}
+                        />
                     </TouchableOpacity>
                 </View>
             </View>
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     section: {
@@ -39,15 +53,15 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     userWrap: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
         paddingTop: 0,
-        marginBottom: 0
+        marginBottom: 0,
     },
     userInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         paddingVertical: 10,
     },
     userSection: {
@@ -57,12 +71,12 @@ const styles = StyleSheet.create({
     },
     userName: {
         fontSize: 20,
-        fontWeight: '600',
+        fontWeight: "600",
         marginBottom: 5,
     },
     userPhone: {
-        color: color.labelColor
-    }
-})
+        color: color.labelColor,
+    },
+});
 
 export default memo(UserInfo);

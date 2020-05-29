@@ -34,6 +34,7 @@ const FilterHeader = ({
     advanceFilter,
     onValueChange,
     yearFilter,
+    houseFilter = true,
     initialState,
 }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -56,25 +57,28 @@ const FilterHeader = ({
     return (
         <View style={styles.filterWrap}>
             <View style={styles.filterSelect}>
-                <View
-                    style={[
-                        styles.filter,
-                        styles.firstFilter,
-                        yearFilter && styles.fullWidth,
-                    ]}
-                >
-                    <CustomSelect
-                        selectOptions={[
-                            { MotelName: "Tất cả" },
-                            ...motelState.listMotels,
-                        ].map((motel) => motel.MotelName)}
-                        getSelectedIndex={(index) =>
-                            _onChange("selectedMotelIndex", index)
-                        }
-                        selectedIndex={selectedMotelIndex}
-                        icon="home"
-                    />
-                </View>
+                {houseFilter && (
+                    <View
+                        style={[
+                            styles.filter,
+                            styles.firstFilter,
+                            yearFilter && styles.fullWidth,
+                        ]}
+                    >
+                        <CustomSelect
+                            selectOptions={[
+                                { MotelName: "Tất cả" },
+                                ...motelState.listMotels,
+                            ].map((motel) => motel.MotelName)}
+                            getSelectedIndex={(index) =>
+                                _onChange("selectedMotelIndex", index)
+                            }
+                            selectedIndex={selectedMotelIndex}
+                            icon="home"
+                        />
+                    </View>
+                )}
+
                 <View
                     style={[
                         styles.filter,
