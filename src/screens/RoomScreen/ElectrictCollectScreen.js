@@ -1,64 +1,81 @@
-import React, { useReducer, useEffect } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
-import { Text, Input, Button, Icon } from '@ui-kitten/components';
-import UserInfo from '~/components/UserInfo';
-import IncludeElectrictWater from '~/components/IncludeElectrictWater';
-import { color, sizes } from '~/config';
-import gbStyle from '~/GlobalStyleSheet';
-import {getRoomById} from '~/api/MotelAPI';
+import React, { useReducer, useEffect } from "react";
+import { StyleSheet, View, ScrollView } from "react-native";
+import { Text, Input, Button, Icon } from "@ui-kitten/components";
+import UserInfo from "~/components/UserInfo";
+import IncludeElectrictWater from "~/components/IncludeElectrictWater";
+import { color, sizes } from "~/config";
+import gbStyle from "~/GlobalStyleSheet";
+import { getRoomById } from "~/api/MotelAPI";
 const initialState = {
-    electrictNumber: '',
+    electrictNumber: "",
     electrictImage: null,
-    waterNumber: '',
+    waterNumber: "",
     waterImage: null,
-    oldElectrict: '323232',
-    oldWater: '232323'
-}
+    oldElectrict: "323232",
+    oldWater: "232323",
+};
 
 const reducer = (prevstate, action) => {
     switch (action.type) {
         case "STATE_CHANGE": {
             return {
                 ...prevstate,
-                ...action.payload.newState
-            }
+                ...action.payload.newState,
+            };
         }
-        default: return prevstate;
+        default:
+            return prevstate;
     }
-}
+};
 
-const ElectrictCollectScreen = ({ route }) => {
+const ElectrictCollectScreen = ({ route }, month) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const roomId = route.params?.roomId ?? null;
+    const { renter, room } = state;
+
     const onChangeValue = (newState) => {
-        dispatch({ type: "STATE_CHANGE", payload: { newState } })
-    }
+        dispatch({ type: "STATE_CHANGE", payload: { newState } });
+    };
 
-    // useEffect(() => {
-    //     const loadRoomInfo = async () => {
-    //         try {
-    //             const res = await getRoomById({roomid: roomId});
-    //         } catch (err) {
-                
-    //         }
-    //     } 
+    useEffect(() => {
+        const loadRoomInfo = async () => {
+            try {
+                const res = await getRoomById({ roomid: roomId });
+                dispatch({
+                    type: "STATE_CHANGE",
+                    payload: { newState: res.Data },
+                });
+            } catch (err) {}
+        };
+        loadRoomInfo();
+    }, []);
 
-    //     loadRoomInfo();
-    // }, [])
-
+    useEffect(() => {
+        console.log(state);
+    }, [state]);
     return (
         <>
             <ScrollView>
                 <View style={styles.container}>
                     <UserInfo
-                        name="Truong Văn Lam"
-                        phone="0886706289"
-                        avatar={null}
+                        name={renter?.renter.FullName ?? "Đang tải..."}
+                        phone={renter?.renter.Phone ?? "Đang tải"}
+                        avatar={renter?.renter.LinkIMG ?? null}
                     />
                     <View style={styles.mainWrap}>
                         <View style={styles.section}>
-                            <Text status="primary" category="h5" style={{ marginBottom: 5 }}>Phòng 01</Text>
-                            <Text style={gbStyle.mBottom15}>Điện nước tháng 04</Text>
+                            <Text
+                                status="primary"
+                                category="h5"
+                                style={{ marginBottom: 5 }}
+                            >
+                                {room && room.NameRoom
+                                    ? room.NameRoom
+                                    : "Đang tải..."}
+                            </Text>
+                            <Text style={gbStyle.mBottom15}>
+                                Điện nước tháng 04
+                            </Text>
                             <View style={styles.formWrap}>
                                 <View style={[styles.formRow, styles.halfCol]}>
                                     <Input
@@ -89,7 +106,6 @@ const ElectrictCollectScreen = ({ route }) => {
                                     electrictTitle="Điện tháng này"
                                 />
                             </View>
-
                         </View>
                         <Button
                             accessoryLeft={() => (
@@ -103,14 +119,13 @@ const ElectrictCollectScreen = ({ route }) => {
                             status="success"
                         >
                             Cập nhật điện nước
-                            </Button>
+                        </Button>
                     </View>
-
                 </View>
             </ScrollView>
         </>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     mainWrap: {
@@ -132,7 +147,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     formWrap: {
-        marginHorizontal: '-1%',
+        marginHorizontal: "-1%",
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "space-between",
@@ -141,7 +156,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         flexGrow: 1,
         marginHorizontal: "1%",
-        alignItems: 'center'
+        alignItems: "center",
     },
     halfCol: {
         flexBasis: "48%",
@@ -150,8 +165,8 @@ const styles = StyleSheet.create({
         flexBasis: "98%",
     },
     mb15: {
-        marginBottom: 15
-    }
+        marginBottom: 15,
+    },
 });
 
 export default ElectrictCollectScreen;
