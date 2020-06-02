@@ -8,6 +8,7 @@ import { Context as AuthContext } from "~/context/AuthContext";
 import FilterHeader from "~/components/FilterHeader";
 import MoneyCard from "~/components/MoneyCard";
 import NavLink from "~/components/common/NavLink";
+import Loading from "~/components/common/Loading";
 
 const RoomMoneyCollectAllScreen = () => {
     const { signOut } = useContext(AuthContext);
@@ -16,7 +17,9 @@ const RoomMoneyCollectAllScreen = () => {
     const { state: modelState } = useContext(MotelContext);
     const { listMotels } = modelState;
     const [confirmVisible, setConfirmVisible] = useState(false);
-    const onFilterChange = (filter) => {
+    const [isLoading, setIsloading] = useState(false);
+    const onFilterChange = async (filter) => {
+        setIsloading(true);
         const {
             selectedMonthIndex,
             selectedMotelIndex,
@@ -25,7 +28,7 @@ const RoomMoneyCollectAllScreen = () => {
         } = filter;
         try {
             //console.log(listMotels);
-            getListElectrict(
+            await getListElectrict(
                 {
                     motelid: listMotels[selectedMotelIndex.row - 1]?.ID ?? 0,
                     month: selectedMonthIndex.row + 1,
@@ -34,7 +37,11 @@ const RoomMoneyCollectAllScreen = () => {
                 },
                 signOut
             );
+            setTimeout(function () {
+                setIsloading(false);
+            }, 1500);
         } catch (error) {
+            setIsloading(false);
             console.log(error);
         }
     };
@@ -70,45 +77,53 @@ const RoomMoneyCollectAllScreen = () => {
             />
 
             <View style={styles.contentContainer}>
-                <List
-                    ListHeaderComponent={() => (
-                        <View style={styles.linkCustom}>
-                            <NavLink
-                                title="Lịch sử thu tiền"
-                                icon={{
-                                    name: "file-text-outline",
-                                    color: color.primary,
-                                }}
-                                routeName="MoneyHistory"
-                                borderBottom={false}
-                            />
-                        </View>
-                    )}
-                    keyExtractor={(room, index) => `${room.RoomID + index}`}
-                    style={styles.listContainer}
-                    contentContainerStyle={styles.contentCard}
-                    data={listElectrictRooms}
-                    renderItem={(room) => (
-                        <MoneyCard
-                            roomInfo={room}
-                            handleValueChange={onChangeRoomInfo}
+                {isLoading ? (
+                    <Loading />
+                ) : (
+                    <>
+                        <List
+                            ListHeaderComponent={() => (
+                                <View style={styles.linkCustom}>
+                                    <NavLink
+                                        title="Lịch sử thu tiền"
+                                        icon={{
+                                            name: "file-text-outline",
+                                            color: color.primary,
+                                        }}
+                                        routeName="MoneyHistory"
+                                        borderBottom={false}
+                                    />
+                                </View>
+                            )}
+                            keyExtractor={(room, index) =>
+                                `${room.RoomID + index}`
+                            }
+                            style={styles.listContainer}
+                            contentContainerStyle={styles.contentCard}
+                            data={listElectrictRooms}
+                            renderItem={(room) => (
+                                <MoneyCard
+                                    roomInfo={room}
+                                    handleValueChange={onChangeRoomInfo}
+                                />
+                            )}
                         />
-                    )}
-                />
-                <Button
-                    onPress={submitAllConfirm}
-                    accessoryLeft={() => (
-                        <Icon
-                            name="credit-card-outline"
-                            fill={color.whiteColor}
-                            style={sizes.iconButtonSize}
-                        />
-                    )}
-                    size="large"
-                    status="danger"
-                >
-                    Thu tiền tất cả phòng
-                </Button>
+                        <Button
+                            onPress={submitAllConfirm}
+                            accessoryLeft={() => (
+                                <Icon
+                                    name="credit-card-outline"
+                                    fill={color.whiteColor}
+                                    style={sizes.iconButtonSize}
+                                />
+                            )}
+                            size="large"
+                            status="danger"
+                        >
+                            Thu tiền tất cả phòng
+                        </Button>
+                    </>
+                )}
             </View>
         </View>
     );

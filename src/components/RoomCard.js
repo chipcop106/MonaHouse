@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, memo } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import {
     Card,
     OverflowMenu,
@@ -96,10 +96,15 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
                 />
                 <MenuItem
                     title="Ghi điện"
+                    disabled={!roomInfo.item.Renter ? true : false}
                     accessoryLeft={() => (
                         <Icon
                             name="flash-outline"
-                            fill={color.darkColor}
+                            fill={
+                                !roomInfo.item.Renter
+                                    ? color.grayColor
+                                    : color.darkColor
+                            }
                             style={styles.iconButton}
                         />
                     )}
@@ -189,6 +194,7 @@ const RoomCard = ({ roomInfo, addFee }) => {
                 appearance="filled"
                 style={styles.item}
                 status="basic"
+                disabled
                 header={(headerProps) =>
                     renderItemHeader(headerProps, roomInfo, navigation)
                 }
@@ -305,13 +311,29 @@ const RoomCard = ({ roomInfo, addFee }) => {
                         <TouchableOpacity
                             onPress={addFee}
                             style={styles.touchButton}
+                            disabled={item.StatusRoomID === 1}
                         >
                             <Icon
                                 name="plus-circle-outline"
-                                fill={color.darkColor}
+                                fill={
+                                    item.Renter
+                                        ? color.darkColor
+                                        : color.grayColor
+                                }
                                 style={styles.iconButton}
                             />
-                            <Text style={styles.textButton}>Thêm phí</Text>
+                            <Text
+                                style={[
+                                    styles.textButton,
+                                    {
+                                        color: item.Renter
+                                            ? color.darkColor
+                                            : color.grayColor,
+                                    },
+                                ]}
+                            >
+                                Thêm phí
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>

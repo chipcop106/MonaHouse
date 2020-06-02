@@ -32,9 +32,18 @@ import RoomElectrictCollectAllScreen from "~/screens/RoomScreen/RoomElectrictCol
 import RoomMoneyCollectAllScreen from "~/screens/RoomScreen/RoomMoneyCollectAllScreen";
 import RoomDetailMoneyHistoryScreen from "~/screens/RoomScreen/RoomDetailMoneyHistoryScreen";
 import RoomDetailElectrictHistoryScreen from "~/screens/RoomScreen/RoomDetailElectrictHistoryScreen";
+import RoomDetailRentHistoryScreen from "~/screens/RoomScreen/RoomDetailRentHistoryScreen";
 import { Host } from "react-native-portalize";
 import ElectrictHistoryScreen from "~/screens/RoomScreen/ElectrictHistoryScreen";
 import MoneyHistoryScreen from "~/screens/RoomScreen/MoneyHistoryScreen";
+import SettingUserDetailScreen from "~/screens/SettingScreen/SettingUserDetailScreen";
+import SettingNotificationScreen from "~/screens/SettingScreen/SettingNotificationScreen";
+import SettingPremiumPackageScreen from "~/screens/SettingScreen/SettingPremiumPackageScreen";
+import SettingElectrictScreen from "~/screens/SettingScreen/SettingElectrictScreen";
+import SettingSMSScreen from "~/screens/SettingScreen/SettingSMSScreen";
+import SettingRoomScreen from "~/screens/SettingScreen/SettingRoomScreen";
+import SettingServiceScreen from "~/screens/SettingScreen/SettingServiceScreen";
+import SettingChangePasswordScreen from "~/screens/SettingScreen/SettingChangePasswordScreen";
 export const isMountedRef = React.createRef();
 
 export const navigationRef = React.createRef();
@@ -200,6 +209,15 @@ const RoomDetailStack = ({ navigation }) => {
                     title: "Lịch sử thanh toán",
                 }}
             />
+
+            <Stack.Screen
+                name="RentHistory"
+                component={RoomDetailRentHistoryScreen}
+                options={{
+                    headerShown: true,
+                    title: "Lịch sử thuê phòng",
+                }}
+            />
         </Stack.Navigator>
     );
 };
@@ -280,6 +298,62 @@ const SettingStack = () => {
                         fontSize: 30,
                     },
                     headerTitleAlign: "left",
+                }}
+            />
+            <Stack.Screen
+                name="SettingUserDetail"
+                component={SettingUserDetailScreen}
+                options={{
+                    title: "Tài khoản",
+                }}
+            />
+            <Stack.Screen
+                name="SettingPremiumPackage"
+                component={SettingPremiumPackageScreen}
+                options={{
+                    title: "Nâng cấp tài khoản",
+                }}
+            />
+            <Stack.Screen
+                name="SettingChangePassword"
+                component={SettingChangePasswordScreen}
+                options={{
+                    title: "Thay đổi mật khẩu",
+                }}
+            />
+            <Stack.Screen
+                name="SettingSMS"
+                component={SettingSMSScreen}
+                options={{
+                    title: "Cấu hình SMS",
+                }}
+            />
+            <Stack.Screen
+                name="SettingRoom"
+                component={SettingRoomScreen}
+                options={{
+                    title: "Cấu hình phòng",
+                }}
+            />
+            <Stack.Screen
+                name="SettingElectrict"
+                component={SettingElectrictScreen}
+                options={{
+                    title: "Cấu hình điện nước",
+                }}
+            />
+            <Stack.Screen
+                name="SettingService"
+                component={SettingServiceScreen}
+                options={{
+                    title: "Cấu hình tiện ích",
+                }}
+            />
+            <Stack.Screen
+                name="SettingNotification"
+                component={SettingNotificationScreen}
+                options={{
+                    title: "Cấu hình thông báo",
                 }}
             />
         </Stack.Navigator>

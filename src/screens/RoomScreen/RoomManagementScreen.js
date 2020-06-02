@@ -1,13 +1,7 @@
 /* eslint-disable react-native/no-color-literals */
-import React, {
-    useState,
-    createRef,
-    useContext,
-    useEffect,
-    useMemo,
-} from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
-import { Icon, Input, List, IndexPath, Text } from "@ui-kitten/components";
+import React, { useState, createRef, useContext } from "react";
+import { StyleSheet, View } from "react-native";
+import { List, Spinner } from "@ui-kitten/components";
 
 import RoomCard from "~/components/RoomCard";
 import { settings } from "~/config";
@@ -18,15 +12,17 @@ import FilterHeader from "~/components/FilterHeader";
 import { Context as RoomContext } from "~/context/RoomContext";
 import { Context as MotelContext } from "~/context/MotelContext";
 import { Context as AuthContext } from "~/context/AuthContext";
-
+import Loading from "~/components/common/Loading";
 const RoomManagementScreen = (evaProps) => {
     const { signOut } = useContext(AuthContext);
     const { state: roomState, getListRooms } = useContext(RoomContext);
     const { state: motelState } = useContext(MotelContext);
     const { listRooms, filterStateDefault } = roomState;
     const { listMotels } = motelState;
+    const [isLoading, setIsloading] = useState(false);
 
     const onFilterChange = async (filter) => {
+        setIsloading(true);
         const {
             selectedMonthIndex,
             selectedMotelIndex,
@@ -42,7 +38,11 @@ const RoomManagementScreen = (evaProps) => {
                 },
                 signOut
             );
+            setTimeout(function () {
+                setIsloading(false);
+            }, 1500);
         } catch (error) {
+            setIsloading(false);
             console.log(error);
         }
     };
@@ -61,18 +61,23 @@ const RoomManagementScreen = (evaProps) => {
                     advanceFilter={true}
                 />
                 <View style={styles.contentContainer}>
-                    <List
-                        keyExtractor={(room, index) => `${room.RoomID + index}`}
-                        style={styles.listContainer}
-                        contentContainerStyle={styles.contentCard}
-                        data={listRooms}
-                        renderItem={(room) => (
-                            <RoomCard
-                                roomInfo={room}
-                                addFee={openAddFeeModal}
-                            />
-                        )}
-                    />
+                    {isLoading ? (
+                        <Loading />
+                    ) : (
+                        <List
+                            keyExtractor={(item, index) => `${item.RoomID}`}
+                            style={styles.listContainer}
+                            contentContainerStyle={styles.contentCard}
+                            data={listRooms}
+                            renderItem={(room) => (
+                                <RoomCard
+                                    roomInfo={room}
+                                    addFee={openAddFeeModal}
+                                />
+                            )}
+                        />
+                    )}
+
                     <Portal>
                         <Modalize
                             ref={bsFee}
@@ -93,16 +98,18 @@ const RoomManagementScreen = (evaProps) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: "#f0f0f0",
     },
 
     contentContainer: {
         flexGrow: 1,
-        backgroundColor: "#ccc",
     },
 
     contentCard: {
         paddingHorizontal: 8,
         paddingVertical: 4,
+        backgroundColor: "#f0f0f0",
+        flexGrow: 1,
     },
 
     listContainer: {
