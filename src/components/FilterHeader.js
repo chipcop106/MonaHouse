@@ -50,10 +50,10 @@ const FilterHeader = ({
     const _onChange = (key, value) => {
         dispatch({ type: "STATE_CHANGE", payload: { key, value } });
     };
-
     useEffect(() => {
         onValueChange(state);
     }, [selectedMotelIndex, selectedMonthIndex, selectedYearIndex]);
+
     return (
         <View style={styles.filterWrap}>
             <View style={styles.filterSelect}>
@@ -145,7 +145,7 @@ const FilterHeader = ({
     );
 };
 
-export default memo(FilterHeader);
+export default FilterHeader;
 
 const styles = StyleSheet.create({
     filterWrap: {

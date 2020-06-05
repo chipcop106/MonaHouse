@@ -33,6 +33,8 @@ import RoomMoneyCollectAllScreen from "~/screens/RoomScreen/RoomMoneyCollectAllS
 import RoomDetailMoneyHistoryScreen from "~/screens/RoomScreen/RoomDetailMoneyHistoryScreen";
 import RoomDetailElectrictHistoryScreen from "~/screens/RoomScreen/RoomDetailElectrictHistoryScreen";
 import RoomDetailRentHistoryScreen from "~/screens/RoomScreen/RoomDetailRentHistoryScreen";
+import AddNewRoomScreen from "~/screens/RoomScreen/AddNewRoomScreen";
+import EditRoomScreen from "~/screens/RoomScreen/EditRoomScreen";
 import { Host } from "react-native-portalize";
 import ElectrictHistoryScreen from "~/screens/RoomScreen/ElectrictHistoryScreen";
 import MoneyHistoryScreen from "~/screens/RoomScreen/MoneyHistoryScreen";
@@ -148,15 +150,7 @@ const HomeStack = () => {
 const RoomDetailStack = ({ navigation }) => {
     const Stack = createStackNavigator();
     return (
-        <Stack.Navigator
-            screenOptions={{
-                headerShow: true,
-                headerStyle: styles.headerStyle,
-                headerTitleStyle: {
-                    color: "#fff",
-                },
-            }}
-        >
+        <Stack.Navigator screenOptions={headerOptions}>
             <Stack.Screen
                 name="RoomDetail"
                 component={RoomDetailScreen}
@@ -193,7 +187,15 @@ const RoomDetailStack = ({ navigation }) => {
             />
 
             <Stack.Screen
-                name="DetailElectrictHistory"
+                name="EditRoom"
+                component={EditRoomScreen}
+                options={{
+                    headerShown: true,
+                    title: "Chỉnh sửa phòng",
+                }}
+            />
+            <Stack.Screen
+                name="Edit"
                 component={RoomDetailElectrictHistoryScreen}
                 options={{
                     headerShown: true,
@@ -272,6 +274,15 @@ const RoomStack = () => {
                     title: "Chi tiết phòng 01",
                 }}
             />
+
+            <Stack.Screen
+                name="AddNewRoom"
+                component={AddNewRoomScreen}
+                options={{
+                    headerShown: true,
+                    title: "Thêm phòng mới",
+                }}
+            />
         </Stack.Navigator>
     );
 };
@@ -279,15 +290,7 @@ const RoomStack = () => {
 const SettingStack = () => {
     const Stack = createStackNavigator();
     return (
-        <Stack.Navigator
-            screenOptions={{
-                headerShow: true,
-                headerStyle: styles.headerStyle,
-                headerTitleStyle: {
-                    color: "#fff",
-                },
-            }}
-        >
+        <Stack.Navigator screenOptions={headerOptions}>
             <Stack.Screen
                 name="Setting"
                 component={SettingScreen}

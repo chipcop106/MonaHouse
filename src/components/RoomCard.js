@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState, memo } from "react";
+import React, { useState, useMemo } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import {
     Card,
@@ -457,4 +457,4 @@ const styles = StyleSheet.create({
     cardBody: {},
 });
 
-export default memo(RoomCard);
+export default RoomCard;

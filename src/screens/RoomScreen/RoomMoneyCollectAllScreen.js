@@ -1,6 +1,6 @@
-import React, { useContext, useState } from "react";
-import { StyleSheet, View, TouchableOpacity, Text, Alert } from "react-native";
-import { Icon, List, Button, Modal, Card } from "@ui-kitten/components";
+import React, { useContext, useReducer, useCallback, useEffect } from "react";
+import { StyleSheet, View, Alert, RefreshControl } from "react-native";
+import { Icon, List, Button, IndexPath } from "@ui-kitten/components";
 import { color, sizes, settings } from "~/config";
 import { Context as RoomContext } from "~/context/RoomContext";
 import { Context as MotelContext } from "~/context/MotelContext";
@@ -10,24 +10,62 @@ import MoneyCard from "~/components/MoneyCard";
 import NavLink from "~/components/common/NavLink";
 import Loading from "~/components/common/Loading";
 
+const initialState = {
+    isLoading: true,
+    refreshing: false,
+    filterState: {
+        selectedMonthIndex: new IndexPath(0),
+        selectedMotelIndex: new IndexPath(0),
+        selectedYearIndex: new IndexPath(0),
+        searchValue: "",
+    },
+};
+
+const reducer = (prevState, { type, payload }) => {
+    switch (type) {
+        case "STATE_CHANGE":
+            return {
+                ...prevState,
+                [payload.key]: payload.value,
+            };
+            break;
+        default:
+            return prevState;
+            break;
+    }
+};
+
 const RoomMoneyCollectAllScreen = () => {
+    const [state, dispatch] = useReducer(reducer, initialState);
     const { signOut } = useContext(AuthContext);
     const { state: roomState, getListElectrict } = useContext(RoomContext);
-    const { listElectrictRooms, filterStateDefault } = roomState;
+    const { listElectrictRooms } = roomState;
     const { state: modelState } = useContext(MotelContext);
     const { listMotels } = modelState;
-    const [confirmVisible, setConfirmVisible] = useState(false);
-    const [isLoading, setIsloading] = useState(false);
-    const onFilterChange = async (filter) => {
-        setIsloading(true);
+
+    const updateState = (key, value) => {
+        dispatch({ type: "STATE_CHANGE", payload: { key, value } });
+    };
+
+    const refreshApi = async () => {
+        updateState("refreshing", true);
+        await loadRoomApi({ loadingControl: false });
+        updateState("refreshing", false);
+    };
+
+    const onRefresh = useCallback(() => {
+        refreshApi();
+    }, [state.refreshing, state.filterState]);
+
+    const loadRoomApi = async ({ loadingControl = true }, filter) => {
+        loadingControl && updateState("isLoading", true);
         const {
             selectedMonthIndex,
             selectedMotelIndex,
             selectedYearIndex,
             searchValue,
-        } = filter;
+        } = filter ? filter : state.filterState;
         try {
-            //console.log(listMotels);
             await getListElectrict(
                 {
                     motelid: listMotels[selectedMotelIndex.row - 1]?.ID ?? 0,
@@ -37,14 +75,20 @@ const RoomMoneyCollectAllScreen = () => {
                 },
                 signOut
             );
-            setTimeout(function () {
-                setIsloading(false);
-            }, 1500);
+            updateState("isLoading", false);
         } catch (error) {
-            setIsloading(false);
+            updateState("isLoading", false);
             console.log(error);
         }
     };
+
+    const onFilterChange = (filter) => {
+        updateState("filterState", filter);
+    };
+
+    useEffect(() => {
+        loadRoomApi({ loadingControl: true });
+    }, [state.filterState]);
 
     const submitAllConfirm = () => {
         Alert.alert(
@@ -67,21 +111,38 @@ const RoomMoneyCollectAllScreen = () => {
 
     const onChangeRoomInfo = (state) => {};
 
+    useEffect(() => {
+        loadRoomApi({ loadingControl: true });
+    }, [state.filterState]);
+
     return (
         <View style={styles.container}>
             <FilterHeader
                 onValueChange={onFilterChange}
-                initialState={filterStateDefault}
+                initialState={state.filterState}
                 advanceFilter={false}
                 yearFilter={true}
             />
-
-            <View style={styles.contentContainer}>
-                {isLoading ? (
+            {state.isLoading ? (
+                <View
+                    style={{
+                        flexGrow: 1,
+                        alignItems: "center",
+                        paddingTop: 30,
+                    }}
+                >
                     <Loading />
-                ) : (
+                </View>
+            ) : (
+                <View style={styles.contentContainer}>
                     <>
                         <List
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={state.refreshing}
+                                    onRefresh={onRefresh}
+                                />
+                            }
                             ListHeaderComponent={() => (
                                 <View style={styles.linkCustom}>
                                     <NavLink
@@ -101,6 +162,9 @@ const RoomMoneyCollectAllScreen = () => {
                             style={styles.listContainer}
                             contentContainerStyle={styles.contentCard}
                             data={listElectrictRooms}
+                            initialNumToRender={5}
+                            removeClippedSubviews={false}
+                            extraData={listElectrictRooms}
                             renderItem={(room) => (
                                 <MoneyCard
                                     roomInfo={room}
@@ -123,8 +187,8 @@ const RoomMoneyCollectAllScreen = () => {
                             Thu tiền tất cả phòng
                         </Button>
                     </>
-                )}
-            </View>
+                </View>
+            )}
         </View>
     );
 };

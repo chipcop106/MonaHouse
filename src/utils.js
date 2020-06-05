@@ -141,7 +141,10 @@ export const convertNumberToText = (number) => {
 };
 
 export const currencyFormat = (value) =>
-    value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    value
+        .toString()
+        .replace(/\D+/g, "")
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 export const randomDataChart = (length, min, max, currency) => {
     const arr = [];

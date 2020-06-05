@@ -33,9 +33,7 @@ const CustomSelect = ({
                     label=""
                     value={selectOptions[selectedIndex - 1]}
                     selectedIndex={selectedIndex}
-                    onSelect={(index) => {
-                        getSelectedIndex(index);
-                    }}
+                    onSelect={getSelectedIndex}
                 >
                     {selectOptions &&
                         selectOptions.map((option) => (

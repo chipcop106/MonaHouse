@@ -5,9 +5,9 @@ import { Input, Icon, Button } from "@ui-kitten/components";
 import { color, sizes } from "~/config";
 
 const initialState = {
-    waterPrice: 5000,
-    electrictPrice: 3500,
-    roomPrice: 500000,
+    waterPrice: "5000",
+    electrictPrice: "3500",
+    roomPrice: "500000",
 };
 
 const reducer = (state, { type, payload }) => {

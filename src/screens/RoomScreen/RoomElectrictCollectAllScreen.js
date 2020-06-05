@@ -1,6 +1,12 @@
-import React, { useContext, useState } from "react";
-import { StyleSheet, View, Alert } from "react-native";
-import { List, Button, Icon } from "@ui-kitten/components";
+import React, { useContext, useReducer, useEffect, useCallback } from "react";
+import {
+    StyleSheet,
+    View,
+    Alert,
+    RefreshControl,
+    KeyboardAvoidingView,
+} from "react-native";
+import { List, Button, Icon, IndexPath } from "@ui-kitten/components";
 import { color, settings, sizes } from "~/config";
 import { Context as RoomContext } from "~/context/RoomContext";
 import { Context as MotelContext } from "~/context/MotelContext";
@@ -9,22 +15,63 @@ import FilterHeader from "~/components/FilterHeader";
 import ElectrictCard from "~/components/ElectrictCard";
 import NavLink from "~/components/common/NavLink";
 import Loading from "~/components/common/Loading";
+
+const initialState = {
+    isLoading: true,
+    refreshing: false,
+    filterState: {
+        selectedMonthIndex: new IndexPath(0),
+        selectedMotelIndex: new IndexPath(0),
+        selectedYearIndex: new IndexPath(0),
+        searchValue: "",
+    },
+};
+
+const reducer = (prevState, { type, payload }) => {
+    switch (type) {
+        case "STATE_CHANGE":
+            return {
+                ...prevState,
+                [payload.key]: payload.value,
+            };
+            break;
+        default:
+            return prevState;
+            break;
+    }
+};
+
 const RoomElectrictCollectAllScreen = () => {
+    const [state, dispatch] = useReducer(reducer, initialState);
     const { signOut } = useContext(AuthContext);
     const { state: roomState, getListElectrict } = useContext(RoomContext);
-    const { listElectrictRooms, filterStateDefault } = roomState;
+    const { listElectrictRooms } = roomState;
     const { state: modelState } = useContext(MotelContext);
     const { listMotels } = modelState;
-    const [isLoading, setIsloading] = useState(false);
 
-    const onFilterChange = async (filter) => {
-        setIsloading(true);
+    const updateState = (key, value) => {
+        dispatch({ type: "STATE_CHANGE", payload: { key, value } });
+    };
+
+    const refreshApi = async () => {
+        updateState("refreshing", true);
+        await loadRoomApi({ loadingControl: false });
+        updateState("refreshing", false);
+    };
+
+    const onRefresh = useCallback(() => {
+        refreshApi();
+    }, [state.refreshing, state.filterState]);
+
+    const loadRoomApi = async ({ loadingControl = true }, filter) => {
+        loadingControl && updateState("isLoading", true);
         const {
             selectedMonthIndex,
             selectedMotelIndex,
             selectedYearIndex,
             searchValue,
-        } = filter;
+        } = filter ? filter : state.filterState;
+
         try {
             //console.log(listMotels);
             await getListElectrict(
@@ -36,13 +83,15 @@ const RoomElectrictCollectAllScreen = () => {
                 },
                 signOut
             );
-            setTimeout(function () {
-                setIsloading(false);
-            }, 1500);
+            updateState("isLoading", false);
         } catch (error) {
-            setIsloading(false);
+            updateState("isLoading", false);
             console.log(error);
         }
+    };
+
+    const onFilterChange = async (filter) => {
+        updateState("filterState", filter);
     };
 
     const onChangeRoomInfo = (state) => {};
@@ -66,47 +115,74 @@ const RoomElectrictCollectAllScreen = () => {
         );
     };
 
+    useEffect(() => {
+        loadRoomApi({ loadingControl: true });
+    }, [state.filterState]);
+
     return (
         <View style={styles.container}>
             <FilterHeader
                 onValueChange={onFilterChange}
-                initialState={filterStateDefault}
+                initialState={state.filterState}
                 advanceFilter={false}
                 yearFilter={true}
             />
 
             <View style={styles.contentContainer}>
-                {isLoading ? (
-                    <Loading />
+                {state.isLoading ? (
+                    <View
+                        style={{
+                            flexGrow: 1,
+                            alignItems: "center",
+                            paddingTop: 30,
+                        }}
+                    >
+                        <Loading />
+                    </View>
                 ) : (
                     <>
-                        <List
-                            ListHeaderComponent={() => (
-                                <View style={styles.linkCustom}>
-                                    <NavLink
-                                        title="Lịch sử ghi điện | nước"
-                                        icon={{
-                                            name: "file-text-outline",
-                                            color: color.primary,
-                                        }}
-                                        routeName="ElectrictHistory"
-                                        borderBottom={false}
+                        <KeyboardAvoidingView
+                            style={{ flex: 1 }}
+                            behavior={Platform.OS === "ios" ? "position" : null}
+                            // keyboardVerticalOffset={-44}
+                        >
+                            <List
+                                refreshControl={
+                                    <RefreshControl
+                                        refreshing={state.refreshing}
+                                        onRefresh={onRefresh}
                                     />
-                                </View>
-                            )}
-                            keyExtractor={(room, index) =>
-                                `${room.RoomID + index}`
-                            }
-                            style={styles.listContainer}
-                            contentContainerStyle={styles.contentCard}
-                            data={listElectrictRooms}
-                            renderItem={(room) => (
-                                <ElectrictCard
-                                    roomInfo={room}
-                                    handleValueChange={onChangeRoomInfo}
-                                />
-                            )}
-                        />
+                                }
+                                ListHeaderComponent={() => (
+                                    <View style={styles.linkCustom}>
+                                        <NavLink
+                                            title="Lịch sử ghi điện | nước"
+                                            icon={{
+                                                name: "file-text-outline",
+                                                color: color.primary,
+                                            }}
+                                            routeName="ElectrictHistory"
+                                            borderBottom={false}
+                                        />
+                                    </View>
+                                )}
+                                keyExtractor={(room, index) =>
+                                    `${room.RoomID + index}`
+                                }
+                                style={styles.listContainer}
+                                contentContainerStyle={styles.contentCard}
+                                data={listElectrictRooms}
+                                initialNumToRender={5}
+                                removeClippedSubviews={false}
+                                extraData={listElectrictRooms}
+                                renderItem={(room) => (
+                                    <ElectrictCard
+                                        roomInfo={room}
+                                        handleValueChange={onChangeRoomInfo}
+                                    />
+                                )}
+                            />
+                        </KeyboardAvoidingView>
                         <Button
                             onPress={submitAllConfirm}
                             accessoryLeft={() => (
@@ -133,20 +209,22 @@ export default RoomElectrictCollectAllScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: "#f0f0f0",
     },
 
     contentContainer: {
         flexGrow: 1,
-        backgroundColor: "#ccc",
     },
 
     contentCard: {
-        paddingHorizontal: 8,
-        paddingVertical: 4,
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        flexGrow: 1,
     },
 
     listContainer: {
-        flex: 1,
+        flexGrow: 1,
+        backgroundColor: "#f0f0f0",
     },
 
     bottomSheetContent: {
