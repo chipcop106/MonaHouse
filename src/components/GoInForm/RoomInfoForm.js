@@ -13,6 +13,7 @@ import IncludeElectrictWater from "~/components/IncludeElectrictWater";
 import { sizes, color } from "../../config";
 import { create_UUID as randomId } from "../../utils";
 import { Context as RoomGoInContext } from "../../context/RoomGoInContext";
+import { currencyFormat as cf } from "~/utils";
 
 const timeType = ["Ngày", "Tháng", "Năm"];
 
@@ -42,9 +43,12 @@ const RoomInfoForm = () => {
                                 textStyle={styles.textInput}
                                 label="Giá thuê / tháng"
                                 placeholder="0"
-                                value={stateRoomInfo.roomPrice}
+                                value={cf(stateRoomInfo.roomPrice)}
                                 onChangeText={(nextValue) =>
-                                    changeStateFormStep("roomPrice", nextValue)
+                                    changeStateFormStep(
+                                        "roomPrice",
+                                        nextValue.replace(",", "")
+                                    )
                                 }
                                 textContentType="none"
                                 keyboardType="numeric"
@@ -54,7 +58,6 @@ const RoomInfoForm = () => {
                             <Datepicker
                                 label="Ngày dọn vào"
                                 date={stateRoomInfo.dateGoIn}
-                                status="basic"
                                 onSelect={(nextDate) =>
                                     changeStateFormStep("dateGoIn", nextDate)
                                 }

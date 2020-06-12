@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useContext } from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
 import { Text, Input, Button, Icon } from "@ui-kitten/components";
 import UserInfo from "~/components/UserInfo";
@@ -6,6 +6,9 @@ import IncludeElectrictWater from "~/components/IncludeElectrictWater";
 import { color, sizes } from "~/config";
 import gbStyle from "~/GlobalStyleSheet";
 import { getRoomById } from "~/api/MotelAPI";
+import TextField from "~/components/common/TextField";
+import { Context as RoomContext } from "~/context/RoomContext";
+import { Context as AuthContext } from "~/context/AuthContext";
 const initialState = {
     electrictNumber: "",
     electrictImage: null,
@@ -13,6 +16,8 @@ const initialState = {
     waterImage: null,
     oldElectrict: "323232",
     oldWater: "232323",
+    waterPrice: "5000",
+    electrictPrice: "5000",
 };
 
 const reducer = (prevstate, action) => {
@@ -28,13 +33,29 @@ const reducer = (prevstate, action) => {
     }
 };
 
-const ElectrictCollectScreen = ({ route }, month) => {
+const ElectrictCollectScreen = ({ navigation, route }) => {
+    const { updateElectrict } = useContext(RoomContext);
+    const { signOut } = useContext(AuthContext);
     const [state, dispatch] = useReducer(reducer, initialState);
     const roomId = route.params?.roomId ?? null;
     const { renter, room } = state;
 
     const onChangeValue = (newState) => {
         dispatch({ type: "STATE_CHANGE", payload: { newState } });
+    };
+
+    const _onSubmit = async () => {
+        const params = {
+            roomid: roomId,
+            renterid: renter.renter.ID,
+            month: new Date().getMonth() + 1,
+            year: new Date().getFullYear(),
+            electrict: parseInt(state.electrictNumber),
+            imgelectrict: state.electrictImage || "",
+            water: parseInt(state.waterNumber),
+            imgwater: state.waterImage || "",
+        };
+        await updateElectrict(params, { signOut, navigation });
     };
 
     useEffect(() => {
@@ -67,18 +88,16 @@ const ElectrictCollectScreen = ({ route }, month) => {
                             <Text
                                 status="primary"
                                 category="h5"
-                                style={{ marginBottom: 5 }}
+                                style={{ marginBottom: 15 }}
                             >
                                 {room && room.NameRoom
                                     ? room.NameRoom
                                     : "Đang tải..."}
                             </Text>
-                            <Text style={gbStyle.mBottom15}>
-                                Điện nước tháng 04
-                            </Text>
+
                             <View style={styles.formWrap}>
                                 <View style={[styles.formRow, styles.halfCol]}>
-                                    <Input
+                                    <TextField
                                         textStyle={styles.textInput}
                                         label="Số điện cũ"
                                         placeholder="0"
@@ -89,7 +108,7 @@ const ElectrictCollectScreen = ({ route }, month) => {
                                     />
                                 </View>
                                 <View style={[styles.formRow, styles.halfCol]}>
-                                    <Input
+                                    <TextField
                                         textStyle={styles.textInput}
                                         label="Số nước cũ"
                                         placeholder="0"
@@ -102,12 +121,13 @@ const ElectrictCollectScreen = ({ route }, month) => {
                                 <IncludeElectrictWater
                                     initialState={initialState}
                                     handleValueChange={onChangeValue}
-                                    waterTitle="Nước tháng này"
-                                    electrictTitle="Điện tháng này"
+                                    waterTitle="Số nước mới"
+                                    electrictTitle="Số điện mới"
                                 />
                             </View>
                         </View>
                         <Button
+                            onPress={_onSubmit}
                             accessoryLeft={() => (
                                 <Icon
                                     name="sync"

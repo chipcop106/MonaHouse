@@ -5,6 +5,9 @@ import {
     updateRoom as updateRoomAPI,
     deleteRoom as deleteRoomAPI,
 } from "../api/MotelAPI";
+
+import { updateElectrictWater } from "~/api/RenterAPI";
+
 import { IndexPath } from "@ui-kitten/components";
 import { Alert } from "react-native";
 
@@ -33,10 +36,20 @@ const roomReducer = (prevstate, { type, payload }) => {
                 listElectrictRooms: payload,
             };
         }
+
         case "GET_ELECTRICT_HISTORY": {
             return {
                 ...prevstate,
                 listElectrictHistory: payload,
+            };
+        }
+
+        case "UPDATE_ELECTRICT_STATUS": {
+            return {
+                ...prevstate,
+                listRooms: [...prevstate.listRooms].map((room) =>
+                    room.id === payload.roomid ? (room.StatusWEID = 6) : room
+                ),
             };
         }
 
@@ -109,6 +122,55 @@ const getListElectrict = (dispatch) => async (
         dispatch({ type: "GET_ELECTRICT", payload: res.Data });
     } catch (error) {
         alert(JSON.stringify(error.message));
+    }
+};
+
+const getElectrictHistory = (dispatch) => async (
+    {
+        motelid = 0,
+        month = currentMonth,
+        year = currentYear,
+        qsearch = "",
+        sortby = 0,
+        status = 0,
+    },
+    signOut
+) => {
+    try {
+        const res = await getRoomsByMotelId({
+            motelid,
+            month,
+            year,
+            qsearch,
+            sortby,
+            status,
+        });
+        res.Code !== 1 && errorHandle(res.Code, { signOut });
+        dispatch({ type: "GET_ELECTRICT_HISTORY", payload: res.Data });
+    } catch (error) {
+        alert(JSON.stringify(error));
+    }
+};
+
+const updateElectrict = (dispatch) => async (params, actions) => {
+    const { navigation } = actions;
+    try {
+        const res = await updateElectrictWater(params);
+        res.Code !== 1 && errorHandle(actions);
+        Alert.alert("Thông báo !!", "Cập nhật điện nước thành công !", [
+            {
+                text: "Ok",
+                onPress: () => {
+                    dispatch({
+                        type: "UPDATE_ELECTRICT_STATUS",
+                        payload: { roomid: 1 },
+                    });
+                    navigation.pop();
+                },
+            },
+        ]);
+    } catch (err) {
+        alert(JSON.stringify(err.message));
     }
 };
 
@@ -186,33 +248,6 @@ const deleteRoom = (dispatch) => async ({ roomid = 0 }, callback) => {
     ]);
 };
 
-const getElectrictHistory = (dispatch) => async (
-    {
-        motelid = 0,
-        month = currentMonth,
-        year = currentYear,
-        qsearch = "",
-        sortby = 0,
-        status = 0,
-    },
-    signOut
-) => {
-    try {
-        const res = await getRoomsByMotelId({
-            motelid,
-            month,
-            year,
-            qsearch,
-            sortby,
-            status,
-        });
-        res.Code !== 1 && errorHandle(res.Code, { signOut });
-        dispatch({ type: "GET_ELECTRICT_HISTORY", payload: res.Data });
-    } catch (error) {
-        alert(JSON.stringify(error));
-    }
-};
-
 const updateState = (dispatch) => (field, value) => {
     dispatch({ type: "STATE_CHANGE", payload: { field, value } });
 };
@@ -223,6 +258,7 @@ export const { Context, Provider } = CreateDataContext(
         getListRooms,
         getListElectrict,
         getElectrictHistory,
+        updateElectrict,
         updateState,
         createRoom,
         updateRoom,

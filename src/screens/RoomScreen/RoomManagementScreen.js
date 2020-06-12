@@ -44,7 +44,7 @@ const initialState = {
     refreshing: false,
     isLoading: true,
     filterState: {
-        selectedMonthIndex: new IndexPath(0),
+        selectedMonthIndex: new IndexPath(new Date().getMonth()),
         selectedMotelIndex: new IndexPath(0),
         selectedYearIndex: new IndexPath(0),
         searchValue: "",
@@ -152,7 +152,7 @@ const RoomManagementScreen = ({ navigation }) => {
                                 onRefresh={onRefresh}
                             />
                         }
-                        initialNumToRender={5}
+                        initialNumToRender={10}
                         removeClippedSubviews={false}
                         keyExtractor={(item, index) => `${item.RoomID}`}
                         style={styles.listContainer}

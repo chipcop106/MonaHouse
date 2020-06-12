@@ -96,12 +96,14 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
                 />
                 <MenuItem
                     title="Ghi điện"
-                    disabled={!roomInfo.item.Renter ? true : false}
+                    disabled={
+                        !item.Renter || item.StatusWEID !== 7 ? true : false
+                    }
                     accessoryLeft={() => (
                         <Icon
                             name="flash-outline"
                             fill={
-                                !roomInfo.item.Renter
+                                !item.Renter || item.StatusWEID !== 7
                                     ? color.grayColor
                                     : color.darkColor
                             }
@@ -119,7 +121,9 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
     return (
         <View style={styles.footerAction}>
             <Button
-                onPress={() => navigation.navigate("RoomGoIn", { id: "1" })}
+                onPress={() =>
+                    navigation.navigate("RoomGoIn", { roomid: item.RoomID })
+                }
                 style={styles.actionButton}
                 appearance="outline"
                 status="primary"
@@ -140,7 +144,9 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
                 Dọn vào
             </Button>
             <Button
-                onPress={() => navigation.navigate("RoomGoOut", { id: "1" })}
+                onPress={() =>
+                    navigation.navigate("RoomGoOut", { roomid: item.RoomID })
+                }
                 style={styles.actionButton}
                 appearance="outline"
                 status="danger"
@@ -161,7 +167,9 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
                 Dọn ra
             </Button>
             <Button
-                onPress={() => navigation.navigate("MoneyCollect", { id: "1" })}
+                onPress={() =>
+                    navigation.navigate("MoneyCollect", { roomid: item.RoomID })
+                }
                 style={styles.actionButton}
                 appearance="outline"
                 status="success"
@@ -192,7 +200,12 @@ const RoomCard = ({ roomInfo, addFee }) => {
         <>
             <Card
                 appearance="filled"
-                style={styles.item}
+                style={[
+                    styles.item,
+                    item.StatusRoomID === 2
+                        ? { backgroundColor: `#d6ffff` }
+                        : null,
+                ]}
                 status="basic"
                 disabled
                 header={(headerProps) =>
@@ -293,6 +306,21 @@ const RoomCard = ({ roomInfo, addFee }) => {
                                 >
                                     <Text style={styles.badgeText}>
                                         Đã ghi điện nước
+                                    </Text>
+                                </LinearGradient>
+                            )}
+                            {item.StatusWEID === 9 && (
+                                <LinearGradient
+                                    colors={color.gradients.warning}
+                                    style={styles.badge}
+                                >
+                                    <Text
+                                        style={{
+                                            ...styles.badgeText,
+                                            color: color.darkColor,
+                                        }}
+                                    >
+                                        Bao điện nước
                                     </Text>
                                 </LinearGradient>
                             )}
@@ -444,7 +472,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     balanceValue: {
-        color: color.greenColor,
+        fontWeight: "600",
     },
     footerAction: {
         flexDirection: "row",
@@ -454,7 +482,6 @@ const styles = StyleSheet.create({
     actionButton: {
         padding: 5,
     },
-    cardBody: {},
 });
 
 export default RoomCard;

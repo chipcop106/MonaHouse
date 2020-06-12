@@ -6,6 +6,7 @@ import {
     Dimensions,
     ScrollView,
     KeyboardAvoidingView,
+    Alert,
 } from "react-native";
 import {
     Card,
@@ -15,6 +16,7 @@ import {
     List,
     Spinner,
     Button,
+    Avatar,
 } from "@ui-kitten/components";
 import UserInfo from "~/components/UserInfo";
 import { color, settings } from "~/config";
@@ -45,12 +47,40 @@ const reducer = (prevstate, { type, payload }) => {
     }
 };
 
+const People = ({ phone = "", name = "", img }) => {
+    return (
+        <View style={styles.peopleContainer}>
+            <View style={styles.flexRow}>
+                <Avatar
+                    size="giant"
+                    source={
+                        img
+                            ? { uri: img }
+                            : require("./../../../assets/user.png")
+                    }
+                />
+                <View style={styles.peopleInfo}>
+                    <Text style={styles.peopleName}>Trương Văn Lam</Text>
+                    <View style={{ ...styles.flexRow, marginTop: 5 }}>
+                        <Icon
+                            name="phone"
+                            style={{ width: 25, height: 25 }}
+                            fill={color.darkColor}
+                        />
+                        <Text style={styles.phoneNumber}>0123456789</Text>
+                    </View>
+                </View>
+            </View>
+        </View>
+    );
+};
+
 const RoomDetailScreen = ({ navigation, route }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const { deleteRoom } = useContext(RoomContext);
     const roomId = route.params?.roomId ?? null;
     const { roomInfo } = state;
-
+    console.log(roomInfo);
     const updateState = (key, value) => {
         dispatch({ type: "STATE_CHANGE", payload: { key, value } });
     };
@@ -76,7 +106,24 @@ const RoomDetailScreen = ({ navigation, route }) => {
     };
 
     const _deleteRoom = () => {
-        deleteRoom({ roomid: roomId }, { navigation });
+        Alert.alert("Cảnh báo !!", "Bạn có chắc muốn xóa phòng này ??", [
+            {
+                text: "Xóa phòng này  ",
+                onPress: () => {
+                    deleteRoom({ roomid: roomId }, { navigation });
+                },
+            },
+            {
+                text: "Hủy bỏ",
+                onPress: () => {
+                    return;
+                },
+            },
+        ]);
+    };
+
+    const _deletePeople = () => {
+        alert("delete people");
     };
 
     useEffect(() => {
@@ -383,33 +430,114 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                         </Text>
                                     )}
                                 </View>
-                                <NavLink
-                                    containerStyle={styles.navLink}
-                                    title="Lịch sử thuê phòng"
-                                    icon={{
-                                        name: "people-outline",
-                                        color: color.primary,
+
+                                <View
+                                    style={{
+                                        ...styles.sec,
+                                        backgroundColor: "transparent",
+                                        paddingHorizontal: 0,
                                     }}
-                                    routeName="RentHistory"
-                                />
-                                <NavLink
-                                    containerStyle={styles.navLink}
-                                    title="Lịch sử điện nước"
-                                    icon={{
-                                        name: "droplet-outline",
-                                        color: color.primary,
-                                    }}
-                                    routeName="DetailElectrictHistory"
-                                />
-                                <NavLink
-                                    containerStyle={styles.navLink}
-                                    title="Lịch sử thanh toán"
-                                    icon={{
-                                        name: "credit-card-outline",
-                                        color: color.primary,
-                                    }}
-                                    routeName="DetailMoneyHistory"
-                                />
+                                >
+                                    <View
+                                        style={{
+                                            ...styles.flexRow,
+                                            alignItems: "center",
+                                            marginBottom: 15,
+                                            justifyContent: "space-between",
+                                        }}
+                                    >
+                                        <Text
+                                            style={{
+                                                ...styles.secTitle,
+                                                marginBottom: 0,
+                                            }}
+                                        >
+                                            Người ở cùng
+                                        </Text>
+                                        <TouchableOpacity
+                                            onPress={
+                                                () => alert("Chưa có API")
+                                                // navigation.navigate(
+                                                //     "AddPeople",
+                                                //     {
+                                                //         roomId,
+                                                //     }
+                                                // )
+                                            }
+                                        >
+                                            <View style={styles.flexRow}>
+                                                <Icon
+                                                    name="plus"
+                                                    fill={color.primary}
+                                                    style={{
+                                                        width: 25,
+                                                        height: 25,
+                                                        marginLeft: 15,
+                                                        marginRight: 5,
+                                                    }}
+                                                />
+                                                <Text
+                                                    status="primary"
+                                                    category="s1"
+                                                >
+                                                    Thêm người
+                                                </Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    </View>
+                                    {[
+                                        {},
+                                        {
+                                            img:
+                                                "https://giadinh.mediacdn.vn/thumb_w/640/2019/10/30/ngoc-trinh-5-1572423107231301246873-crop-15724237122011649225014.jpg",
+                                        },
+                                        {},
+                                    ].map((people, index) => {
+                                        if (index === 0) return;
+                                        return (
+                                            <UserInfo
+                                                key={`${index}`}
+                                                avatar={people.img}
+                                                phone="0123456789"
+                                                name="Trương Văn Lam"
+                                                styleContainer={
+                                                    styles.peopleContainer
+                                                }
+                                                styleCard={styles.peopleCard}
+                                                deletePeople={_deletePeople}
+                                            />
+                                        );
+                                    })}
+                                </View>
+                                <View style={styles.menuWrap}>
+                                    <NavLink
+                                        containerStyle={styles.navLink}
+                                        title="Lịch sử thuê phòng"
+                                        icon={{
+                                            name: "people-outline",
+                                            color: color.primary,
+                                        }}
+                                        routeName="RentHistory"
+                                    />
+                                    <NavLink
+                                        containerStyle={styles.navLink}
+                                        title="Lịch sử điện nước"
+                                        icon={{
+                                            name: "droplet-outline",
+                                            color: color.primary,
+                                        }}
+                                        routeName="DetailElectrictHistory"
+                                    />
+                                    <NavLink
+                                        containerStyle={styles.navLink}
+                                        title="Lịch sử thanh toán"
+                                        icon={{
+                                            name: "credit-card-outline",
+                                            color: color.primary,
+                                        }}
+                                        routeName="DetailMoneyHistory"
+                                    />
+                                </View>
                             </View>
                             <Button
                                 onPress={_deleteRoom}
@@ -529,5 +657,31 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         borderRadius: 8,
         marginBottom: 15,
+    },
+    peopleInfo: {
+        marginLeft: 10,
+    },
+    phoneNumber: {
+        marginLeft: 5,
+    },
+    meta: {
+        marginTop: 10,
+    },
+    peopleName: {
+        fontSize: 16,
+        fontWeight: "600",
+    },
+    peopleCard: {
+        backgroundColor: "#fff",
+        paddingHorizontal: 15,
+        borderRadius: 8,
+        marginTop: 0,
+    },
+    peopleContainer: {
+        marginBottom: 10,
+        marginTop: 0,
+    },
+    menuWrap: {
+        marginBottom: 30,
     },
 });

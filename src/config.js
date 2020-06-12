@@ -1,7 +1,10 @@
 import { Platform } from "react-native";
-import { NativeDateService } from "@ui-kitten/components";
+import moment from "moment";
+import { MomentDateService } from "@ui-kitten/moment";
 
 const currentYear = new Date().getFullYear();
+
+const dateService = new MomentDateService();
 
 export const color = {
     primary: "#2BC7C7",
@@ -23,6 +26,7 @@ export const color = {
         primary: ["#B6F4FD", "#2BC7C7", "#75F2FF"],
         success: ["#00E096", "#00E096", "#00E096"],
         danger: ["#FF3D71", "#FF3D71", "#FF3D71"],
+        warning: ["#feca61", "#feca61", "#ffeb00"],
     },
 };
 
@@ -58,7 +62,7 @@ export const settings = {
     oneSignalKey: "92eed1ed-9a7c-4b5f-a73f-2178b8e994c5",
     deviceOS: ["", "ios", "android"].indexOf(Platform.OS).toString(),
     key: "VnVOQG0zODlNb25hRGV2",
-    formatDateService: new NativeDateService("en", "DD/MM/YYYY"),
+    formatDateService: dateService,
     minRangeDatePicker: new Date(`01/01/${currentYear - 3}`),
     maxRangeDatePicker: new Date(`01/01/${currentYear + 3}`),
     monthLists: monthOptions,
