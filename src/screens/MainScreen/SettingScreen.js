@@ -58,7 +58,7 @@ const SettingScreen = () => {
 		}
 	);
 	const onPressWithParrams = key => {
-		navidation.navigate('', {});
+		signOut();
 	}
 
 	return (
@@ -67,9 +67,9 @@ const SettingScreen = () => {
 				<View style={styles.itemWrap}>
 					<TouchableOpacity
 						style={styles.itemInner}
-						onPress={ () => onPressWithParrams("") }
+						onPress={ () => signOut() }
 					>
-						<Text style={[styles.textColor, styles.textSettingSize]}>Cấu hình điện nước</Text>
+						<Text style={[styles.textColor, styles.textSettingSize]}>Đăng xuất</Text>
 					</TouchableOpacity>
 				</View>
 				

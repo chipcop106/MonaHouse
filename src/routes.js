@@ -9,6 +9,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import { Icon } from "@ui-kitten/components";
 import SignInScreen from "./screens/AuthScreen/SignInScreen";
 import SignUpScreen from "./screens/AuthScreen/SignUpScreen";
+import ForgotPass from "./screens/AuthScreen/ForgotPass";
 import HomeScreen from "./screens/MainScreen/HomeScreen";
 import ReportDebtScreen from "./screens/MainScreen/ReportDebtScreen";
 import ReportElectrictScreen from "./screens/MainScreen/ReportElectrictScreen";
@@ -393,6 +394,15 @@ const AuthenticationScreen = () => (
             component={SignUpScreen}
             options={{
                 title: "Sign Up",
+                // When logging out, a pop animation feels intuitive
+                // You can remove this if you want the default 'push' animation
+            }}
+        />
+        <Stack.Screen
+            name="ForgotPass"
+            component={ForgotPass}
+            options={{
+                title: "ForgotPass",
                 // When logging out, a pop animation feels intuitive
                 // You can remove this if you want the default 'push' animation
             }}
