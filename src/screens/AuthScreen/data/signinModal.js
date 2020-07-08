@@ -12,6 +12,6 @@ export class SignInData {
 }
 export const SignInSchema = Yup.object().shape({
     // email: Yup.string().email('Invalid email'),
-    username: Yup.string().min(6, 'username must be at least 6 characters'),
-    password: Yup.string().min(6, 'Password must be at least 6 characters'),
+    username: Yup.string().required('Phải nhập tên dăng nhập').min(4, 'Tên dăng nhập phải ít nhất 4 ký tự'),
+    password: Yup.string().required('Phải nhập mật khẩu').min(4, 'Mật khẩu phải ít nhất 4 ký tự'),
 });

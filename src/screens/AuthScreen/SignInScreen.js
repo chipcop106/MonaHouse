@@ -8,13 +8,11 @@ import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handl
 import { Context as AuthContext } from './../../context/AuthContext';
 import { color } from '~/config';
 import { Formik, useFormikContext } from 'formik';
-import { SignInData, SignInSchema } from '~/data/signinModal'
+import { SignInData, SignInSchema } from './data/signinModal'
 const LoadingIndicator  = () => <ActivityIndicator color="#fff" />
 
 const SignInScreen = ({route}) => {
-    const { authState, signIn, clearErrorMessage } = useContext(AuthContext);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const { state: authState, signIn, clearErrorMessage } = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
     const navigation = useNavigation();
     const [phoneNumber, setphoneNumber] = useState('');
@@ -22,12 +20,12 @@ const SignInScreen = ({route}) => {
         headerShown: false,
     })
     
-    // useEffect(() =>{
-    //     const listener = navigation.addListener('blur',clearErrorMessage);
-    //     return () =>{
-    //         listener.remove();
-    //     }
-    // },[])
+    useEffect(() =>{
+       
+        if(!!authState?.errorMessage){
+            Alert.alert('Thông báo', authState.errorMessage);
+        }
+    },[authState])
     // const onPressLogin = async () => {
     //     setLoading(true);
     //     await signIn(username, password);
@@ -35,7 +33,7 @@ const SignInScreen = ({route}) => {
     //     setLoading(false);
     // }
     const _touchForgot = () => {
-        navigation.navigate('ForgotPass', {})
+        navigation.navigate('SignUp', {})
     }
     const _onPressRegister = () => {
         navigation.navigate('SignUp', {})
@@ -48,8 +46,12 @@ const SignInScreen = ({route}) => {
         }
        
     }
-    const _onFormSubmit = values => {
-        console.log(values);
+    const _onFormSubmit = async values => {
+        // console.log(values);
+        setLoading(true);
+        await signIn(values.username, values.password);
+        console.log(authState);
+        setLoading(false);
     }
     const RenderForm = props => {
         
@@ -60,6 +62,7 @@ const SignInScreen = ({route}) => {
                     id='username'
                     // value={username}
                     // onChangeText={(value) => setUsername(value)}
+                    keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
                     style={styles.input}
                     autoCorrect={false}
                     autoCapitalize={'none'}
@@ -84,7 +87,7 @@ const SignInScreen = ({route}) => {
                     <Text style={styles.forgotPassTxt}>Quên mật khẩu</Text>
                 </TouchableOpacity>
             </View>
-            {(authState && authState.errorMessage) ? (<Text styles={styles.label}>{authState.errorMessage}</Text>) : null}
+            {/* {(authState && authState.errorMessage) ? (<Text styles={styles.label}>{authState.errorMessage}</Text>) : null} */}
             <Button
                 style={styles.btnLogin}
                 onPress={props.handleSubmit}
@@ -156,7 +159,7 @@ const InputValidate = props => {
             {...props}
             {...fieldProps}
             caption={error}
-            onChangeText={formContext.handleChange(props.id)}
+            onChangeText={formContext.handleChange(id)}
         />
     );
 }

@@ -24,6 +24,38 @@ export const forgotPassword = async (params) =>{
   
 }
 
+export const getVerifyCode = async (params) =>{
+    try {
+        let res = await instance.get(path + '/getVerifyCode',{
+            params: {
+                key: settings.key,
+                ...params
+            }
+        })
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        return error;
+    }
+   
+}
+export const verifyCode = async (params) =>{
+    try {
+        let res = await instance.get(path + '/verifyCode',{
+            params: {
+                key: settings.key,
+                ...params
+            }
+        })
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        return error;
+    }
+   
+}
+
+
 export const registerAccount = async (params) =>{
     try {
         let res = await instance.get(path + '/registeraccount',{

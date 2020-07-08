@@ -72,12 +72,22 @@ const signInLocalToken = (dispatch) => async () => {
 const signIn = (dispatch) => async (username, password) => {
     try {
         const res = await loginAccount({ username, password });
-        const { token, account } = res.Data;
-        await AsyncStorage.setItem('userToken', token);
-        await AsyncStorage.setItem('userInfo', JSON.stringify(account));
-        dispatch({ type: 'SIGN_IN', payload: { token, account } });
+        console.log( 'signIn Res:', res);
+        
+        if(res.Code == 0){
+
+            dispatch({ type: 'ADD_ERROR', payload: 'Tài khoản hoặc mật khẩu không đúng!!' });
+            
+        } else {
+            const { token, account } = res.Data;
+            await AsyncStorage.setItem('userToken', token);
+            await AsyncStorage.setItem('userInfo', JSON.stringify(account));
+            dispatch({ type: 'SIGN_IN', payload: { token, account } });
+        }
+        
     } catch (error) {
-        dispatch({ type: 'ADD_ERROR', payload: 'Tài khoản hoặc mật khẩu không đúng !!' });
+        console.log('signIn error', error);
+        dispatch({ type: 'ADD_ERROR', payload: 'Xãy ra lỗi phía server, vui lòng liên hệ nhà cung cấp!!' });
     }
     // Thất bại send message error;
 };

@@ -379,7 +379,19 @@ const BottomNavigator = () => {
 const Stack = createStackNavigator();
 
 const AuthenticationScreen = () => (
-    <Stack.Navigator>
+    <Stack.Navigator
+        screenOptions={{
+            headerShow: true,
+            headerStyle: styles.headerStyle,
+            headerTitleStyle: {
+                color: "#fff",
+            },
+            headerTintColor: "#fff",
+            headerBackTitle: "",
+            headerBackTitleVisible: false,
+            headerTitle: ""
+        }}
+    >
         <Stack.Screen
             name="SignIn"
             component={SignInScreen}
