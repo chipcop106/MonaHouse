@@ -5,12 +5,13 @@ import { Text, StyleSheet, View, TextInput,
 } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { registerAccountn, getVerifyCode, verifyCode } from '~/api/AccountAPI'
+import { getVerifyCode, verifyCode } from '~/api/AccountAPI'
 import { color } from '~/config';
-
+import { Context as AuthContext } from '~/context/AuthContext';
 
 const MAX_LENGTH_CODE = 6;
 const SignUpScreen = () => {
+    const { state: authState, verificationSuccessAction} = React.useContext(AuthContext);
     const navigation = useNavigation();
     const route = useRoute();
     const textInput = useRef();
@@ -24,16 +25,24 @@ const SignUpScreen = () => {
             headerTitle: <RDheaderText />
         });
     }, [navigation, route]);
-
-    _getCode = async () => {
+    React.useEffect(() => {
+        if (enterCode && inputValue.length === MAX_LENGTH_CODE){
+            _verifyCode();
+        }
+    }, [inputValue])
+    
+    const _getCode = async () => {
 
         setSpinner(true);
         await new Promise(r => setTimeout(r, 100));
 
         try { 
             // call get verifications Code
+            // 1 đăng kí, 2 quên mật khẩu
+            
             const res = await getVerifyCode({
-                phone: inputValue
+                phone: inputValue,
+                typeVerify: ['','Register', 'ForgotPass'].indexOf(route.params.from.toString())
             });
             
             if (res.err) throw res.err;
@@ -45,7 +54,7 @@ const SignUpScreen = () => {
             
             setSpinner(false);
             await new Promise(r => setTimeout(r, 100));
-
+            // data: {Code: 1, Message: "Mã đã được gửi vào số điện thoại 0979047573", Data: "2020-07-10T22:52:43.9256102Z"}
             Alert.alert('Gửi', "Chúng tôi gửi mã xác nhận vào số điện thoại của bạn !!", [{
                 text: 'OK',
                 onPress: () => textInput.current.focus()
@@ -54,52 +63,48 @@ const SignUpScreen = () => {
         } catch (err) {
             setSpinner(false);
             await new Promise(r => setTimeout(r, 100));
-            Alert.alert('Oops!', `${!!err.Message ? err.Message : err}!! Vui lòng liên hệ nhà chung cấp để được mở khoá trước thời hạng` );
+            Alert.alert('Oops!', `${!!err.Message ? err.Message : err}!!` );
         }
 
        
 
     }
-    _verifyCode = async () => {
+    const _verifyCode = async () => {
 
         setSpinner(true);
         await new Promise(r => setTimeout(r, 100));
         
-            console.log('_verifyCode', inputValue);
-            try {
-                // call verifications code 
-                const res = await verifyCode({
-                    phone: phoneValue,
-                    code: inputValue
+        console.log('_verifyCode', inputValue);
+        try {
+            // call verifications code 
+            const res = await verifyCode({
+                phone: phoneValue,
+                code: inputValue
 
-                });
+            });
 
-                if (res.err) throw res.err;
-                if (res.Code !== 1) throw res;
-                textInput.current.blur();
-                setSpinner(false);
-                setTimeout(() => {
-                    Alert.alert('Thành công!', 'Số điện thoại đã được xác thực');
-                }, 100);
+            if (res.err) throw res.err;
+            if (res.Code !== 1) throw res;
+            textInput.current.blur();
+            setSpinner(false);
+            await new Promise(r => setTimeout(r, 100));
+            Alert.alert('Thành công!', 'Số điện thoại đã được xác thực');
+            await verificationSuccessAction(res.Data);
+          
 
-            } catch (err) {
-                setSpinner(false);
-                setTimeout(() => {
-                    Alert.alert('Oops!', !!err.Message ? err.Message : err);
-                }, 100);
-            }
+        } catch (err) {
+            setSpinner(false);
+            setTimeout(() => {
+                Alert.alert('Oops!', !!err.Message ? err.Message : err);
+            }, 100);
+        }
 
       
 
     }
 
     const _onChangeText = async (text) =>{
-        await setInputValue(text);
-        if (!enterCode) return;
-        if (text.length === MAX_LENGTH_CODE){
-            _verifyCode();
-        }
-            
+        setInputValue(text);           
     }
     const _getSubmitAction = () => {
         enterCode ? _verifyCode() : _getCode();

@@ -8,22 +8,21 @@ const authReducer = (state, action) => {
         return {
             ...state,
             userToken: action.payload.token,
-            accountInfo: action.payload.account,
+            userInfo: action.payload.account,
             isLoading: false,
         };
     case 'SIGN_IN':
         return {
             ...state,
-            userToken: action.payload.token,
-            accountInfo: action.payload.account,
             isLoading: false,
             errorMessage: '',
+            ...action.payload
         };
     case 'SIGN_UP':
         return {
             ...state,
             userToken: action.payload.token,
-            accountInfo: action.payload.account,
+            userInfo: action.payload.account,
             errorMessage: '',
         };
     case 'SIGN_OUT':
@@ -32,7 +31,7 @@ const authReducer = (state, action) => {
             userToken: null,
             isLoading: false,
             errorMessage: '',
-            accountInfo:null
+            userInfo:null
         };
     case 'ADD_ERROR':
         return {
@@ -44,12 +43,18 @@ const authReducer = (state, action) => {
             ...state,
             errorMessage: '',
         };
+    case 'NEWPW': {
+        return {
+            ...state,
+            ...action.payload
+        };
+    }
     default:
         return {
             ...state,
             isSignout: true,
             userToken: null,
-            accountInfo: null
+            userInfo: null
         };
     }
 };
@@ -64,6 +69,7 @@ const signInLocalToken = (dispatch) => async () => {
         token = await AsyncStorage.getItem('userToken');
         dispatch({ type: 'RESTORE_TOKEN', payload: { token } });
     } catch (err) {
+        console.log('signInLocalToken err', err);
         alert('Token da het han');
         dispatch({ type: 'SIGN_OUT'});
     }
@@ -82,7 +88,8 @@ const signIn = (dispatch) => async (username, password) => {
             const { token, account } = res.Data;
             await AsyncStorage.setItem('userToken', token);
             await AsyncStorage.setItem('userInfo', JSON.stringify(account));
-            dispatch({ type: 'SIGN_IN', payload: { token, account } });
+            dispatch({ type: 'SIGN_IN', payload:{ userToken: token, userInfo: account} });
+            
         }
         
     } catch (error) {
@@ -95,6 +102,18 @@ const signIn = (dispatch) => async (username, password) => {
 const signUp = (dispatch) => async (phone, name) => {
     dispatch({ type: 'SIGN_IN', payload: { token } });
 };
+const verificationSuccessAction = (dispatch) => async (data) => {
+    try {
+        console.log(data, JSON.stringify(data));
+        const {TokenApp} = data;
+        await AsyncStorage.setItem('userToken', TokenApp);
+        await AsyncStorage.setItem('userInfo', JSON.stringify(data));
+        dispatch({ type: 'SIGN_IN', payload: { userToken: TokenApp, userInfo: data, isNewPW: true} });
+    } catch (error) {
+        console.log('verificationSuccessAction error', error);
+    }
+    
+};
 
 
 const signOut = (dispatch) => async () => {
@@ -106,7 +125,9 @@ const signOut = (dispatch) => async () => {
     }
 
 };
-
+const setIsNewPW = dispatch => async isnew => {
+    dispatch({ type: 'NEWPW', payload: { isNewPW:  isnew} });
+}
 const clearErrorMessage = (dispatch) => () => {
     dispatch({ type: 'CLEAR_ERROR_MESSAGE' });
 };
@@ -115,12 +136,13 @@ const clearErrorMessage = (dispatch) => () => {
 export const { Context, Provider } = CreateDataContext(
     authReducer,
     {
-        signIn, restoreToken, signOut, clearErrorMessage, signInLocalToken,
+        signIn, restoreToken, signOut, clearErrorMessage, signInLocalToken, verificationSuccessAction, setIsNewPW
     },
     {
         isLoading: true,
         userToken: null,
         errorMessage: '',
-        accountInfo: null
+        userInfo: null,
+        isNewPW: false
     },
 );

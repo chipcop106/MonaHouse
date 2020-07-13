@@ -9,6 +9,7 @@ import { Context as AuthContext } from './../../context/AuthContext';
 import { color } from '~/config';
 import { Formik, useFormikContext } from 'formik';
 import { SignInData, SignInSchema } from './data/signinModal'
+import { InputValidate } from '~/components/common/InputValidate'
 const LoadingIndicator  = () => <ActivityIndicator color="#fff" />
 
 const SignInScreen = ({route}) => {
@@ -33,10 +34,11 @@ const SignInScreen = ({route}) => {
     //     setLoading(false);
     // }
     const _touchForgot = () => {
-        navigation.navigate('SignUp', {})
+        // navigation.navigate('ForgotPass', {}) // ForgotPass
+        navigation.navigate('SignUp', {from: 'ForgotPass'}) // ForgotPass
     }
     const _onPressRegister = () => {
-        navigation.navigate('SignUp', {})
+        navigation.navigate('SignUp', {from: 'Register'})
     }
     const onPressContact = () => {
         if(phoneNumber){
@@ -141,28 +143,8 @@ const SignInScreen = ({route}) => {
         </SafeAreaView>
     )
 }
-const AlertTriangleIcon = (style) => (
-    <Icon {...style} name='alert-triangle-outline'/>
-);
+
   
-const InputValidate = props => {
-    const formContext = useFormikContext();
-    const { id } = props;
-    const { [id]: error } = formContext.errors;
-    const fieldProps= {
-        status: error && 'danger',
-        captionIcon: error && AlertTriangleIcon,
-    };
-    
-    return (
-        <Input
-            {...props}
-            {...fieldProps}
-            caption={error}
-            onChangeText={formContext.handleChange(id)}
-        />
-    );
-}
 const styles = StyleSheet.create({
     // input: {
     //     padding: 10,

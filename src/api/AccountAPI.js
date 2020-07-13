@@ -9,6 +9,21 @@ export const getPhoneHelp = async () => {
     return res.data;
 }
 
+export const resetPassword = async (params) =>{
+    try {
+        const token = await getAccessToken();
+        let res = await instance.get(path + '/resetpassword',{
+            params: {
+                ...params,
+                token
+            }
+        })
+        return res.data;
+    } catch (error) {
+        return error.message;
+    }
+  
+}
 export const forgotPassword = async (params) =>{
     try {
         let res = await instance.get(path + '/forgotpassword',{

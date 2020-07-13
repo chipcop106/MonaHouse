@@ -3,14 +3,14 @@ import {
 	Text, StyleSheet, View,
 	ScrollView, Image
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import {
 	Layout, Button, Icon, Input
 } from "@ui-kitten/components";
 import ImagePicker from "react-native-image-crop-picker";
 import { utils } from '@react-native-firebase/app';
 import vision from '@react-native-firebase/ml-vision';
-import {Context as authCt} from '~/context/AuthContext';
+import {Context as AuthContext} from '~/context/AuthContext';
 
 
 
@@ -21,8 +21,17 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 const SettingScreen = () => {
-	const { signOut } = useContext(authCt);
-	const navidation = useNavigation();
+	const { state: authState, signOut , setIsNewPW} = useContext(AuthContext);
+	const navigation = useNavigation();
+	const route = useRoute();
+	React.useLayoutEffect(() => {
+        if(authState.isNewPW){
+			setIsNewPW(false);
+			navigation.navigate('ForgotPass', {});
+			
+		}
+    }, [navigation, route]);
+
 	const [stateData, dispatchData] = React.useReducer(
 		(prevState, action) => {
 			switch (action.type) {

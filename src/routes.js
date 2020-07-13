@@ -212,6 +212,13 @@ const SettingStack = () => {
                     headerTitleAlign: "left",
                 }}
             />
+            <Stack.Screen
+                name="ForgotPass"
+                component={ForgotPass}
+                options={{
+                    title: "ForgotPass"
+                }}
+            />
         </Stack.Navigator>
     );
 };
@@ -270,11 +277,12 @@ const MoneyCollectStack = () => {
 
 const BottomNavigator = () => {
     const BottomTab = createMaterialBottomTabNavigator();
-
+    const {state: authState} = useContext(AuthContext);
+    
     return (
         <Host>
             <BottomTab.Navigator
-                initialRouteName="Home"
+                initialRouteName={authState.isNewPW ? 'SettingStack' : "Home"}
                 activeColor={color.primary}
                 inactiveColor={color.grayColor}
                 backBehavior="history"
