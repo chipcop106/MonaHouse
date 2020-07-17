@@ -49,11 +49,11 @@ const ModalizeSelect =  (props) => {
                     fill={color.whiteColor}
                     style={styles.iconStyle}
                 />
-                <Text style={[styles.selectedtxt,{flexGrow: 1}]} numberOfLines={1}>{selected}</Text>
+                <Text style={[styles.selectedtxt,{flexGrow: 1, paddingRight: 40, backgroundColor: "transparent"}]} numberOfLines={1}>{selected}</Text>
                 <Icon
                     name={'chevron-down-outline'}
                     fill={"#919cb3"}
-                    style={[{width: 25, height: 25, paddingHorizontal: 0, position: "absolute", right: 0, top: -13}]}
+                    style={[{width: 25, height: 25, paddingHorizontal: 0, position: "absolute", right: 10, top: -13}]}
                 />
             </View>
         </TouchableOpacity>

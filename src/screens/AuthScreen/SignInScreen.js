@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, memo } from 'react';
 import { Text, StyleSheet, View, TextInput, 
     ActivityIndicator, SafeAreaView, Platform, KeyboardAvoidingView, TouchableOpacity, Image, Linking, Alert
 } from 'react-native';
@@ -85,7 +85,7 @@ const SignInScreen = ({route}) => {
                     style={styles.input}
                     autoCorrect={false}
                     autoCapitalize={'none'}
-                    editable={!loading}
+                    disabled={loading}
                 />
             </View>
             <View style={styles.formGroup}>
@@ -98,7 +98,7 @@ const SignInScreen = ({route}) => {
                     style={styles.input}
                     autoCorrect={false}
                     autoCapitalize={'none'}
-                    editable={!loading}
+                    disabled={loading}
                 />
             </View>
             <View style={[styles.formGroup, {flexDirection: "row-reverse"}]}>

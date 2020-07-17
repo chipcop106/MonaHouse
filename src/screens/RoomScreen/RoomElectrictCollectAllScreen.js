@@ -1,5 +1,7 @@
-import React, { useContext } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useContext, useState } from "react";
+import { StyleSheet, View,
+    ActivityIndicator, RefreshControl
+} from "react-native";
 import { List } from "@ui-kitten/components";
 import { color, settings } from "~/config";
 import { Context as RoomContext } from "~/context/RoomContext";
@@ -15,17 +17,24 @@ const RoomElectrictCollectAllScreen = () => {
     const { listElectrictRooms, filterStateDefault } = roomState;
     const { state: modelState } = useContext(MotelContext);
     const { listMotels } = modelState;
+    const [loading, setLoading] = useState(false);
 
-    const onFilterChange = (filter) => {
+    const onFilterChange = async (filter) => {
+        setLoading(true);
         const {
             selectedMonthIndex,
             selectedMotelIndex,
             selectedYearIndex,
             searchValue,
-        } = filter;
+        } = filter || {
+            selectedMonthIndex: 0,
+            selectedMotelIndex: 0,
+            selectedYearIndex: 0,
+            searchValue: ""
+        };
         try {
             //console.log(listMotels);
-            getListElectrict(
+            await getListElectrict(
                 {
                     motelid: listMotels[selectedMotelIndex - 1]?.ID ?? 0,
                     month: selectedMonthIndex + 1,
@@ -37,7 +46,11 @@ const RoomElectrictCollectAllScreen = () => {
         } catch (error) {
             console.log(error);
         }
+        setLoading(false);
     };
+    const _onRefresh = () => {
+        onFilterChange();
+    }
 
     const onChangeRoomInfo = (state) => {};
 
@@ -52,11 +65,17 @@ const RoomElectrictCollectAllScreen = () => {
 
             <View style={styles.contentContainer}>
                 <List
+                    refreshControl={
+                        <RefreshControl
+                          onRefresh={_onRefresh}
+                          refreshing={loading}
+                        />
+                    }
                     stickyHeaderIndices={[0]}
                     ListHeaderComponent={() => (
                         <View style={styles.linkCustom}>
                             <NavLink
-                                title="Lịch sử ghi điện | nước"
+                                title="Lịch sử ghi điện nước"
                                 icon={{
                                     name: "file-text-outline",
                                     color: color.primary,
