@@ -379,6 +379,8 @@ PODS:
     - SwiftyJSON (= 5.0)
   - RNCMaskedView (0.1.10):
     - React
+  - RNCPicker (1.6.5):
+    - React
   - RNFBApp (7.1.0):
     - Firebase/CoreOnly (~> 6.25.0)
     - React
@@ -470,6 +472,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - RNCharts (from `../node_modules/react-native-charts-wrapper`)
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
+  - "RNCPicker (from `../node_modules/@react-native-community/picker`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBMLVision (from `../node_modules/@react-native-firebase/ml-vision`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
@@ -600,6 +603,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-charts-wrapper"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
+  RNCPicker:
+    :path: "../node_modules/@react-native-community/picker"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBMLVision:
@@ -705,6 +710,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
   RNCharts: d364ca2085e24edb9ee0390d3fb7209257daa44c
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
+  RNCPicker: 55b9b4240d0a9eba8733d02616775d4040de2e7d
   RNFBApp: 25a6476dfd7aac2bcbe984f569875bcea122895b
   RNFBMLVision: 18cbca535ccf3d07f4a031aa537cb9fb04125297
   RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
@@ -731,4 +737,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 8c843779aa226d5d83516d9847c88f32901fb7f7
 
-COCOAPODS: 1.9.2
+COCOAPODS: 1.9.3

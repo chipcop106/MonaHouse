@@ -1,3 +1,4 @@
+import { Alert } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage';
 import CreateDataContext from './CreateDataContext';
 import { loginAccount } from '../api/AccountAPI';
@@ -70,7 +71,7 @@ const signInLocalToken = (dispatch) => async () => {
         dispatch({ type: 'RESTORE_TOKEN', payload: { token } });
     } catch (err) {
         console.log('signInLocalToken err', err);
-        alert('Token da het han');
+        Alert.alert('Token da het han');
         dispatch({ type: 'SIGN_OUT'});
     }
 };

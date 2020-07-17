@@ -5,12 +5,15 @@ import React, {
     memo,
     useReducer,
 } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, 
+    
+    TouchableOpacity } from "react-native";
 import { Icon, Input } from "@ui-kitten/components";
 import CustomSelect from "~/components/common/CustomSelect";
 import { color, settings } from "~/config";
 import { Context as MotelContext } from "~/context/MotelContext";
 import { Context as RoomContext } from "~/context/RoomContext";
+import ModalizeSelect from "~/components/common/ModalizeSelect";
 // const initialState = {
 //     selectedMonthIndex: new IndexPath(0),
 //     selectedMotelIndex: new IndexPath(0),
@@ -35,6 +38,7 @@ const FilterHeader = ({
     onValueChange,
     yearFilter,
     initialState,
+    loading
 }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const [filterShow, setFilterShow] = useState(false);
@@ -46,10 +50,13 @@ const FilterHeader = ({
     } = state;
     const { state: motelState } = useContext(MotelContext);
 
-    const _onChange = (key, value) => {
-        dispatch({ type: "STATE_CHANGE", payload: { key, value } });
-    };
+    const _getSelectedIndex = (key) =>{
 
+        return index => {
+            console.log(key, index);
+            dispatch({ type: "STATE_CHANGE", payload: { key, value: index } });
+        }
+    }
     useEffect(() => {
         onValueChange(state);
     }, [selectedMotelIndex, selectedMonthIndex, selectedYearIndex]);
@@ -61,45 +68,73 @@ const FilterHeader = ({
                         styles.filter,
                         styles.firstFilter,
                         yearFilter && styles.fullWidth,
+                        {position: "relative"}
                     ]}
                 >
-                    <CustomSelect
+                    {/* <CustomSelect
+                        disabled={loading}
                         selectOptions={[
                             { MotelName: "Tất cả" },
                             ...motelState.listMotels,
                         ].map((motel) => motel.MotelName)}
-                        getSelectedIndex={(index) =>
-                            _onChange("selectedMotelIndex", index)
-                        }
+                        getSelectedIndex={_getSelectedIndex("selectedMotelIndex")}
                         selectedIndex={selectedMotelIndex}
                         icon="home"
-                    />
+                    /> */}
+                    <View style={[StyleSheet.absoluteFill]}>
+                        <ModalizeSelect 
+                            disabled={loading}
+                            onChange={_getSelectedIndex("selectedMotelIndex")}
+                            pickerData={["Tất cả",...motelState.listMotels.map(item => item.MotelName)]}
+                            selectedValue={"Tất cả"}
+                            leftIcon="home"
+                            disabled={loading}
+                        />
+                    </View>
                 </View>
                 <View
                     style={[
                         styles.filter,
                         styles.secondFilter,
                         yearFilter && { marginLeft: 0, marginRight: 5 },
+                        {position: "relative"}
                     ]}
                 >
-                    <CustomSelect
+                    {/* <CustomSelect
                         selectOptions={settings.monthLists}
-                        getSelectedIndex={(index) => {
-                            _onChange("selectedMonthIndex", index);
-                        }}
+                        getSelectedIndex={_getSelectedIndex("selectedMonthIndex")}
                         selectedIndex={selectedMonthIndex}
                         icon="calendar"
-                    />
+                        disabled={loading}
+                    /> */}
+                    <View style={[StyleSheet.absoluteFill]}>
+                        <ModalizeSelect 
+                            disabled={loading}
+                            onChange={_getSelectedIndex("selectedMonthIndex")}
+                            pickerData={settings.monthLists}
+                            selectedValue={settings.monthLists[selectedMonthIndex || 0]}
+                            leftIcon="calendar"
+                            disabled={loading}
+                        />
+                    </View>
+                    
                 </View>
                 {yearFilter && (
                     <View style={[styles.filter, styles.secondFilter]}>
-                        <CustomSelect
+                        {/* <CustomSelect
                             selectOptions={settings.yearLists}
-                            getSelectedIndex={(index) => {
-                                _onChange("selectedYearIndex", index);
-                            }}
+                            getSelectedIndex={_getSelectedIndex("selectedYearIndex")}
                             selectedIndex={selectedYearIndex}
                             icon="calendar"
+                            disabled={loading}
+                        /> */}
+                        <ModalizeSelect 
+                            disabled={loading}
+                            onChange={_getSelectedIndex("selectedYearIndex")}
+                            pickerData={settings.yearLists}
+                            selectedValue={settings.yearLists[selectedYearIndex || 0]}
+                            leftIcon="calendar"
+                            disabled={loading}
                         />
                     </View>
                 )}
@@ -119,12 +154,11 @@ const FilterHeader = ({
             {filterShow && (
                 <View style={styles.filterSearch}>
                     <Input
+                        editable={loading}
                         status="transparent"
                         placeholder="Tìm kiếm..."
                         value={searchValue}
-                        onChangeText={(value) => {
-                            _onChange("searchValue", value);
-                        }}
+                        onChangeText={_getSelectedIndex("searchValue")}
                         onEndEditing={() => onValueChange(state)}
                         onSubmitEditing={() => onValueChange(state)}
                         accessoryLeft={() => (
@@ -158,6 +192,7 @@ const styles = StyleSheet.create({
     filter: {
         flexGrow: 1,
         marginBottom: 10,
+        minHeight: 40
     },
     fullWidth: {
         width: "100%",

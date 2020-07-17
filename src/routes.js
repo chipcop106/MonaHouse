@@ -280,7 +280,7 @@ const BottomNavigator = () => {
     const {state: authState} = useContext(AuthContext);
     
     return (
-        <Host>
+        
             <BottomTab.Navigator
                 initialRouteName={authState.isNewPW ? 'SettingStack' : "Home"}
                 activeColor={color.primary}
@@ -380,7 +380,7 @@ const BottomNavigator = () => {
                     }}
                 />
             </BottomTab.Navigator>
-        </Host>
+       
     );
 };
 
@@ -434,6 +434,7 @@ const RootStack = () => {
     const { state } = useContext(AuthContext);
     return (
         <NavigationContainer ref={navigationRef}>
+            <Host>
             <Stack.Navigator
                 screenOptions={{ gestureEnabled: true }}
                 headerMode="none"
@@ -461,6 +462,7 @@ const RootStack = () => {
                     />
                 )}
             </Stack.Navigator>
+            </Host>
         </NavigationContainer>
     );
 };

@@ -47,7 +47,7 @@ const monthOptions = [
 const yearOptions = [];
 
 for (let i = currentYear - 5; i <= currentYear + 5; i++) {
-    yearOptions.push(i);
+    yearOptions.push(`${i}`);
 }
 
 export const settings = {

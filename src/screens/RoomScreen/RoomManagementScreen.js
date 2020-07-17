@@ -6,7 +6,9 @@ import React, {
     useEffect,
     useMemo,
 } from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Alert,
+    TouchableOpacity, ActivityIndicator, RefreshControl
+} from "react-native";
 import { Icon, Input, List, IndexPath, Text } from "@ui-kitten/components";
 
 import RoomCard from "~/components/RoomCard";
@@ -25,19 +27,33 @@ const RoomManagementScreen = (evaProps) => {
     const { state: motelState } = useContext(MotelContext);
     const { listRooms, filterStateDefault } = roomState;
     const { listMotels } = motelState;
-
-    const onFilterChange = async (filter) => {
+    //local screen state
+    const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        loadData();
+    },[])
+  
+    const loadData = async (filterList) => {
+        console.log('filterList', filterList);
+        setLoading(true);
         const {
             selectedMonthIndex,
             selectedMotelIndex,
             selectedYearIndex,
-        } = filter;
+        } = filterList || {
+            selectedMonthIndex: 0,
+            selectedMotelIndex: 0,
+            selectedYearIndex: 0,
+            searchValue: ""
+        };
+        
         try {
-            //console.log(listMotels);
+            // console.log(listMotels);
+            
             await getListRooms(
                 {
-                    motelid: listMotels[selectedMotelIndex.row - 1]?.ID ?? 0,
-                    month: selectedMonthIndex.row + 1,
+                    motelid: listMotels[selectedMotelIndex - 1]?.ID ?? 0,
+                    month: selectedMonthIndex + 1,
                     year: settings.yearLists[selectedYearIndex],
                 },
                 signOut
@@ -45,7 +61,16 @@ const RoomManagementScreen = (evaProps) => {
         } catch (error) {
             console.log(error);
         }
+        setLoading(false);
     };
+    const _onValueChange = (filterFormvalue) => {
+        
+        loadData(filterFormvalue);
+    }
+    
+    const _onRefresh = () =>{
+        loadData();
+    }
 
     const bsFee = createRef();
 
@@ -55,14 +80,24 @@ const RoomManagementScreen = (evaProps) => {
     return (
         <>
             <View style={styles.container}>
+                
                 <FilterHeader
-                    onValueChange={onFilterChange}
+                    onValueChange={_onValueChange}
                     initialState={filterStateDefault}
                     advanceFilter={true}
+                    loading={loading}
                 />
+
                 <View style={styles.contentContainer}>
                     <List
-                        keyExtractor={(room, index) => `${room.RoomID + index}`}
+                        refreshControl={
+                            <RefreshControl
+                              onRefresh={_onRefresh}
+                              refreshing={loading}
+                            />
+                        }
+                        
+                        keyExtractor={(room, index) => `${room.RoomID}-${index}`}
                         style={styles.listContainer}
                         contentContainerStyle={styles.contentCard}
                         data={listRooms}
@@ -73,7 +108,7 @@ const RoomManagementScreen = (evaProps) => {
                             />
                         )}
                     />
-                    <Portal>
+                    <Portal >
                         <Modalize
                             ref={bsFee}
                             closeOnOverlayTap={false}

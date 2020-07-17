@@ -10,6 +10,9 @@ import { color } from '~/config';
 import { Formik, useFormikContext } from 'formik';
 import { SignInData, SignInSchema } from './data/signinModal'
 import { InputValidate } from '~/components/common/InputValidate'
+import {getPhoneHelp} from '~/api/AccountAPI'
+
+
 const LoadingIndicator  = () => <ActivityIndicator color="#fff" />
 
 const SignInScreen = ({route}) => {
@@ -20,7 +23,21 @@ const SignInScreen = ({route}) => {
     navigation.setOptions({
         headerShown: false,
     })
-    
+    useEffect(()=>{
+        (async ()=>{
+            try {
+                const res = await getPhoneHelp();
+                if(res.Code === 1){
+                    setphoneNumber(res.Data.phone)
+                } else {
+                    Alert.alert('Thông báo', JSON.stringify(res));
+                }
+              
+            } catch (error) {
+                Alert.alert('Thông báo', error)
+            }
+        })()
+    },[])
     useEffect(() =>{
        
         if(!!authState?.errorMessage){
@@ -41,7 +58,7 @@ const SignInScreen = ({route}) => {
         navigation.navigate('SignUp', {from: 'Register'})
     }
     const onPressContact = () => {
-        if(phoneNumber){
+        if(!!phoneNumber){
             Linking.openURL(`tel:${phoneNumber}`)
         } else {
             Alert.alert('Thông báo', 'Chức năng đang trong quá trình xây dựng')
@@ -131,7 +148,6 @@ const SignInScreen = ({route}) => {
                     </Text>
                 </View>
                 <View style={styles.formGroup}>
-                    
                         <Button
                             style={styles.btnContact}
                             onPress={onPressContact}
@@ -169,7 +185,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         marginTop: 30,
         marginBottom: 10,
-        borderRadius: 15,
+        borderRadius: 5,
     },
     forgotPassTxt: {
         color: color.primary,
@@ -182,10 +198,10 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     btnLogin: {
-        borderRadius: 30
+        borderRadius: 5
     },
     btnContact: {
-        borderRadius: 30,
+        borderRadius: 5,
         paddingVertical: 15,
         backgroundColor: color.redColor,
         borderColor: color.redColor,

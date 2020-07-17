@@ -27,8 +27,8 @@ const RoomElectrictCollectAllScreen = () => {
             //console.log(listMotels);
             getListElectrict(
                 {
-                    motelid: listMotels[selectedMotelIndex.row - 1]?.ID ?? 0,
-                    month: selectedMonthIndex.row + 1,
+                    motelid: listMotels[selectedMotelIndex - 1]?.ID ?? 0,
+                    month: selectedMonthIndex + 1,
                     year: settings.yearLists[selectedYearIndex],
                     qsearch: `${searchValue}`,
                 },
@@ -52,6 +52,7 @@ const RoomElectrictCollectAllScreen = () => {
 
             <View style={styles.contentContainer}>
                 <List
+                    stickyHeaderIndices={[0]}
                     ListHeaderComponent={() => (
                         <View style={styles.linkCustom}>
                             <NavLink
@@ -65,7 +66,7 @@ const RoomElectrictCollectAllScreen = () => {
                             />
                         </View>
                     )}
-                    keyExtractor={(room, index) => `${room.RoomID + index}`}
+                    keyExtractor={(room, index) => `${room.RoomID} - ${index}`}
                     style={styles.listContainer}
                     contentContainerStyle={styles.contentCard}
                     data={listElectrictRooms}

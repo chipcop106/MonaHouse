@@ -5,8 +5,16 @@ const path = `/AccountApi`;
 
 
 export const getPhoneHelp = async () => {
-    let res = await instance.get(path + '/getphonehelp');
-    return res.data;
+    let data = '';
+    try {
+        const res = await instance.get(path + '/getphonehelp');
+        data = res.data
+        
+    } catch (error) {
+        data = error.message
+    }
+    return data;
+    
 }
 
 export const resetPassword = async (params) =>{

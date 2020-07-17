@@ -1,3 +1,6 @@
+import {
+    Alert
+} from 'react-native';
 import CreateDataContext from "~/context/CreateDataContext";
 import { getRoomsByMotelId } from "../api/MotelAPI";
 import { IndexPath } from "@ui-kitten/components";
@@ -48,6 +51,7 @@ const getListRooms = (dispatch) => async (
     },
     signOut
 ) => {
+
     try {
         const res = await getRoomsByMotelId({
             motelid,
@@ -58,13 +62,14 @@ const getListRooms = (dispatch) => async (
             status,
         });
         if (res.Code === 2) {
-            alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
+            Alert.alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
             if (signOut) signOut();
         }
         dispatch({ type: "GET_ROOM", payload: res.Data });
     } catch (error) {
-        alert(JSON.stringify(error));
+        Alert.alert(JSON.stringify(error));
     }
+
 };
 
 const getListElectrict = (dispatch) => async (
@@ -88,7 +93,8 @@ const getListElectrict = (dispatch) => async (
             status,
         });
         if (res.Code === 2) {
-            alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
+            
+            Alert.alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
             if (signOut) signOut();
         }
         dispatch({ type: "GET_ELECTRICT", payload: res.Data });
@@ -118,12 +124,13 @@ const getElectrictHistory = (dispatch) => async (
             status,
         });
         if (res.Code === 2) {
-            alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
+            
+            Alert.alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
             if (signOut) signOut();
         }
         dispatch({ type: "GET_ELECTRICT_HISTORY", payload: res.Data });
     } catch (error) {
-        alert(JSON.stringify(error));
+        Alert.alert(JSON.stringify(error));
     }
 };
 
@@ -141,9 +148,9 @@ export const { Context, Provider } = CreateDataContext(
     },
     {
         filterStateDefault: {
-            selectedMonthIndex: new IndexPath(0),
-            selectedMotelIndex: new IndexPath(0),
-            selectedYearIndex: new IndexPath(0),
+            selectedMonthIndex: 0,
+            selectedMotelIndex: 0,
+            selectedYearIndex: 0,
             searchValue: "",
         },
         listRooms: [],
