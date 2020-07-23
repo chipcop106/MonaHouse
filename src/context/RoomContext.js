@@ -95,14 +95,11 @@ const getListRooms = (dispatch) => async (
             sortby,
             status,
         });
-<<<<<<< HEAD
         if (res.Code === 2) {
             Alert.alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
             if (signOut) signOut();
         }
-=======
         res.Code !== 1 && errorHandle(res.Code, { signOut });
->>>>>>> RoomManager
         dispatch({ type: "GET_ROOM", payload: res.Data });
     } catch (error) {
         Alert.alert(JSON.stringify(error));
@@ -130,15 +127,12 @@ const getListElectrict = (dispatch) => async (
             sortby,
             status,
         });
-<<<<<<< HEAD
         if (res.Code === 2) {
             
             Alert.alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
             if (signOut) signOut();
         }
-=======
         res.Code !== 1 && errorHandle(res.Code, { signOut });
->>>>>>> RoomManager
         dispatch({ type: "GET_ELECTRICT", payload: res.Data });
     } catch (error) {
         alert(JSON.stringify(error.message));
@@ -165,15 +159,12 @@ const getElectrictHistory = (dispatch) => async (
             sortby,
             status,
         });
-<<<<<<< HEAD
         if (res.Code === 2) {
             
             Alert.alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
             if (signOut) signOut();
         }
-=======
         res.Code !== 1 && errorHandle(res.Code, { signOut });
->>>>>>> RoomManager
         dispatch({ type: "GET_ELECTRICT_HISTORY", payload: res.Data });
     } catch (error) {
         Alert.alert(JSON.stringify(error));
@@ -293,15 +284,12 @@ export const { Context, Provider } = CreateDataContext(
         deleteRoom,
     },
     {
-<<<<<<< HEAD
         filterStateDefault: {
             selectedMonthIndex: 0,
             selectedMotelIndex: 0,
             selectedYearIndex: 0,
             searchValue: "",
         },
-=======
->>>>>>> RoomManager
         listRooms: [],
         listElectrictRooms: [],
         listElectrictHistory: [],

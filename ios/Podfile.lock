@@ -377,15 +377,10 @@ PODS:
     - SwiftyJSON (= 5.0)
   - RNCMaskedView (0.1.10):
     - React
-<<<<<<< HEAD
   - RNCPicker (1.6.5):
     - React
   - RNFBApp (7.1.0):
     - Firebase/CoreOnly (~> 6.25.0)
-=======
-  - RNFBApp (7.0.1):
-    - Firebase/CoreOnly (~> 6.13.0)
->>>>>>> RoomManager
     - React
   - RNFBMLVision (7.0.1):
     - Firebase/MLVision (~> 6.13.0)
@@ -749,8 +744,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 8c843779aa226d5d83516d9847c88f32901fb7f7
 
-<<<<<<< HEAD
 COCOAPODS: 1.9.3
-=======
-COCOAPODS: 1.9.1
->>>>>>> RoomManager

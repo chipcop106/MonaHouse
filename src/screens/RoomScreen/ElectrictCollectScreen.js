@@ -1,40 +1,21 @@
-<<<<<<< HEAD
 import React, { useReducer, useEffect, useState } from "react";
 import { StyleSheet, View, ScrollView, 
     Alert, ActivityIndicator,
     TextInput
 } from "react-native";
-=======
-import React, { useReducer, useEffect, useContext } from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
->>>>>>> RoomManager
 import { Text, Input, Button, Icon } from "@ui-kitten/components";
 import UserInfo from "~/components/UserInfo";
 import IncludeElectrictWater from "~/components/IncludeElectrictWater";
 import { color, sizes } from "~/config";
 import gbStyle from "~/GlobalStyleSheet";
-<<<<<<< HEAD
 import { getRoomById, updateWaterElectric } from "~/api/MotelAPI";
-=======
-import { getRoomById } from "~/api/MotelAPI";
-import TextField from "~/components/common/TextField";
-import { Context as RoomContext } from "~/context/RoomContext";
-import { Context as AuthContext } from "~/context/AuthContext";
->>>>>>> RoomManager
 const initialState = {
     electrictNumber: "",
     electrictImage: null,
     waterNumber: "",
     waterImage: null,
-<<<<<<< HEAD
     oldElectrict: "",
     oldWater: "",
-=======
-    oldElectrict: "323232",
-    oldWater: "232323",
-    waterPrice: "5000",
-    electrictPrice: "5000",
->>>>>>> RoomManager
 };
 
 const reducer = (prevstate, action) => {
@@ -49,18 +30,11 @@ const reducer = (prevstate, action) => {
             return prevstate;
     }
 };
-<<<<<<< HEAD
 const renderZero = num => {
     if(num > 9) return `${num}`;
     return `0${num}`
 }
 const ElectrictCollectScreen = ({ route }, month) => {
-=======
-
-const ElectrictCollectScreen = ({ navigation, route }) => {
-    const { updateElectrict } = useContext(RoomContext);
-    const { signOut } = useContext(AuthContext);
->>>>>>> RoomManager
     const [state, dispatch] = useReducer(reducer, initialState);
     const roomId = route.params?.roomId ?? null;
     // const { renter, room, electric, water } = state;
@@ -68,20 +42,6 @@ const ElectrictCollectScreen = ({ navigation, route }) => {
 
     const onChangeValue = (newState) => {
         dispatch({ type: "STATE_CHANGE", payload: { newState } });
-    };
-
-    const _onSubmit = async () => {
-        const params = {
-            roomid: roomId,
-            renterid: renter.renter.ID,
-            month: new Date().getMonth() + 1,
-            year: new Date().getFullYear(),
-            electrict: parseInt(state.electrictNumber),
-            imgelectrict: state.electrictImage || "",
-            water: parseInt(state.waterNumber),
-            imgwater: state.waterImage || "",
-        };
-        await updateElectrict(params, { signOut, navigation });
     };
 
     useEffect(() => {
@@ -147,21 +107,19 @@ const ElectrictCollectScreen = ({ navigation, route }) => {
                             <Text
                                 status="primary"
                                 category="h5"
-<<<<<<< HEAD
                                 style={{ marginBottom: 5 }}
                                 disabled={loading}
-=======
-                                style={{ marginBottom: 15 }}
->>>>>>> RoomManager
                             >
                                 {state.room && state.room.NameRoom
                                     ? state.room.NameRoom
                                     : loading && "Đang tải..."}
                             </Text>
-
+                            <Text style={gbStyle.mBottom15}>
+                                Điện nước tháng 04
+                            </Text>
                             <View style={styles.formWrap}>
                                 <View style={[styles.formRow, styles.halfCol]}>
-                                    <TextField
+                                    <Input
                                         textStyle={styles.textInput}
                                         label="Số điện cũ"
                                         placeholder={'0'}
@@ -172,7 +130,7 @@ const ElectrictCollectScreen = ({ navigation, route }) => {
                                     />
                                 </View>
                                 <View style={[styles.formRow, styles.halfCol]}>
-                                    <TextField
+                                    <Input
                                         textStyle={styles.textInput}
                                         label="Số nước cũ"
                                         placeholder="0"
@@ -187,19 +145,12 @@ const ElectrictCollectScreen = ({ navigation, route }) => {
                                     initialState={initialState}
                                     roomData={state.room}
                                     handleValueChange={onChangeValue}
-<<<<<<< HEAD
                                     waterTitle="Nước tháng này"
                                     electrictTitle="Điện tháng này"
                                 />}
-=======
-                                    waterTitle="Số nước mới"
-                                    electrictTitle="Số điện mới"
-                                />
->>>>>>> RoomManager
                             </View>
                         </View>
                         <Button
-                            onPress={_onSubmit}
                             accessoryLeft={() => (
                                 <Icon
                                     name="sync"
