@@ -1,8 +1,8 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
-
+import {settings} from '~/config'
 const apiConfig = {
-    baseUrl: `https://app.mona.house/api`,
+    baseUrl: `${settings.hostURL}/api`,
 }
 
 export const getAccessToken = async () =>{

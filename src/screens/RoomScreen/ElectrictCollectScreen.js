@@ -1,18 +1,21 @@
-import React, { useReducer, useEffect } from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
+import React, { useReducer, useEffect, useState } from "react";
+import { StyleSheet, View, ScrollView, 
+    Alert, ActivityIndicator,
+    TextInput
+} from "react-native";
 import { Text, Input, Button, Icon } from "@ui-kitten/components";
 import UserInfo from "~/components/UserInfo";
 import IncludeElectrictWater from "~/components/IncludeElectrictWater";
 import { color, sizes } from "~/config";
 import gbStyle from "~/GlobalStyleSheet";
-import { getRoomById } from "~/api/MotelAPI";
+import { getRoomById, updateWaterElectric } from "~/api/MotelAPI";
 const initialState = {
     electrictNumber: "",
     electrictImage: null,
     waterNumber: "",
     waterImage: null,
-    oldElectrict: "323232",
-    oldWater: "232323",
+    oldElectrict: "",
+    oldWater: "",
 };
 
 const reducer = (prevstate, action) => {
@@ -27,51 +30,89 @@ const reducer = (prevstate, action) => {
             return prevstate;
     }
 };
-
+const renderZero = num => {
+    if(num > 9) return `${num}`;
+    return `0${num}`
+}
 const ElectrictCollectScreen = ({ route }, month) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const roomId = route.params?.roomId ?? null;
-    const { renter, room } = state;
+    // const { renter, room, electric, water } = state;
+    const [loading, setLoading] = useState(false);
 
     const onChangeValue = (newState) => {
         dispatch({ type: "STATE_CHANGE", payload: { newState } });
     };
 
     useEffect(() => {
-        const loadRoomInfo = async () => {
+        (async () => {
+       
             try {
                 const res = await getRoomById({ roomid: roomId });
+                console.log('getRoomById RES', res.Data);
                 dispatch({
                     type: "STATE_CHANGE",
                     payload: { newState: res.Data },
                 });
             } catch (err) {}
-        };
-        loadRoomInfo();
+        })()
     }, []);
-
     useEffect(() => {
-        console.log(state);
+        console.log('state change', state);
     }, [state]);
+    const _pressUpdate = async () => {
+        setLoading(true);
+        const {waterNumber, electrictNumber, waterImage, electrictImage} = state;
+        
+        const nowDate = new Date();
+        
+        try {
+            const res = await updateWaterElectric({
+                date: `${ renderZero(nowDate.getDate()) }/${ renderZero(nowDate.getMonth() + 1) }/${ nowDate.getFullYear() }`,
+                data: JSON.stringify([{RoomID: roomId,
+                    WaterNumber: waterNumber,
+                    WaterIMG: waterImage || 0, 
+                    ElectricNumber: electrictNumber,
+                    ElectricIMG: electrictImage || 0}])
+
+            });
+            
+            if(res.Code === 1){
+                Alert.alert('Thành công!!', 'Số điện nước đã được cập nhật')
+            } else {
+                throw res;
+            }
+
+        } catch (error) {
+
+            setLoading(false);
+            Alert.alert('Oop!!', JSON.stringify(error))
+        }
+        setLoading(false);
+        // electrictNumber, waterNumber
+    }
     return (
         <>
             <ScrollView>
                 <View style={styles.container}>
-                    <UserInfo
-                        name={renter?.renter.FullName ?? "Đang tải..."}
-                        phone={renter?.renter.Phone ?? "Đang tải"}
-                        avatar={renter?.renter.LinkIMG ?? null}
-                    />
+                    {
+                       state.renter?.renter.FullName && <UserInfo
+                            name={state.renter?.renter.FullName ?? "Đang tải..."}
+                            phone={state.renter?.renter.Phone ?? "Đang tải"}
+                            avatar={state.renter?.renter.LinkIMG ?? null}
+                        />
+                    }
                     <View style={styles.mainWrap}>
                         <View style={styles.section}>
                             <Text
                                 status="primary"
                                 category="h5"
                                 style={{ marginBottom: 5 }}
+                                disabled={loading}
                             >
-                                {room && room.NameRoom
-                                    ? room.NameRoom
-                                    : "Đang tải..."}
+                                {state.room && state.room.NameRoom
+                                    ? state.room.NameRoom
+                                    : loading && "Đang tải..."}
                             </Text>
                             <Text style={gbStyle.mBottom15}>
                                 Điện nước tháng 04
@@ -81,11 +122,11 @@ const ElectrictCollectScreen = ({ route }, month) => {
                                     <Input
                                         textStyle={styles.textInput}
                                         label="Số điện cũ"
-                                        placeholder="0"
-                                        disabled
-                                        value={state.oldElectrict}
+                                        placeholder={'0'}
+                                        value={String(state.electric?.number || 0)}
                                         textContentType="none"
                                         keyboardType="numeric"
+                                        disabled
                                     />
                                 </View>
                                 <View style={[styles.formRow, styles.halfCol]}>
@@ -93,18 +134,20 @@ const ElectrictCollectScreen = ({ route }, month) => {
                                         textStyle={styles.textInput}
                                         label="Số nước cũ"
                                         placeholder="0"
-                                        disabled
-                                        value={state.oldWater}
+                                        value={String(state.water?.number || 0)}
                                         textContentType="none"
                                         keyboardType="numeric"
+                                        disabled
                                     />
                                 </View>
-                                <IncludeElectrictWater
+                                {!!!state.room && loading && <ActivityIndicator size="large" />}
+                                {state.room && <IncludeElectrictWater
                                     initialState={initialState}
+                                    roomData={state.room}
                                     handleValueChange={onChangeValue}
                                     waterTitle="Nước tháng này"
                                     electrictTitle="Điện tháng này"
-                                />
+                                />}
                             </View>
                         </View>
                         <Button
@@ -117,6 +160,8 @@ const ElectrictCollectScreen = ({ route }, month) => {
                             )}
                             size="large"
                             status="success"
+                            disabled={loading}
+                            onPress={_pressUpdate}
                         >
                             Cập nhật điện nước
                         </Button>
@@ -128,6 +173,10 @@ const ElectrictCollectScreen = ({ route }, month) => {
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingVertical: 15,
+    },
     mainWrap: {
         paddingHorizontal: 15,
     },
@@ -143,9 +192,7 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         marginBottom: 15,
     },
-    container: {
-        flex: 1,
-    },
+    
     formWrap: {
         marginHorizontal: "-1%",
         flexDirection: "row",

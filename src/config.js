@@ -59,4 +59,5 @@ export const settings = {
     maxRangeDatePicker: new Date(`01/01/${currentYear + 3}`),
     monthLists: monthOptions,
     yearLists: yearOptions,
+    hostURL: 'https://app.mona.house'
 };

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useLayoutEffect } from "react";
 import {
     StyleSheet, View,
 } from "react-native";
@@ -7,13 +7,49 @@ import {
 } from "@ui-kitten/components";
 import { color } from "../../config";
 import { Context as RoomGoOutContext } from "../../context/RoomGoOutContext";
-
+import { ReadyGoOut } from "~/api/RenterAPI";
+import { currencyFormat } from '~/utils'
 const paymentMethod = ['Tiền mặt', 'Chuyển khoản'];
 
 const GoOutCheckout = () => {
-    const { state, changeStateFormStep } = useContext(RoomGoOutContext);
+    const { state, changeStateFormStep, loadDataForm } = useContext(RoomGoOutContext);
     const stateGoOutInfo = state.dataForm[state.step];
     const firstRoomState = state.dataForm[0];
+
+    const loaddata = async () => {
+        try {
+
+            const res = await ReadyGoOut({ roomid: firstRoomState.roomID, renterid:  firstRoomState.renterID});
+            console.log('ReadyGoOut RES', res.Data);
+
+            // moneyLastMonth: '',
+            // depositMoney: '',
+            // depositType: '',
+            // checkoutDeposit: "",
+            // actuallyReceived: "",
+            // paymentTypeIndex: new IndexPath(0),
+
+            // await loadDataForm(res.Data);
+
+        } catch (err) {
+            console.log('ReadyGoOut loaddata err', err);
+        }
+    }
+    useEffect(() => {
+        console.log(state);
+        loaddata();
+    }, [])
+    useLayoutEffect(() => {
+       
+    }, [])
+    const renderPriceValue = (price, count) => {
+        
+        try {
+            return currencyFormat( parseInt(price) *  parseInt(count) );
+        } catch (error) {
+            return 0
+        }
+    }
     return (
         <>
             <View style={styles.mainWrap}>
@@ -22,11 +58,11 @@ const GoOutCheckout = () => {
                     <View style={[styles.formWrap]}>
                         <View style={[styles.formRow, styles.rowInfo]}>
                             <Text style={styles.rowLabel}>{firstRoomState.roomInfo.electrictNumber} kW X {firstRoomState.roomInfo.electrictPrice}</Text>
-                            <Text status="basic" style={[styles.rowValue]}>3.000.000</Text>
+                            <Text status="basic" style={[styles.rowValue]}>{renderPriceValue(firstRoomState.roomInfo.electrictNumber, firstRoomState.roomInfo.electrictPrice)}</Text>
                         </View>
                         <View style={[styles.formRow, styles.rowInfo]}>
                             <Text style={styles.rowLabel}>{firstRoomState.roomInfo.waterNumber} kW X {firstRoomState.roomInfo.waterPrice}</Text>
-                            <Text status="basic" style={[styles.rowValue]}>3.000.000</Text>
+                            <Text status="basic" style={[styles.rowValue]}>{renderPriceValue(firstRoomState.roomInfo.waterNumber, firstRoomState.roomInfo.waterPrice)}</Text>
                         </View>
                         <View style={[styles.formRow, styles.rowInfo]}>
                             <Text style={styles.rowLabel}>Tiền tháng trước:</Text>
@@ -36,10 +72,10 @@ const GoOutCheckout = () => {
                             <Text style={styles.rowLabel}>Tiền cọc:</Text>
                             <Text status="basic" style={[styles.rowValue]}>3.000.000</Text>
                         </View>
-                        <View style={[styles.formRow, styles.rowInfo]}>
+                        {/* <View style={[styles.formRow, styles.rowInfo]}>
                             <Text style={styles.rowLabel}>Loại cọc:</Text>
                             <Text status="basic" style={[styles.rowValue]}>Cọc giữ hạn tới hết hợp đồng</Text>
-                        </View>
+                        </View> */}
                         <Divider style={styles.divider} />
                         <View style={[styles.formRow, styles.rowInfo]}>
                             <Text style={styles.rowLabel}>Tổng thu:</Text>

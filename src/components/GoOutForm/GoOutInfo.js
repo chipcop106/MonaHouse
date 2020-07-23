@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useLayoutEffect } from "react";
 import {
     StyleSheet, View,
 } from "react-native";
@@ -14,6 +14,7 @@ import { Context as RoomGoOutContext } from "../../context/RoomGoOutContext";
 const GoOutInfo = () => {
     const { state, changeStateFormStep } = useContext(RoomGoOutContext);
     const stateGoOutInfo = state.dataForm[state.step];
+    
     return (
         <>
             <View style={styles.mainWrap}>
@@ -28,7 +29,7 @@ const GoOutInfo = () => {
                                     <Text>12 tháng</Text>
                                 </View>)}
                                 disabled
-                                textStyle={{color:color.redColor}}
+                                textStyle={{color: color.redColor}}
                                 onChangeText={(nextValue) => changeStateFormStep('constract', nextValue)}
                             />
                         </View>
@@ -56,10 +57,11 @@ const GoOutInfo = () => {
                         </View>
                         <IncludeElectrictWater
                             index={stateGoOutInfo.electrictIndex?.row ?? (new IndexPath(0).row)}
-                            waterTitle="Nước tháng này"
-                            electrictTitle="Điện tháng này"
+                            waterTitle="Số nước tháng này"
+                            electrictTitle="Số điện tháng này"
                             priceDisplay={false}
                             initialState={stateGoOutInfo.roomInfo}
+                            roomData={''}
                             handleValueChange={(stateValue) => changeStateFormStep('roomInfo',stateValue)}
                         />
                     </View>

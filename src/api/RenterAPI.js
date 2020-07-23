@@ -204,19 +204,37 @@ string imgwater
 
 */
 
-export const deleteService = async params => {
-    let result;
+export const ReadyGoOut = async params => {
+    // params:
+    // renterid:1074
+    // roomid:2385
+
     try {
         const token = await getAccessToken();
-        let res = await instance.get(`${path}/writewaterelectrict`, {
+        let res = await instance.get(`${path}/ReadyMoveOut`,{
             params:{
                 ...params,
                 token
             }
         });
-        result = res.data;
+        return res.data;
     } catch (error) {
-        result = error;
+        return error.message;
     }
-    return result;
+}
+
+export const GoOut = async params => {
+    // MoveOut(string token, int renterid, int roomid, int paid, int payment)
+    try {
+        const token = await getAccessToken();
+        let res = await instance.get(`${path}/MoveOut`,{
+            params:{
+                ...params,
+                token
+            }
+        });
+        return res.data;
+    } catch (error) {
+        return error.message;
+    }
 }

@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, memo } from 'react';
+import React, { useReducer, useEffect, memo, useLayoutEffect } from 'react';
 import {
   View, Image, StyleSheet, Text,
 } from 'react-native';
@@ -31,13 +31,26 @@ const reducer = (state, { field, value }) => ({
   [field]: value,
 });
 
-function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay, handleValueChange, initialState }) {
+function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay, handleValueChange, initialState, roomData }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const onChange = (key, value) => {
     dispatch({ field: key, value });
   };
-
+  useLayoutEffect(() => {
+    if(!!roomData){
+      try {
+        console.log('Electtric/Water roomData', roomData);
+        // dispatch
+        // waterPrice, electrictPrice
+        dispatch({ field: 'electrictPrice', value: `${roomData.PriceElectric}` });
+        dispatch({ field: 'waterPrice', value: `${roomData.PriceWater}` });
+      } catch (error) {
+        console.log('roomData error', error);
+      }
+    }
+      
+  }, [])
   useEffect(() => {
     handleValueChange(state);
   }, [state]);
@@ -53,10 +66,10 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
         mediaType: 'photo',
       };
       ImagePicker.openPicker(options).then((images) => {
-        dispatch({ field: key, value:images });
+        dispatch({ field: key, value: images });
       });
     } catch (error) {
-      
+
     }
   };
 
@@ -69,7 +82,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
               textStyle={styles.textInput}
               label={electrictTitle}
               placeholder="0"
-              value={state.electrictNumber}
+              value={String(state.electrictNumber)}
               onChangeText={(nextValue) => onChange('electrictNumber', nextValue)}
               textContentType="none"
               keyboardType="numeric"
@@ -80,7 +93,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
               textStyle={styles.textInput}
               label={waterTitle}
               placeholder="0"
-              value={state.waterNumber}
+              value={String(state.waterNumber)}
               onChangeText={(nextValue) => onChange('waterNumber', nextValue)}
               textContentType="none"
               keyboardType="numeric"
@@ -88,37 +101,37 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
           </View>
           {priceDisplay && (
             <>
-     <View style={[styles.formRow, styles.halfCol]}>
-            <Input
-              textStyle={styles.textInput}
-              label="Giá điện / kW"
-              placeholder="0"
-              value={state.electrictPrice}
-              onChangeText={(nextValue) => onChange('electrictPrice', nextValue)}
-              textContentType="none"
-              keyboardType="numeric"
-            />
-          </View>
-          <View style={[styles.formRow, styles.halfCol]}>
-            <Input
-              textStyle={styles.textInput}
-              label="Giá nước / m3"
-              placeholder="0"
-              value={state.waterPrice}
-              onChangeText={(nextValue) => onChange('waterPrice', nextValue)}
-              textContentType="none"
-              keyboardType="numeric"
-            />
-          </View>
-          </>
+              <View style={[styles.formRow, styles.halfCol]}>
+                <Input
+                  textStyle={styles.textInput}
+                  label="Giá điện / kW"
+                  placeholder="0"
+                  value={state.electrictPrice}
+                  onChangeText={(nextValue) => onChange('electrictPrice', nextValue)}
+                  textContentType="none"
+                  keyboardType="numeric"
+                />
+              </View>
+              <View style={[styles.formRow, styles.halfCol]}>
+                <Input
+                  textStyle={styles.textInput}
+                  label="Giá nước / m3"
+                  placeholder="0"
+                  value={state.waterPrice}
+                  onChangeText={(nextValue) => onChange('waterPrice', nextValue)}
+                  textContentType="none"
+                  keyboardType="numeric"
+                />
+              </View>
+            </>
           )}
-     
+
           <View style={[styles.formRow, styles.halfCol]}>
-            {state.electrictImage && (
-            <Image
-              source={{ uri: state.electrictImage.path }}
-              style={[styles.imagePreview]}
-            />
+            {!!state.electrictImage && (
+              <Image
+                source={{ uri: state.electrictImage.path ||  state.electrictImage }}
+                style={[styles.imagePreview]}
+              />
             )}
             <Button
               onPress={() => handleChoosePhoto('electrictImage')}
@@ -128,11 +141,11 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
             </Button>
           </View>
           <View style={[styles.formRow, styles.halfCol]}>
-            {state.waterImage && (
-            <Image
-              source={{ uri: state.waterImage.path }}
-              style={[styles.imagePreview]}
-            />
+            {!!state.waterImage && (
+              <Image
+                source={{ uri: state.waterImage.path || state.waterImage}}
+                style={[styles.imagePreview]}
+              />
             )}
             <Button
               onPress={() => handleChoosePhoto('waterImage')}
@@ -209,10 +222,10 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
 
             <View style={[styles.formRow]}>
               {state.waterImage && (
-              <Image
-                source={{ uri: state.waterImage.path }}
-                style={[styles.imagePreview]}
-              />
+                <Image
+                  source={{ uri: state.waterImage.path || state.waterImage }}
+                  style={[styles.imagePreview]}
+                />
               )}
               <Button
                 onPress={() => handleChoosePhoto('waterImage')}
@@ -264,10 +277,10 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
 
             <View style={[styles.formRow]}>
               {state.electrictImage && (
-              <Image
-                source={{ uri: state.electrictImage.path }}
-                style={[styles.imagePreview]}
-              />
+                <Image
+                  source={{ uri: state.electrictImage.path ||  state.electrictImage}}
+                  style={[styles.imagePreview]}
+                />
               )}
               <Button
                 onPress={() => handleChoosePhoto('electrictImage')}

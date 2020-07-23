@@ -1,12 +1,17 @@
 import React, { useContext, useLayoutEffect, useState, useEffect } from "react";
-import { StyleSheet, View, TouchableOpacity, ScrollView, Linking } from "react-native";
+import { StyleSheet, View, TouchableOpacity, ScrollView, Linking, ActivityIndicator } from "react-native";
 import { Text, Layout, Button, Icon, Avatar } from '@ui-kitten/components';
+import { useNavigation, useRoute } from "@react-navigation/native";
 import GoOutInfo from "../../components/GoOutForm/GoOutInfo";
 import GoOutCheckout from "../../components/GoOutForm/GoOutCheckout";
 import { Context as RoomGoOutContext } from '../../context/RoomGoOutContext'
 import { sizes, color } from '../../config'
 import AsyncStorage from '@react-native-community/async-storage'
 import UserInfo from '~/components/UserInfo';
+import { getRoomById } from "~/api/MotelAPI";
+
+
+
 const titleHeader = ["Thông tin phòng, ki ốt", "Thông tin thanh toán"];
 
 const RenderForm = () => {
@@ -34,15 +39,21 @@ const RenderForm = () => {
 };
 
 const RoomGoOutScreen = ({ navigation }) => {
-    const { state: RoomGoOutState, changeStepForm, clearState } = useContext(RoomGoOutContext);
-    const [userInfo, setUserInfo] = useState({})
-
-    const loadUserInfo = async () => {
+    const { state: RoomGoOutState, changeStepForm, clearState, loadDataForm } = useContext(RoomGoOutContext);
+    const route = useRoute();
+    const [userInfo, setUserInfo] = useState({});
+    const [loading, setLoading] = useState(false);
+    const loaddata = async () => {
         try {
-            const userData = await AsyncStorage.getItem('userInfo');
-            setUserInfo(JSON.parse(userData));
-        } catch(err) {
-            console.log(err);
+            const res = await getRoomById({ roomid: route.params.roomId });
+            console.log('getRoomById RES', res.Data);
+            setUserInfo({
+                ...res.Data.renter.renter
+            })
+            await loadDataForm(res.Data);
+
+        } catch (err) {
+            console.log('RoomGoOutScreen loaddata err', err);
         }
     }
 
@@ -62,7 +73,7 @@ const RoomGoOutScreen = ({ navigation }) => {
     }, [navigation, RoomGoOutState]);
 
     useEffect(() => {
-        loadUserInfo();
+        loaddata();
     }, [])
 
     const sendFormData = () =>{
@@ -74,7 +85,7 @@ const RoomGoOutScreen = ({ navigation }) => {
     return (
         <Layout style={styles.container} level="3">
             <ScrollView>
-            {userInfo ? (<UserInfo avatar={userInfo.Avatar} name={userInfo.FullName} phone={userInfo.Phone}/>) : <Text>Loading user info...</Text>}
+            {userInfo ? (<UserInfo avatar={userInfo.Avatar} name={userInfo.FullName} phone={userInfo.Phone}/>) : <Text>Đang tải dữ liệu...</Text>}
                 <RenderForm />
                 <View
                     style={styles.mainWrap}
@@ -82,8 +93,8 @@ const RoomGoOutScreen = ({ navigation }) => {
                     {
                         RoomGoOutState.step < 1 ? (
                             <Button
-                                onPress={() => changeStepForm(1)}
-                                accessoryRight={() => (
+                                onPress={() => changeStepForm(1, {...RoomGoOutState.dataForm, roomId: route.params.roomId})}
+                                accessoryRight={RoomGoOutState.isLoading ? null : () => (
                                     <Icon
                                         name="arrow-right"
                                         fill={color.whiteColor}
@@ -93,7 +104,9 @@ const RoomGoOutScreen = ({ navigation }) => {
                                 size="large"
                                 status="danger"
                             >
-                                Xem phí dọn ra
+                                {
+                                    RoomGoOutState.isLoading ? <ActivityIndicator color="#fff" size="small" /> : `Xem phí dọn ra`
+                                }
                             </Button>
                         )
                             : (

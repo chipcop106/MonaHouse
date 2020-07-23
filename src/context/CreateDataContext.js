@@ -8,7 +8,7 @@ export default (reducer, actions, initialState) => {
     // actions {action1, action2}
     const boundActions = {};
     for (let key in actions) {
-      boundActions[key] = actions[key](dispatch);
+      boundActions[key] = actions[key](dispatch, state);
     }
     
     return (

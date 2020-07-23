@@ -67,11 +67,12 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
 
 const renderItemFooter = (footerProps, roomInfo, navigation) => {
   const { item } = roomInfo;
+  
   return (
 
     <View style={styles.footerAction}>
       <Button
-        onPress={() => navigation.navigate('RoomGoIn', { id: '1' })}
+        onPress={() => navigation.navigate('RoomGoIn', { roomId: item.RoomID })}
         style={styles.actionButton}
         appearance="outline"
         status="primary"
@@ -82,7 +83,7 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
         Dọn vào
           </Button>
       <Button
-        onPress={() => navigation.navigate('RoomGoOut', { id: '1' })}
+        onPress={() => navigation.navigate('RoomGoOut', { roomId: item.RoomID })}
         style={styles.actionButton}
         appearance="outline"
         status="danger"
@@ -93,7 +94,7 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
         Dọn ra
           </Button>
       <Button
-        onPress={() => navigation.navigate('MoneyCollect', { id: '1' })}
+        onPress={() => navigation.navigate('MoneyCollect', { roomId: item.RoomID })}
         style={styles.actionButton}
         appearance="outline"
         status="success"

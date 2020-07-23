@@ -171,3 +171,19 @@ export const getOptionsSortRoom = async () => {
         return error.message;
     }
 }
+export const updateWaterElectric = async params => {
+    try {
+        const token = await getAccessToken();
+        let res = await instance.get(`${path}/recordWaterElectric`,{
+            params:{
+                ...params,
+                token
+            }
+        });
+        return res.data;
+    } catch (error) {
+        return error.message;
+    }
+}
+
+
