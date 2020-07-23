@@ -13,7 +13,6 @@ import { getRoomById } from "~/api/MotelAPI";
 
 
 const titleHeader = ["Thông tin phòng, ki ốt", "Thông tin thanh toán"];
-import { getRoomById } from "~/api/MotelAPI";
 const RenderForm = () => {
     const {
         state: RoomGoOutState,
@@ -95,7 +94,7 @@ const RoomGoOutScreen = ({ navigation }) => {
     return (
         <Layout style={styles.container} level="3">
             <ScrollView>
-            {userInfo ? (<UserInfo avatar={userInfo.Avatar} name={userInfo.FullName} phone={userInfo.Phone}/>) : <Text>Đang tải dữ liệu...</Text>}
+            {!!userInfo ? (<UserInfo avatar={userInfo.Avatar} name={userInfo.FullName} phone={userInfo.Phone}/>) : <Text>Đang tải dữ liệu...</Text>}
                 <RenderForm />
                 <View
                     style={styles.mainWrap}

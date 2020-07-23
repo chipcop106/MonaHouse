@@ -11,9 +11,6 @@ import {
 
 import { updateElectrictWater } from "~/api/RenterAPI";
 
-import { IndexPath } from "@ui-kitten/components";
-import { Alert } from "react-native";
-
 const currentTime = new Date();
 const currentMonth = currentTime.getMonth() + 1;
 const currentYear = currentTime.getFullYear();

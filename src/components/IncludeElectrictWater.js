@@ -99,14 +99,14 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
               keyboardType="numeric"
             />
           </View>
-          {priceDisplay && (
+          {!!priceDisplay && (
             <>
               <View style={[styles.formRow, styles.halfCol]}>
                 <Input
                   textStyle={styles.textInput}
                   label="Giá điện / kW"
                   placeholder="0"
-                  value={state.electrictPrice}
+                  value={String(state.electrictPrice)}
                   onChangeText={(nextValue) => onChange('electrictPrice', nextValue)}
                   textContentType="none"
                   keyboardType="numeric"
@@ -117,7 +117,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                   textStyle={styles.textInput}
                   label="Giá nước / m3"
                   placeholder="0"
-                  value={state.waterPrice}
+                  value={String(state.waterPrice)}
                   onChangeText={(nextValue) => onChange('waterPrice', nextValue)}
                   textContentType="none"
                   keyboardType="numeric"
@@ -163,7 +163,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
               textStyle={styles.textInput}
               label="Tiền trọn gói điện"
               placeholder="0"
-              value={state.electrictPriceInclude}
+              value={String(state.electrictPriceInclude)}
               onChangeText={(nextValue) => onChange('electrictPriceInclude', nextValue)}
               textContentType="none"
               keyboardType="numeric"
@@ -174,7 +174,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
               textStyle={styles.textInput}
               label="Tiền trọn gói nước"
               placeholder="0"
-              value={state.waterPriceInclude}
+              value={String(state.waterPriceInclude)}
               onChangeText={(nextValue) => onChange('waterPriceInclude', nextValue)}
               textContentType="none"
               keyboardType="numeric"
@@ -191,7 +191,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 textStyle={styles.textInput}
                 label="Tiền trọn gói điện"
                 placeholder="0"
-                value={state.electrictPriceInclude}
+                value={String(state.electrictPriceInclude)}
                 onChangeText={(nextValue) => onChange('electrictPriceInclude', nextValue)}
                 textContentType="none"
                 keyboardType="numeric"
@@ -202,7 +202,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 textStyle={styles.textInput}
                 label="Số nước"
                 placeholder="0"
-                value={state.waterNumber}
+                value={String(state.waterNumber)}
                 onChangeText={(nextValue) => onChange('waterNumber', nextValue)}
                 textContentType="none"
                 keyboardType="numeric"
@@ -213,7 +213,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 textStyle={styles.textInput}
                 label="Giá nước / m3"
                 placeholder="0"
-                value={state.waterPrice}
+                value={String(state.waterPrice)}
                 onChangeText={(nextValue) => onChange('waterPrice', nextValue)}
                 textContentType="none"
                 keyboardType="numeric"
@@ -221,7 +221,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
             </View>
 
             <View style={[styles.formRow]}>
-              {state.waterImage && (
+              {!!state.waterImage && (
                 <Image
                   source={{ uri: state.waterImage.path || state.waterImage }}
                   style={[styles.imagePreview]}
@@ -245,7 +245,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 textStyle={styles.textInput}
                 label="Tiền trọn gói nước"
                 placeholder="0"
-                value={state.waterPriceInclude}
+                value={String(state.waterPriceInclude)}
                 onChangeText={(nextValue) => onChange('waterPriceInclude', nextValue)}
                 textContentType="none"
                 keyboardType="numeric"
@@ -256,7 +256,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 textStyle={styles.textInput}
                 label="Số điện"
                 placeholder="0"
-                value={state.electrictNumber}
+                value={String(state.electrictNumber)}
                 onChangeText={(nextValue) => onChange('electrictNumber', nextValue)}
                 textContentType="none"
                 keyboardType="numeric"
@@ -268,7 +268,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 textStyle={styles.textInput}
                 label="Giá điện / kW"
                 placeholder="0"
-                value={state.electrictPrice}
+                value={String(state.electrictPrice)}
                 onChangeText={(nextValue) => onChange('electrictPrice', nextValue)}
                 textContentType="none"
                 keyboardType="numeric"

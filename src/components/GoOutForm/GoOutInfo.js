@@ -5,9 +5,6 @@ import {
 import {
     Input, Datepicker, Text, IndexPath
 } from "@ui-kitten/components";
-import React, { useContext, useState, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
-import { Input, Datepicker, Text, IndexPath } from "@ui-kitten/components";
 import IncludeElectrictWater from "../IncludeElectrictWater";
 import { sizes, color, settings } from "../../config";
 import { Context as RoomGoOutContext } from "../../context/RoomGoOutContext";
@@ -15,7 +12,9 @@ import { Context as RoomGoOutContext } from "../../context/RoomGoOutContext";
 const GoOutInfo = () => {
     const { state, changeStateFormStep } = useContext(RoomGoOutContext);
     const stateGoOutInfo = state.dataForm[state.step];
-    
+    useEffect(() => {
+       console.log(state);
+    }, [])
     return (
         <>
             <View style={styles.mainWrap}>
@@ -80,7 +79,7 @@ const GoOutInfo = () => {
                             index={
                                 state.roomInfo?.room.TypeEW
                                     ? parseInt(state.roomInfo?.room.TypeEW) - 1
-                                    : new IndexPath(3).row
+                                    : 0
                             }
                             waterTitle="Nước tháng này"
                             electrictTitle="Điện tháng này"

@@ -87,9 +87,9 @@ const RoomElectrictCollectAllScreen = () => {
         onFilterChange();
     }
 
-    const onFilterChange = async (filter) => {
-        updateState("filterState", filter);
-    };
+    // const onFilterChange = async (filter) => {
+    //     updateState("filterState", filter);
+    // };
 
     const onChangeRoomInfo = (state) => {};
 
