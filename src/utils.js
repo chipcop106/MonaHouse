@@ -1,3 +1,7 @@
+import moment from "moment";
+import "moment/min/locales";
+moment.locale("vi");
+
 export default class Utils {
     getDaysInMonth(month, year) {
         const date = new Date(Date.UTC(year, month, 1));
@@ -167,4 +171,14 @@ export const filterDuplicateArr = (arr, key) => {
         }
     }, []);
     return filteredArr;
+};
+
+export const formatDate = () => {
+    function formatDateToString(date) {
+        return moment(date).format("DD-MM-YYYY");
+    }
+    function formatStringToDate(strDate) {
+        return moment(strDate, "DD-MM-YYYY");
+    }
+    return { formatDateToString, formatStringToDate };
 };

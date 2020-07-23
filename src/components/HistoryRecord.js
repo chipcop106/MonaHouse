@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         flexGrow: 1,
         paddingVertical: 10,
+        paddingHorizontal: 15,
         shadowColor: "rgba(0,0,0,.35)",
         shadowOffset: {
             width: 0,
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
     },
     datetime: {
         textAlign: "center",
-        paddingHorizontal: 15,
+        paddingRight: 15,
     },
     date: {
         fontSize: 28,
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     },
     action: {
         justifyContent: "center",
-        paddingHorizontal: 15,
+        paddingLeft: 15,
     },
     slide: {
         width: "100%",
@@ -113,36 +114,69 @@ const styles = StyleSheet.create({
     },
 });
 
-const HistoryRecord = (props, { imageVisible }) => {
+const HistoryRecord = ({ style, renterInfo = false, title = "Phòng 01" }) => {
     const [visible, setVisible] = React.useState(false);
-
     return (
         <>
-            <View {...props}>
+            <View style={style}>
                 <View style={styles.wrapCard}>
-                    <View style={styles.datetime}>
-                        <Text style={styles.date}>05</Text>
-                        <Text style={styles.year}>2020</Text>
-                    </View>
+                    {!renterInfo && (
+                        <View style={styles.datetime}>
+                            <Text style={styles.date}>05</Text>
+                            <Text style={styles.year}>2020</Text>
+                        </View>
+                    )}
+
                     <View style={styles.info}>
-                        <Text style={styles.name}>Phòng 01</Text>
+                        <Text style={styles.name}>{title}</Text>
                         <View style={styles.metaWrap}>
-                            <View style={styles.meta}>
-                                <Icon
-                                    name="droplet-outline"
-                                    fill={color.darkColor}
-                                    style={styles.metaIcon}
-                                />
-                                <Text style={styles.textNumber}>8879909</Text>
-                            </View>
-                            <View style={styles.meta}>
-                                <Icon
-                                    name="flash-outline"
-                                    fill={color.darkColor}
-                                    style={styles.metaIcon}
-                                />
-                                <Text style={styles.textNumber}>3355542</Text>
-                            </View>
+                            {renterInfo ? (
+                                <>
+                                    <View style={styles.meta}>
+                                        <Icon
+                                            name="log-in-outline"
+                                            fill={color.darkColor}
+                                            style={styles.metaIcon}
+                                        />
+                                        <Text style={styles.textNumber}>
+                                            20/04/2020
+                                        </Text>
+                                    </View>
+                                    <View style={styles.meta}>
+                                        <Icon
+                                            name="log-out-outline"
+                                            fill={color.darkColor}
+                                            style={styles.metaIcon}
+                                        />
+                                        <Text style={styles.textNumber}>
+                                            20/06/2020
+                                        </Text>
+                                    </View>
+                                </>
+                            ) : (
+                                <>
+                                    <View style={styles.meta}>
+                                        <Icon
+                                            name="droplet-outline"
+                                            fill={color.darkColor}
+                                            style={styles.metaIcon}
+                                        />
+                                        <Text style={styles.textNumber}>
+                                            8879909
+                                        </Text>
+                                    </View>
+                                    <View style={styles.meta}>
+                                        <Icon
+                                            name="flash-outline"
+                                            fill={color.darkColor}
+                                            style={styles.metaIcon}
+                                        />
+                                        <Text style={styles.textNumber}>
+                                            3355542
+                                        </Text>
+                                    </View>
+                                </>
+                            )}
                         </View>
                     </View>
                     <TouchableOpacity

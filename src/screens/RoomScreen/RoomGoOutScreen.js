@@ -13,27 +13,29 @@ import { getRoomById } from "~/api/MotelAPI";
 
 
 const titleHeader = ["Thông tin phòng, ki ốt", "Thông tin thanh toán"];
-
+import { getRoomById } from "~/api/MotelAPI";
 const RenderForm = () => {
-    const { state: RoomGoOutState, changeStateFormStep, changeStepForm } = useContext(RoomGoOutContext);
+    const {
+        state: RoomGoOutState,
+        changeStateFormStep,
+        changeStepForm,
+    } = useContext(RoomGoOutContext);
     const { step, dataForm } = RoomGoOutState;
 
     return (
         <>
-            {step === 0
-                && (
-                    <GoOutInfo
-                        onChangeState={changeStateFormStep}
-                        initialState={dataForm[step]}
-                    />
-                )}
-            {step === 1
-                && (
-                    <GoOutCheckout
-                        onChangeState={changeStateFormStep}
-                        initialState={dataForm[step]}
-                    />
-                )}
+            {step === 0 && (
+                <GoOutInfo
+                    onChangeState={changeStateFormStep}
+                    initialState={dataForm[step]}
+                />
+            )}
+            {step === 1 && (
+                <GoOutCheckout
+                    onChangeState={changeStateFormStep}
+                    initialState={dataForm[step]}
+                />
+            )}
         </>
     );
 };
@@ -55,16 +57,24 @@ const RoomGoOutScreen = ({ navigation }) => {
         } catch (err) {
             console.log('RoomGoOutScreen loaddata err', err);
         }
-    }
+    };
 
     useLayoutEffect(() => {
         navigation.setOptions({
             headerLeft: () => (
                 <TouchableOpacity
                     style={styles.backButton}
-                    onPress={() => (RoomGoOutState.step === 0 ? navigation.pop() : changeStepForm(-1))}
+                    onPress={() =>
+                        RoomGoOutState.step === 0
+                            ? navigation.pop()
+                            : changeStepForm(-1)
+                    }
                 >
-                    <Icon name="arrow-back-outline" fill={color.primary} style={sizes.iconButtonSize} />
+                    <Icon
+                        name="arrow-back-outline"
+                        fill={color.primary}
+                        style={sizes.iconButtonSize}
+                    />
                     <Text style={styles.backButtonText}>Back</Text>
                 </TouchableOpacity>
             ),
@@ -76,11 +86,11 @@ const RoomGoOutScreen = ({ navigation }) => {
         loaddata();
     }, [])
 
-    const sendFormData = () =>{
+    const sendFormData = () => {
         alert(JSON.stringify(RoomGoOutState));
         navigation.pop();
         clearState();
-    }
+    };
 
     return (
         <Layout style={styles.container} level="3">
@@ -129,8 +139,8 @@ const RoomGoOutScreen = ({ navigation }) => {
                 </View>
             </ScrollView>
         </Layout>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     mainWrap: {
@@ -159,7 +169,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "700",
         marginBottom: 15,
-    }
+    },
 });
 
 export default RoomGoOutScreen;

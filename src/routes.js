@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
@@ -21,7 +21,7 @@ import {
     Provider as AuthProvider,
 } from "./context/AuthContext";
 
-import { color } from "./config";
+import { color, sizes } from "./config";
 import ElectrictCollectScreen from "./screens/RoomScreen/ElectrictCollectScreen";
 import MoneyCollectScreen from "./screens/RoomScreen/MoneyCollectScreen";
 import RoomManagementScreen from "./screens/RoomScreen/RoomManagementScreen";
@@ -31,9 +31,22 @@ import RoomGoInScreen from "./screens/RoomScreen/RoomGoInScreen";
 import RoomDetailScreen from "./screens/RoomScreen/RoomDetailScreen";
 import RoomElectrictCollectAllScreen from "~/screens/RoomScreen/RoomElectrictCollectAllScreen";
 import RoomMoneyCollectAllScreen from "~/screens/RoomScreen/RoomMoneyCollectAllScreen";
+import RoomDetailMoneyHistoryScreen from "~/screens/RoomScreen/RoomDetailMoneyHistoryScreen";
+import RoomDetailElectrictHistoryScreen from "~/screens/RoomScreen/RoomDetailElectrictHistoryScreen";
+import RoomDetailRentHistoryScreen from "~/screens/RoomScreen/RoomDetailRentHistoryScreen";
+import AddNewRoomScreen from "~/screens/RoomScreen/AddNewRoomScreen";
+import EditRoomScreen from "~/screens/RoomScreen/EditRoomScreen";
 import { Host } from "react-native-portalize";
 import ElectrictHistoryScreen from "~/screens/RoomScreen/ElectrictHistoryScreen";
 import MoneyHistoryScreen from "~/screens/RoomScreen/MoneyHistoryScreen";
+import SettingUserDetailScreen from "~/screens/SettingScreen/SettingUserDetailScreen";
+import SettingNotificationScreen from "~/screens/SettingScreen/SettingNotificationScreen";
+import SettingPremiumPackageScreen from "~/screens/SettingScreen/SettingPremiumPackageScreen";
+import SettingElectrictScreen from "~/screens/SettingScreen/SettingElectrictScreen";
+import SettingSMSScreen from "~/screens/SettingScreen/SettingSMSScreen";
+import SettingRoomScreen from "~/screens/SettingScreen/SettingRoomScreen";
+import SettingServiceScreen from "~/screens/SettingScreen/SettingServiceScreen";
+import SettingChangePasswordScreen from "~/screens/SettingScreen/SettingChangePasswordScreen";
 export const isMountedRef = React.createRef();
 
 export const navigationRef = React.createRef();
@@ -135,6 +148,83 @@ const HomeStack = () => {
     );
 };
 
+const RoomDetailStack = ({ navigation }) => {
+    const Stack = createStackNavigator();
+    return (
+        <Stack.Navigator screenOptions={headerOptions}>
+            <Stack.Screen
+                name="RoomDetail"
+                component={RoomDetailScreen}
+                options={{
+                    headerShown: true,
+                    title: "Chi tiết phòng",
+                    headerLeft: () => (
+                        <TouchableOpacity
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginLeft: 10,
+                            }}
+                            onPress={() => navigation.pop()}
+                        >
+                            <Icon
+                                name="arrow-back-outline"
+                                fill={color.primary}
+                                style={sizes.iconButtonSize}
+                            />
+                            <Text
+                                style={{
+                                    color: color.primary,
+                                    marginLeft: 5,
+                                    fontSize: 16,
+                                }}
+                            >
+                                Back
+                            </Text>
+                        </TouchableOpacity>
+                    ),
+                    inheritParams: ["roomId"],
+                }}
+            />
+
+            <Stack.Screen
+                name="EditRoom"
+                component={EditRoomScreen}
+                options={{
+                    headerShown: true,
+                    title: "Chỉnh sửa phòng",
+                }}
+            />
+            <Stack.Screen
+                name="Edit"
+                component={RoomDetailElectrictHistoryScreen}
+                options={{
+                    headerShown: true,
+                    title: "Lịch sử ghi điện | nước",
+                }}
+            />
+
+            <Stack.Screen
+                name="DetailMoneyHistory"
+                component={RoomDetailMoneyHistoryScreen}
+                options={{
+                    headerShown: true,
+                    title: "Lịch sử thanh toán",
+                }}
+            />
+
+            <Stack.Screen
+                name="RentHistory"
+                component={RoomDetailRentHistoryScreen}
+                options={{
+                    headerShown: true,
+                    title: "Lịch sử thuê phòng",
+                }}
+            />
+        </Stack.Navigator>
+    );
+};
+
 // Room stack
 const RoomStack = () => {
     const Stack = createStackNavigator();
@@ -162,6 +252,7 @@ const RoomStack = () => {
                     title: "Thu tiền",
                 }}
             />
+
             <Stack.Screen
                 name="RoomGoIn"
                 component={RoomGoInScreen}
@@ -176,12 +267,21 @@ const RoomStack = () => {
                     title: "Dọn ra",
                 }}
             />
+            <Stack.Screen
+                name="RoomDetailStack"
+                component={RoomDetailStack}
+                options={{
+                    headerShown: false,
+                    title: "Chi tiết phòng 01",
+                }}
+            />
 
             <Stack.Screen
-                name="RoomDetail"
-                component={RoomDetailScreen}
+                name="AddNewRoom"
+                component={AddNewRoomScreen}
                 options={{
-                    title: "Chi tiết phòng 01",
+                    headerShown: true,
+                    title: "Thêm phòng mới",
                 }}
             />
         </Stack.Navigator>
@@ -191,15 +291,7 @@ const RoomStack = () => {
 const SettingStack = () => {
     const Stack = createStackNavigator();
     return (
-        <Stack.Navigator
-            screenOptions={{
-                headerShow: true,
-                headerStyle: styles.headerStyle,
-                headerTitleStyle: {
-                    color: "#fff",
-                },
-            }}
-        >
+        <Stack.Navigator screenOptions={headerOptions}>
             <Stack.Screen
                 name="Setting"
                 component={SettingScreen}
@@ -217,6 +309,62 @@ const SettingStack = () => {
                 component={ForgotPass}
                 options={{
                     title: "ForgotPass"
+                }}
+            />
+            <Stack.Screen
+                name="SettingUserDetail"
+                component={SettingUserDetailScreen}
+                options={{
+                    title: "Tài khoản",
+                }}
+            />
+            <Stack.Screen
+                name="SettingPremiumPackage"
+                component={SettingPremiumPackageScreen}
+                options={{
+                    title: "Nâng cấp tài khoản",
+                }}
+            />
+            <Stack.Screen
+                name="SettingChangePassword"
+                component={SettingChangePasswordScreen}
+                options={{
+                    title: "Thay đổi mật khẩu",
+                }}
+            />
+            <Stack.Screen
+                name="SettingSMS"
+                component={SettingSMSScreen}
+                options={{
+                    title: "Cấu hình SMS",
+                }}
+            />
+            <Stack.Screen
+                name="SettingRoom"
+                component={SettingRoomScreen}
+                options={{
+                    title: "Cấu hình phòng",
+                }}
+            />
+            <Stack.Screen
+                name="SettingElectrict"
+                component={SettingElectrictScreen}
+                options={{
+                    title: "Cấu hình điện nước",
+                }}
+            />
+            <Stack.Screen
+                name="SettingService"
+                component={SettingServiceScreen}
+                options={{
+                    title: "Cấu hình tiện ích",
+                }}
+            />
+            <Stack.Screen
+                name="SettingNotification"
+                component={SettingNotificationScreen}
+                options={{
+                    title: "Cấu hình thông báo",
                 }}
             />
         </Stack.Navigator>
