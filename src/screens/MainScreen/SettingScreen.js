@@ -13,7 +13,7 @@ import LinearGradient from "react-native-linear-gradient";
 
 const SettingScreen = () => {
     const { state: authState, signOut , setIsNewPW } = useContext(authCt);
-    const navidation = useNavigation();
+    const navigation = useNavigation();
 	const route = useRoute();
 	React.useLayoutEffect(() => {
         if(authState.isNewPW){
@@ -57,7 +57,7 @@ const SettingScreen = () => {
         }
     );
     const onPressWithParrams = (key = "SettingStack", params = {}) => {
-        navidation.navigate(key, params);
+        navigation.navigate(key, params);
     };
 
     return (
@@ -410,6 +410,141 @@ const SettingScreen = () => {
     );
 };
 
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: color.darkColor,
+        flex: 1,
+    },
+    imagePreview: {
+        aspectRatio: 1,
+        height: 100,
+        marginTop: 0,
+        marginBottom: 5,
+        borderRadius: 4,
+        marginRight: 5,
+    },
+    itemWrap: {
+        backgroundColor: "rgba(65,63,98,1)",
+    },
+    itemInner: {
+        paddingHorizontal: 15,
+        minHeight: 50,
+        justifyContent: "space-between",
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    textColor: {
+        color: "#fff",
+    },
+    textSettingSize: {
+        fontSize: 16,
+    },
+    badge: {
+        paddingHorizontal: 5,
+        paddingVertical: 3,
+        backgroundColor: color.primary,
+        borderRadius: 4,
+        marginLeft: 5,
+    },
+
+    icon: {
+        width: 25,
+        height: 25,
+        marginRight: 10,
+    },
+    expiredDate: {
+        marginLeft: 5,
+    },
+    userInfo: {
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 15,
+        backgroundColor: "rgba(65,63,98,1)",
+    },
+    avatar: {
+        marginRight: 15,
+    },
+    image: {
+        width: 60,
+        height: 60,
+        borderRadius: 60 / 2,
+    },
+    info: {
+        flexGrow: 1,
+    },
+    metaWrap: {
+        flexDirection: "row",
+    },
+    meta: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    name: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginRight: 5,
+    },
+    linkCarret: {
+        width: 30,
+        height: 30,
+    },
+    caretWrap: {
+        paddingLeft: 15,
+        flexShrink: 0,
+    },
+    userName: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 10,
+    },
+    upgradeBtn: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 15,
+        position: "relative",
+    },
+    upgradeText: {
+        fontSize: 24,
+        color: color.darkColor,
+    },
+    upgradeIcon: {
+        width: 45,
+        height: 45,
+        transform: [{ rotate: "-45deg" }],
+        position: "absolute",
+        right: 30,
+    },
+    subTitle: {
+        paddingHorizontal: 15,
+        marginBottom: 15,
+        fontSize: 16,
+        color: color.lightWeight,
+        fontWeight: "600",
+        textTransform: "uppercase",
+    },
+    settingIcon: {
+        width: 35,
+        height: 35,
+    },
+    linkText: {
+        flexGrow: 1,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginLeft: 15,
+        borderBottomWidth: 0.5,
+        borderBottomColor: color.lightWeight,
+
+        paddingVertical: 15,
+    },
+    secWrap: {
+        marginBottom: 30,
+    },
+});
+
+export default SettingScreen;
+
 const DemoMLKitVision = () => {
     const { signOut } = useContext(authCt);
     const navidation = useNavigation();
@@ -568,141 +703,6 @@ const DemoMLKitVision = () => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: color.darkColor,
-        flex: 1,
-    },
-    imagePreview: {
-        aspectRatio: 1,
-        height: 100,
-        marginTop: 0,
-        marginBottom: 5,
-        borderRadius: 4,
-        marginRight: 5,
-    },
-    itemWrap: {
-        backgroundColor: "rgba(65,63,98,1)",
-    },
-    itemInner: {
-        paddingHorizontal: 15,
-        minHeight: 50,
-        justifyContent: "space-between",
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    textColor: {
-        color: "#fff",
-    },
-    textSettingSize: {
-        fontSize: 16,
-    },
-    badge: {
-        paddingHorizontal: 5,
-        paddingVertical: 3,
-        backgroundColor: color.primary,
-        borderRadius: 4,
-        marginLeft: 5,
-    },
-
-    icon: {
-        width: 25,
-        height: 25,
-        marginRight: 10,
-    },
-    expiredDate: {
-        marginLeft: 5,
-    },
-    userInfo: {
-        flexDirection: "row",
-        alignItems: "center",
-        padding: 15,
-        backgroundColor: "rgba(65,63,98,1)",
-    },
-    avatar: {
-        marginRight: 15,
-    },
-    image: {
-        width: 60,
-        height: 60,
-        borderRadius: 60 / 2,
-    },
-    info: {
-        flexGrow: 1,
-    },
-    metaWrap: {
-        flexDirection: "row",
-    },
-    meta: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    name: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginRight: 5,
-    },
-    linkCarret: {
-        width: 30,
-        height: 30,
-    },
-    caretWrap: {
-        paddingLeft: 15,
-        flexShrink: 0,
-    },
-    userName: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 10,
-    },
-    upgradeBtn: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 15,
-        position: "relative",
-    },
-    upgradeText: {
-        fontSize: 24,
-        color: color.darkColor,
-    },
-    upgradeIcon: {
-        width: 45,
-        height: 45,
-        transform: [{ rotate: "-45deg" }],
-        position: "absolute",
-        right: 30,
-    },
-    subTitle: {
-        paddingHorizontal: 15,
-        marginBottom: 15,
-        fontSize: 16,
-        color: color.lightWeight,
-        fontWeight: "600",
-        textTransform: "uppercase",
-    },
-    settingIcon: {
-        width: 35,
-        height: 35,
-    },
-    linkText: {
-        flexGrow: 1,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginLeft: 15,
-        borderBottomWidth: 0.5,
-        borderBottomColor: color.lightWeight,
-
-        paddingVertical: 15,
-    },
-    secWrap: {
-        marginBottom: 30,
-    },
-});
-
-export default SettingScreen;
 
 const processDocument = async (localPath) => {
     const processed = await vision().textRecognizerProcessImage(localPath);

@@ -41,7 +41,7 @@ const ElectrictHistoryScreen = () => {
                 contentContainerStyle={styles.contentCard}
                 style={styles.listContainer}
                 data={listElectrictHistory}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => `${item.id}`}
                 renderItem={() => <HistoryRecord style={styles.card} />}
                 style={styles.container}
             ></List>

@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0731D3BE24204D9B009CAE85 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0731D3BB24204D9B009CAE85 /* Expo.plist */; };
-		074F4BDE2432834300BDB9FE /* app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 07287ACD2432831900C893F0 /* app.bundle */; };
-		074F4BDF2432834300BDB9FE /* app.manifest in Resources */ = {isa = PBXBuildFile; fileRef = 07287ACC2432831900C893F0 /* app.manifest */; };
 		09EE1F4D2474DE670011803F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 09EE1F4C2474DE660011803F /* GoogleService-Info.plist */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
@@ -21,9 +18,6 @@
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
-		07287ACC2432831900C893F0 /* app.manifest */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = app.manifest; path = MonaHouse/Supporting/app.manifest; sourceTree = "<group>"; };
-		07287ACD2432831900C893F0 /* app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = app.bundle; path = MonaHouse/Supporting/app.bundle; sourceTree = "<group>"; };
-		0731D3BB24204D9B009CAE85 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Expo.plist; path = MonaHouse/Supporting/Expo.plist; sourceTree = "<group>"; };
 		09EE1F4C2474DE660011803F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0D2AC8C683A921378C9F1E26 /* Pods-MonaHouse.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MonaHouse.debug.xcconfig"; path = "Target Support Files/Pods-MonaHouse/Pods-MonaHouse.debug.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* MonaHouse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonaHouse.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -64,9 +58,6 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
-				0731D3BB24204D9B009CAE85 /* Expo.plist */,
-				07287ACD2432831900C893F0 /* app.bundle */,
-				07287ACC2432831900C893F0 /* app.manifest */,
 			);
 			name = MonaHouse;
 			sourceTree = "<group>";
@@ -158,7 +149,7 @@
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = R5V5U423CS;
+						DevelopmentTeam = 6939V9EDAU;
 						LastSwiftMigration = 1140;
 					};
 				};
@@ -186,9 +177,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				074F4BDE2432834300BDB9FE /* app.bundle in Resources */,
-				074F4BDF2432834300BDB9FE /* app.manifest in Resources */,
-				0731D3BE24204D9B009CAE85 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				09EE1F4D2474DE670011803F /* GoogleService-Info.plist in Resources */,
@@ -321,7 +309,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = R5V5U423CS;
+				DEVELOPMENT_TEAM = 6939V9EDAU;
 				INFOPLIST_FILE = MonaHouse/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
