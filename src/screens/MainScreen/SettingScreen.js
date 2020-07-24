@@ -13,7 +13,7 @@ import LinearGradient from "react-native-linear-gradient";
 
 const SettingScreen = () => {
     const { state: authState, signOut , setIsNewPW } = useContext(authCt);
-    const navidation = useNavigation();
+    const navigation = useNavigation();
 	const route = useRoute();
 	React.useLayoutEffect(() => {
         if(authState.isNewPW){
@@ -57,7 +57,7 @@ const SettingScreen = () => {
         }
     );
     const onPressWithParrams = (key = "SettingStack", params = {}) => {
-        navidation.navigate(key, params);
+        navigation.navigate(key, params);
     };
 
     return (
