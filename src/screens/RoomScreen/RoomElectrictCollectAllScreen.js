@@ -51,6 +51,9 @@ const RoomElectrictCollectAllScreen = () => {
     const { state: modelState } = useContext(MotelContext);
     const { listMotels } = modelState;
     const [loading, setLoading] = useState(false);
+    const updateState = (key, value) => {
+        dispatch({ type: "STATE_CHANGE", payload: { key, value } });
+    };
 
     const onFilterChange = async (filter) => {
         setLoading(true);

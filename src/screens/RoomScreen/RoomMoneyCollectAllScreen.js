@@ -14,9 +14,9 @@ const initialState = {
     isLoading: true,
     refreshing: false,
     filterState: {
-        selectedMonthIndex: new IndexPath(0),
-        selectedMotelIndex: new IndexPath(0),
-        selectedYearIndex: new IndexPath(0),
+        selectedMonthIndex: 0,
+        selectedMotelIndex: 0,
+        selectedYearIndex: 0,
         searchValue: "",
     },
 };
@@ -68,8 +68,8 @@ const RoomMoneyCollectAllScreen = () => {
         try {
             await getListElectrict(
                 {
-                    motelid: listMotels[selectedMotelIndex.row - 1]?.ID ?? 0,
-                    month: selectedMonthIndex.row + 1,
+                    motelid: listMotels[selectedMotelIndex - 1]?.ID ?? 0,
+                    month: selectedMonthIndex + 1,
                     year: settings.yearLists[selectedYearIndex],
                     qsearch: `${searchValue}`,
                 },
@@ -157,7 +157,7 @@ const RoomMoneyCollectAllScreen = () => {
                                 </View>
                             )}
                             keyExtractor={(room, index) =>
-                                `${room.RoomID + index}`
+                                `${room.RoomID}-${index}`
                             }
                             style={styles.listContainer}
                             contentContainerStyle={styles.contentCard}
