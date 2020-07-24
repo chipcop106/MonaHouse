@@ -1,6 +1,5 @@
 platform :ios, '10.0'
 
-require_relative '../node_modules/react-native-unimodules/cocoapods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 target 'MonaHouse' do
@@ -38,8 +37,6 @@ target 'MonaHouse' do
 
   # Other native modules
   pod 'RNCharts', :path => '../node_modules/react-native-charts-wrapper'
-  # Automatically detect installed unimodules
-  use_unimodules!
 
   # react-native-cli autolinking
   use_native_modules!
