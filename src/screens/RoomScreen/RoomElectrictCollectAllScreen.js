@@ -22,9 +22,9 @@ const initialState = {
     isLoading: true,
     refreshing: false,
     filterState: {
-        selectedMonthIndex: new IndexPath(0),
-        selectedMotelIndex: new IndexPath(0),
-        selectedYearIndex: new IndexPath(0),
+        selectedMonthIndex: 0,
+        selectedMotelIndex: 0,
+        selectedYearIndex: 0,
         searchValue: "",
     },
 };
@@ -86,7 +86,7 @@ const RoomElectrictCollectAllScreen = () => {
         setLoading(false);
     };
     const _onRefresh = () => {
-        onFilterChange();
+        onFilterChange(state.filterState);
     }
 
     // const onFilterChange = async (filter) => {
