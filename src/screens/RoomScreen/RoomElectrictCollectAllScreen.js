@@ -76,8 +76,10 @@ const RoomElectrictCollectAllScreen = () => {
                 },
                 signOut
             );
+            setLoading(false);
             updateState("isLoading", false);
         } catch (error) {
+            setLoading(false);
             updateState("isLoading", false);
             console.log(error);
         }
@@ -111,15 +113,18 @@ const RoomElectrictCollectAllScreen = () => {
             { cancelable: false }
         );
     };
-
+    const _onValueChange = (filterFormvalue) => {
+        
+        onFilterChange(filterFormvalue);
+    }
     useEffect(() => {
-        loadRoomApi({ loadingControl: true });
+       
     }, [state.filterState]);
 
     return (
         <View style={styles.container}>
             <FilterHeader
-                onValueChange={onFilterChange}
+                onValueChange={_onValueChange}
                 initialState={state.filterState}
                 advanceFilter={false}
                 yearFilter={true}

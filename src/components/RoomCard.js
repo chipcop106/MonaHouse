@@ -35,7 +35,12 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
       {...headerprops}
       style={styles.headerWrap}>
       <TouchableOpacity
-        onPress={() => navigation.navigate('RoomDetail')}
+        onPress={() => navigation.navigate('RoomDetailStack', {  
+          screen: "RoomDetail",
+          params: {
+              roomId: item.RoomID,
+          }, 
+        })}
       >
         <Text
           style={styles.roomName}
