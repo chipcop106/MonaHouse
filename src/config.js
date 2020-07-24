@@ -16,9 +16,14 @@ export const color = {
     transparent: "transparent",
     labelColor: "#707070",
     disabledTextColor: "rgba(131, 131, 131, 0.24)",
+    lightWeight: "#e0e0fc",
+    iconSettingColor: "#6565a0",
+    darkShadowColor: "rgba(65,63,98,1)",
     gradients: {
+        primary: ["#B6F4FD", "#2BC7C7", "#75F2FF"],
         success: ["#00E096", "#00E096", "#00E096"],
         danger: ["#FF3D71", "#FF3D71", "#FF3D71"],
+        warning: ["#feca61", "#feca61", "#ffeb00"],
     },
 };
 
