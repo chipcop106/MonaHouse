@@ -5,14 +5,16 @@ import React, {
     useContext,
     useEffect,
     useMemo,
+    useLayoutEffect
 } from "react";
 import { StyleSheet, View, Alert,
     TouchableOpacity, ActivityIndicator, RefreshControl
 } from "react-native";
+import { useNavigation, useRoute} from "@react-navigation/native"
 import { Icon, Input, List, IndexPath, Text } from "@ui-kitten/components";
 
 import RoomCard from "~/components/RoomCard";
-import { settings } from "~/config";
+import { settings, color, sizes } from "~/config";
 import { Modalize } from "react-native-modalize";
 import { Portal } from "react-native-portalize";
 import AddFeeModal from "~/components/AddFeeModal";
@@ -27,12 +29,35 @@ const RoomManagementScreen = (evaProps) => {
     const { state: motelState } = useContext(MotelContext);
     const { listRooms, filterStateDefault } = roomState;
     const { listMotels } = motelState;
+    const navigation = useNavigation();
     //local screen state
     const [loading, setLoading] = useState(false);
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => <TouchableOpacity
+                style={{paddingHorizontal: 15, paddingVertical: 5, flexDirection: "row"}}
+                onPress={_pressAddNewRoom}
+            >
+                <Icon
+                    name="plus-circle-outline"
+                    fill={color.primary}
+                    style={[sizes.iconButtonSize, { marginRight: 5 }]}
+                /> 
+                <Text style={[{color: color.primary, fontSize: 16}]}>Thêm</Text>
+            </TouchableOpacity>
+        })
+        return () => { };
+    }, [])
+
     useEffect(() => {
         loadData();
     },[])
-  
+    const _pressAddNewRoom = ()=>{
+        navigation.navigate('AddNewRoom', {
+            ...motelState
+        });
+    }
     const loadData = async (filterList) => {
         console.log('filterList', filterList);
         setLoading(true);
