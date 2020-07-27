@@ -20,9 +20,19 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
     const [visible, setVisible] = useState(false);
     const onItemSelect = (index) => {
         switch (index.row) {
+            case 0: {
+                navigation.navigate('RoomDetailStack', {
+                    screen: "RoomDetail",
+                    params: {
+                        roomId: item.RoomID,
+                    },
+                });
+                break;
+            }
             case 1: {
                 console.log(item.RoomID);
-                navigation.navigate('ElectrictCollect', { roomId: item.RoomID })
+                navigation.navigate('ElectrictCollect', { roomId: item.RoomID });
+                break;
             }
         }
         setVisible(false);
