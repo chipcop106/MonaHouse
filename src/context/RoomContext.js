@@ -4,7 +4,7 @@ import {
 import CreateDataContext from "~/context/CreateDataContext";
 import {
     getRoomsByMotelId,
-    createRoom as createRoomAPI,
+    createRoomSingle as createRoomAPI,
     updateRoom as updateRoomAPI,
     deleteRoom as deleteRoomAPI,
 } from "../api/MotelAPI";
@@ -191,13 +191,13 @@ const updateElectrict = (dispatch) => async (params, actions) => {
 };
 
 const createRoom = (dispatch) => async (
-    { motelid, quantityroom },
+    params,
     callback
 ) => {
     const { navigation, refreshList } = callback;
 
     try {
-        const res = await createRoomAPI({ motelid, quantityroom });
+        const res = await createRoomAPI(params);
         res.Code !== 1 && errorHandle(res.Code, callback);
         Alert.alert("Thông báo", "Tạo phòng mới thành công !", [
             {

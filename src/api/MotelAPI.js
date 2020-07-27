@@ -132,6 +132,21 @@ export const createRoom = async (params) => {
         return error.message;
     }
 };
+export const createRoomSingle = async (params) => {
+    try {
+        const token = await getAccessToken();
+        let res = await instance.get(`${path}/createroomone`, {
+            params: {
+                ...params,
+                token,
+            },
+        });
+        return res.data;
+    } catch (error) {
+        return error.message;
+    }
+};
+
 
 export const updateRoom = async (params) => {
     try {

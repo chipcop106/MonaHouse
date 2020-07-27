@@ -144,8 +144,19 @@ export const convertNumberToText = (number) => {
     return result;
 };
 
-export const currencyFormat = (value, seperator = '.') =>
-    value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, seperator);
+export const currencyFormat = (value, seperator = ',') =>{
+
+    value += '';
+    let x = value.split('.');
+    let x1 = x[0];
+    let x2 = x.length > 1 ? '.' + x[1] : '';
+    let rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + seperator + '$2');
+    }
+    return x1 + x2;
+}
+    
 
 export const randomDataChart = (length, min, max, currency) => {
     const arr = [];

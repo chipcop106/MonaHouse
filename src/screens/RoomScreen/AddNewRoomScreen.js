@@ -23,6 +23,7 @@ import { Context as MotelContext } from "~/context/MotelContext";
 import { Context as AuthContext } from "~/context/AuthContext";
 import { create_UUID as randomId } from "~/utils";
 import Service from "~/components/GoInForm/Service";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const initialState = {
     isLoading: true,
@@ -42,20 +43,22 @@ const reducer = (state, { type, payload }) => {
                 ...state,
                 [payload.key]: payload.value,
             };
-            break;
 
         default:
             return state;
-            break;
     }
 };
 
-const AddNewRoomScreen = ({ navigation, route }) => {
+const AddNewRoomScreen = () => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const { signOut } = useContext(AuthContext);
     const { state: motelState } = useContext(MotelContext);
     const { createRoom } = useContext(RoomContext);
     const { listMotels } = motelState;
+    const navigation = useNavigation();
+    const route = useRoute();
+    
+
     const refreshList = () => {
         route.params.onGoBack();
     };
@@ -97,11 +100,22 @@ const AddNewRoomScreen = ({ navigation, route }) => {
     };
 
     const createNewRoom = async () => {
+    //     roomName: "",
+    // roomPrice: "",
+    // waterPrice: "",
+    // electrictPrice: "",
+    // description: "",
+    // services: [],
         try {
             await createRoom(
                 {
                     motelid: listMotels[state.motelIndex.row]?.ID ?? null,
+                    roomname: state.roomName,
+                    priceroom: state.roomPrice,
                     quantityroom: 1,
+                    electricprice: state.electrictPrice,
+                    waterprice: state.waterPrice,
+                    description: state.description
                 },
                 { navigation, signOut, refreshList }
             );
@@ -150,10 +164,11 @@ const AddNewRoomScreen = ({ navigation, route }) => {
                     <View style={[styles.formGroup, styles.half]}>
                         <Input
                             label="Giá phòng / tháng"
-                            placeholder="3.000.000"
+                            placeholder="vd: 3,000,000"
                             value={cf(state.roomPrice)}
-                            onChangeText={(newValue) =>
-                                updateState("roomPrice", newValue)
+                            onChangeText={(newValue) =>{
+                                    updateState("roomPrice", newValue.replace(/,/g,''))
+                                }   
                             }
                             style={styles.input}
                             textStyle={styles.textInput}
@@ -168,7 +183,7 @@ const AddNewRoomScreen = ({ navigation, route }) => {
                                 placeholder="3.500"
                                 value={cf(state.electrictPrice)}
                                 onChangeText={(newValue) =>
-                                    updateState("electrictPrice", newValue)
+                                    updateState("electrictPrice", newValue.replace(/,/g,''))
                                 }
                                 style={styles.input}
                                 textStyle={styles.textInput}
@@ -181,7 +196,7 @@ const AddNewRoomScreen = ({ navigation, route }) => {
                                 placeholder="5.000"
                                 value={cf(state.waterPrice)}
                                 onChangeText={(newValue) =>
-                                    updateState("waterPrice", cf(newValue))
+                                    updateState("waterPrice", newValue.replace(/,/g,''))
                                 }
                                 style={styles.input}
                                 textStyle={styles.textInput}
