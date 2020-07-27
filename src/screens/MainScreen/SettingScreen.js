@@ -59,6 +59,9 @@ const SettingScreen = () => {
     const onPressWithParrams = (key = "SettingStack", params = {}) => {
         navigation.navigate(key, params);
     };
+    const _pressLogout = () => {
+        signOut();
+    }
 
     return (
         <View style={styles.container}>
@@ -405,6 +408,17 @@ const SettingScreen = () => {
                         </TouchableOpacity>
                     </View>
                 </View>
+                <View style={styles.secWrap}>
+                    <View style={[{paddingHorizontal: 15}]}>
+                        <TouchableOpacity style={styles.logoutBtn} onPress={_pressLogout}>
+                            <Text style={styles.logoutBtnTxt}>Đăng xuất</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {/* <TouchableOpacity>
+                        <Text></Text>
+                    </TouchableOpacity> */}
+                    
+                </View>
             </ScrollView>
         </View>
     );
@@ -700,6 +714,21 @@ const styles = StyleSheet.create({
     secWrap: {
         marginBottom: 30,
     },
+    logoutBtn: {
+        backgroundColor: '#d1d1d1',
+        borderRadius: 5,
+        minHeight: 48,
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center'
+
+    },
+    logoutBtnTxt: {
+        color: '#fff',
+        textTransform: 'uppercase',
+        fontWeight: "bold",
+        fontSize: 16
+    }
 });
 
 export default SettingScreen;

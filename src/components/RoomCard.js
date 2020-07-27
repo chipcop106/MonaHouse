@@ -118,11 +118,11 @@ const RoomCard = ({ roomInfo, addFee }) => {
   const navigation = useNavigation();
   const { item } = roomInfo;
   return (
-    <>
+    <View style={styles.item}>
 
       <Card
+        style={[{borderRadius: 9}]}
         appearance="filled"
-        style={styles.item}
         status="basic"
         header={(headerProps) => renderItemHeader(headerProps, roomInfo, navigation)}
         footer={(footerProps) => renderItemFooter(footerProps, roomInfo, navigation)}
@@ -211,7 +211,7 @@ const RoomCard = ({ roomInfo, addFee }) => {
         </View>
       </Card>
 
-    </>
+    </View>
   );
 };
 
@@ -239,6 +239,14 @@ const styles = StyleSheet.create({
   item: {
     marginBottom: 20,
     borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+        width: 0,
+        height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
   iconMenu: {
     width: 30,
@@ -329,6 +337,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   cardBody: {
+   
   },
 });
 
