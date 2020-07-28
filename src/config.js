@@ -4,6 +4,7 @@ import { NativeDateService } from "@ui-kitten/components";
 const currentYear = new Date().getFullYear();
 
 export const color = {
+    bgmain: "#F6F7F9",
     primary: "#2BC7C7",
     second: "#25c4d9",
     darkColor: "#48466d",
@@ -21,8 +22,8 @@ export const color = {
     darkShadowColor: "rgba(65,63,98,1)",
     gradients: {
         primary: ["#B6F4FD", "#2BC7C7", "#75F2FF"],
-        success: ["#00E096", "#00E096", "#00E096"],
-        danger: ["#FF3D71", "#FF3D71", "#FF3D71"],
+        success: ["#2EC953", "#2EC953", "#2EC953"],
+        danger: ["#F8604C", "#F8604C", "#F8604C"],
         warning: ["#feca61", "#feca61", "#ffeb00"],
     },
 };

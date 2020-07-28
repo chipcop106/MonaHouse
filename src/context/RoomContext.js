@@ -281,6 +281,7 @@ export const { Context, Provider } = CreateDataContext(
         deleteRoom,
     },
     {
+        isLoading: false,
         filterStateDefault: {
             selectedMonthIndex: 0,
             selectedMotelIndex: 0,

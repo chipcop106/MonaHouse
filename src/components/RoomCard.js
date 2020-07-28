@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, memo } from 'react';
 import {
-    StyleSheet, View, Text, TouchableOpacity,
+    StyleSheet, View, Text, TouchableOpacity, Image
 } from 'react-native';
 import {
     Card, OverflowMenu, MenuItem, Icon, Avatar, Button, ButtonGroup,
@@ -137,11 +137,14 @@ const RoomCard = ({ roomInfo, addFee }) => {
                 header={(headerProps) => renderItemHeader(headerProps, roomInfo, navigation)}
                 footer={(footerProps) => renderItemFooter(footerProps, roomInfo, navigation)}
             >
-                <View style={styles.cardBody}>
-                    <View style={[styles.renter, styles.space]}>
-                        <Avatar style={styles.renterAvatar} size="large" source={item.Avatar ? { url: item.Avatar } : noImageSrc} />
-                        <Text style={styles.renterName}>{item.Renter ? item.Renter : 'Chưa có khách'}</Text>
+                <View style={[styles.renter, styles.space]}>
+                    <View style={[styles.renterAvatar, !!!item.Avatar && styles.renterAvatarNoimg]}>
+                        <Avatar style={[styles.avatarinner]} shape="square"  source={item.Avatar ? { url: item.Avatar } : noImageSrc} />
                     </View>
+                    <Text style={styles.renterName}>{item.Renter ? item.Renter : 'Chưa có khách'}</Text>
+                </View>
+                <View style={styles.cardBody}>
+                    
                     <View style={[styles.space, styles.infoWrap]}>
                         <View style={styles.info}>
                             <Text style={styles.infoLabel}>Giá (tháng)</Text>
@@ -208,7 +211,7 @@ const RoomCard = ({ roomInfo, addFee }) => {
                         <View style={styles.balance}>
                             <Text style={styles.balanceText}>
                                 Dư:
-              <Text style={styles.balanceValue}> {currencyFormat(item.MoneyDebtID)} đ</Text>
+                            <Text style={styles.balanceValue}> {currencyFormat(item.MoneyDebtID)} đ</Text>
                             </Text>
                         </View>
                         <TouchableOpacity
@@ -305,10 +308,13 @@ const styles = StyleSheet.create({
     },
     status: {
         marginHorizontal: 5,
+        
+
     },
     badge: {
-        padding: 5,
-        borderRadius: 4,
+        padding: 10,
+        borderRadius: 6,
+        minHeight: 32,
     },
     badgeText: {
         color: color.whiteColor,
@@ -342,13 +348,38 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 15,
+        borderWidth: 0,
+        marginTop: -1,
+        backgroundColor: '#fff'
     },
     actionButton: {
-        padding: 5,
+        padding: 10,
+        paddingHorizontal: 15,
+        borderRadius: 6,
+        minHeight: 45,
+        justifyContent: "center"
     },
     cardBody: {
-
+        backgroundColor: '#F0F4F8',
+        padding: 15,
+        borderRadius: 6
     },
+    renterAvatar: {
+        width: 36,
+        aspectRatio: 1,
+        borderRadius: 36/2,
+        overflow: 'hidden',
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    avatarinner: {
+        width: 16,
+        height: 16
+    },
+    renterAvatarNoimg: {
+        backgroundColor: 'rgba(0,0,0,0.2)',
+       
+    }
 });
 
 export default memo(RoomCard);

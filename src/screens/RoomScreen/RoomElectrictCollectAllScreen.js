@@ -47,7 +47,7 @@ const RoomElectrictCollectAllScreen = () => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const { signOut } = useContext(AuthContext);
     const { state: roomState, getListElectrict } = useContext(RoomContext);
-    const { listElectrictRooms } = roomState;
+    const { listElectrictRooms} = roomState;
     const { state: modelState } = useContext(MotelContext);
     const { listMotels } = modelState;
     const [loading, setLoading] = useState(false);
@@ -56,7 +56,7 @@ const RoomElectrictCollectAllScreen = () => {
     };
 
     const onFilterChange = async (filter) => {
-        setLoading(true);
+        !!!filter ? updateState('isLoading', true) : setLoading(true);
         const {
             selectedMonthIndex,
             selectedMotelIndex,
@@ -86,7 +86,8 @@ const RoomElectrictCollectAllScreen = () => {
             updateState("isLoading", false);
             console.log(error);
         }
-        setLoading(false);
+        !!!filter ? updateState('isLoading', false) : setLoading(false);
+        
     };
     const _onRefresh = () => {
         onFilterChange(state.filterState);
@@ -121,8 +122,8 @@ const RoomElectrictCollectAllScreen = () => {
         onFilterChange(filterFormvalue);
     }
     useEffect(() => {
-       
-    }, [state.filterState]);
+        onFilterChange();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -132,8 +133,16 @@ const RoomElectrictCollectAllScreen = () => {
                 advanceFilter={false}
                 yearFilter={true}
             />
-
-            <View style={styles.contentContainer}>
+            {!!state.isLoading && <View
+                    style={{
+                        flexGrow: 1,
+                        alignItems: "center",
+                        paddingTop: 30,
+                    }}
+                >
+                    <Loading />
+                </View> }
+            {!!!state.isLoading && <View style={styles.contentContainer}>
                 <List
                     refreshControl={
                         <RefreshControl
@@ -166,7 +175,8 @@ const RoomElectrictCollectAllScreen = () => {
                         />
                     )}
                 />
-            </View>
+            </View> }    
+            
         </View>
     );
 };
@@ -176,7 +186,7 @@ export default RoomElectrictCollectAllScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f0f0f0",
+        backgroundColor: color.bgmain,
     },
 
     contentContainer: {

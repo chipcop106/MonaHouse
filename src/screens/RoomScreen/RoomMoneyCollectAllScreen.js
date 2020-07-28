@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
 
     contentContainer: {
         flexGrow: 1,
-        backgroundColor: "#ccc",
+        backgroundColor: color.bgmain,
     },
 
     contentCard: {

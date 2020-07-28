@@ -159,6 +159,59 @@ const SettingScreen = () => {
                         </View>
                     </LinearGradient>
                 </TouchableOpacity>
+                <Text style={styles.subTitle}>Quản lý Nhà/Phòng</Text>
+                <View style={styles.secWrap}>
+                    <View style={styles.itemWrap}>
+                        <TouchableOpacity
+                            style={styles.itemInner}
+                            onPress={ () => onPressWithParrams("SettingElectrict", {
+                                id: null,
+                            })}
+
+                        >
+                            <Icon
+                                name="droplet-outline"
+                                fill={color.iconSettingColor}
+                                style={styles.settingIcon}
+                            />
+                            <View style={styles.linkText}>
+                                <Text
+                                    style={[
+                                        styles.textColor,
+                                        styles.textSettingSize,
+                                    ]}
+                                >
+                                    Danh sách nhà trọ
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.itemWrap}>
+                        <TouchableOpacity
+                            style={styles.itemInner}
+                            onPress={ () =>{
+
+                            } }
+
+                        >
+                            <Icon
+                                name="droplet-outline"
+                                fill={color.iconSettingColor}
+                                style={styles.settingIcon}
+                            />
+                            <View style={styles.linkText}>
+                                <Text
+                                    style={[
+                                        styles.textColor,
+                                        styles.textSettingSize,
+                                    ]}
+                                >
+                                    Danh sách phòng trọ
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
                 <Text style={styles.subTitle}>Cấu hình hệ thống</Text>
                 <View style={styles.secWrap}>
                     <View style={styles.itemWrap}>
@@ -408,16 +461,10 @@ const SettingScreen = () => {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={styles.secWrap}>
-                    <View style={[{paddingHorizontal: 15}]}>
-                        <TouchableOpacity style={styles.logoutBtn} onPress={_pressLogout}>
-                            <Text style={styles.logoutBtnTxt}>Đăng xuất</Text>
-                        </TouchableOpacity>
-                    </View>
-                    {/* <TouchableOpacity>
-                        <Text></Text>
-                    </TouchableOpacity> */}
-                    
+                <View style={[{paddingHorizontal: 15}]}>
+                    <TouchableOpacity style={styles.logoutBtn} onPress={_pressLogout}>
+                        <Text style={styles.logoutBtnTxt}>Đăng xuất</Text>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </View>
@@ -585,7 +632,7 @@ const SettingScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: color.darkColor,
+        backgroundColor: color.bgmain,
         flex: 1,
     },
     imagePreview: {
@@ -597,17 +644,16 @@ const styles = StyleSheet.create({
         marginRight: 5,
     },
     itemWrap: {
-        backgroundColor: "rgba(65,63,98,1)",
+        backgroundColor: '#fff',
     },
     itemInner: {
-        paddingHorizontal: 15,
-        minHeight: 50,
+        padding: 10,
         justifyContent: "space-between",
         flexDirection: "row",
         alignItems: "center",
     },
     textColor: {
-        color: "#fff",
+        color: "#000",
     },
     textSettingSize: {
         fontSize: 16,
@@ -690,11 +736,11 @@ const styles = StyleSheet.create({
     },
     subTitle: {
         paddingHorizontal: 15,
-        marginBottom: 15,
+        marginBottom: 10,
         fontSize: 16,
-        color: color.lightWeight,
-        fontWeight: "600",
+        color: '#3C3C43',
         textTransform: "uppercase",
+        opacity: 0.6
     },
     settingIcon: {
         width: 35,
@@ -706,13 +752,23 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         marginLeft: 15,
-        borderBottomWidth: 0.5,
-        borderBottomColor: color.lightWeight,
-
         paddingVertical: 15,
     },
     secWrap: {
+        marginHorizontal: 15,
         marginBottom: 30,
+        backgroundColor: '#fff',
+        borderRadius: 6,
+        minHeight: 40,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 5,
+        padding: 5,
     },
     logoutBtn: {
         backgroundColor: '#d1d1d1',

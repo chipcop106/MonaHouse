@@ -151,7 +151,7 @@ const SignInScreen = ({route}) => {
                         <Button
                             style={styles.btnContact}
                             onPress={onPressContact}
-                        > Liên hệ với chúng tôi </Button>
+                        > {!!!phoneNumber ? <LoadingIndicator /> : `Liên hệ với chúng tôi`} </Button>
                    
                 </View>
             </ScrollView>

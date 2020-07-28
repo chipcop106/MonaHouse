@@ -297,11 +297,11 @@ const SettingStack = () => {
                 component={SettingScreen}
                 options={{
                     title: "Cài đặt",
-                    headerTitleStyle: {
-                        color: "#fff",
-                        fontSize: 30,
-                    },
-                    headerTitleAlign: "left",
+                    // headerTitleStyle: {
+                    //     color: "#fff",
+                    //     fontSize: 30,
+                    // },
+                    // headerTitleAlign: "left",
                 }}
             />
             <Stack.Screen

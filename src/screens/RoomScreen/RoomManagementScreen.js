@@ -24,12 +24,13 @@ import FilterHeader from "~/components/FilterHeader";
 import { Context as RoomContext } from "~/context/RoomContext";
 import { Context as MotelContext } from "~/context/MotelContext";
 import { Context as AuthContext } from "~/context/AuthContext";
+import Loading from "~/components/common/Loading";
 
 const RoomManagementScreen = () => {
     const { signOut } = useContext(AuthContext);
-    const { state: roomState, getListRooms } = useContext(RoomContext);
+    const { state: roomState, getListRooms, updateState } = useContext(RoomContext);
     const { state: motelState } = useContext(MotelContext);
-    const { listRooms, filterStateDefault } = roomState;
+    const { listRooms, filterStateDefault, isLoading } = roomState;
     const { listMotels } = motelState;
     const navigation = useNavigation();
     const route = useRoute();
@@ -70,7 +71,7 @@ const RoomManagementScreen = () => {
     }
     const loadData = async (filterList) => {
         console.log('filterList', filterList);
-        setLoading(true);
+        !!!filterList ? updateState('isLoading', true) : setLoading(true);
         const {
             selectedMonthIndex,
             selectedMotelIndex,
@@ -96,7 +97,7 @@ const RoomManagementScreen = () => {
         } catch (error) {
             console.log(error);
         }
-        setLoading(false);
+        !!!filterList ? updateState('isLoading', false) : setLoading(false);
     };
     const _onValueChange = (filterFormvalue) => {
         setFilterValue(filterFormvalue);
@@ -104,7 +105,7 @@ const RoomManagementScreen = () => {
     }
     
     const _onRefresh = () =>{
-        loadData();
+        loadData(filterValue);
     }
 
     const bsFee = createRef();
@@ -122,8 +123,16 @@ const RoomManagementScreen = () => {
                     advanceFilter={true}
                     loading={loading}
                 />
-
-                <View style={styles.contentContainer}>
+                {!!isLoading && <View
+                    style={{
+                        flexGrow: 1,
+                        alignItems: "center",
+                        paddingTop: 30,
+                    }}
+                >
+                    <Loading />
+                </View> }
+                {!!!isLoading && <View style={styles.contentContainer}>
                     <List
                         refreshControl={
                             <RefreshControl
@@ -145,6 +154,7 @@ const RoomManagementScreen = () => {
                     />
                     <Portal >
                         <Modalize
+                            
                             ref={bsFee}
                             closeOnOverlayTap={false}
                             adjustToContentHeight={true}
@@ -154,9 +164,9 @@ const RoomManagementScreen = () => {
                             </View>
                         </Modalize>
                     </Portal>
-                </View>
+                </View>}
             </View>
-            <TouchableOpacity
+            {!!!loading && <TouchableOpacity
                 onPress={_pressAddNewRoom}
                 style={styles.addAction}
             >
@@ -179,7 +189,7 @@ const RoomManagementScreen = () => {
                         />
                     </View>
                 </LinearGradient>
-            </TouchableOpacity>
+            </TouchableOpacity>}
         </>
     );
 };
@@ -191,7 +201,7 @@ const styles = StyleSheet.create({
 
     contentContainer: {
         flexGrow: 1,
-        backgroundColor: "#ccc",
+        backgroundColor: color.bgmain,
     },
 
     contentCard: {
