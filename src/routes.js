@@ -47,6 +47,9 @@ import SettingSMSScreen from "~/screens/SettingScreen/SettingSMSScreen";
 import SettingRoomScreen from "~/screens/SettingScreen/SettingRoomScreen";
 import SettingServiceScreen from "~/screens/SettingScreen/SettingServiceScreen";
 import SettingChangePasswordScreen from "~/screens/SettingScreen/SettingChangePasswordScreen";
+import SettingHouseScreen from '~/screens/SettingScreen/SettingHouseScreen'
+import SettingHouseDetailScreen from '~/screens/SettingScreen/SettingHouseDetailScreen'
+
 export const isMountedRef = React.createRef();
 
 export const navigationRef = React.createRef();
@@ -196,7 +199,7 @@ const RoomDetailStack = ({ navigation }) => {
                 }}
             />
             <Stack.Screen
-                name="Edit"
+                name="DetailElectrictHistory"
                 component={RoomDetailElectrictHistoryScreen}
                 options={{
                     headerShown: true,
@@ -357,7 +360,7 @@ const SettingStack = () => {
                 name="SettingService"
                 component={SettingServiceScreen}
                 options={{
-                    title: "Cấu hình tiện ích",
+                    title: "Dịch vụ kèm theo",
                 }}
             />
             <Stack.Screen
@@ -367,6 +370,21 @@ const SettingStack = () => {
                     title: "Cấu hình thông báo",
                 }}
             />
+            <Stack.Screen
+                name="SettingHouse"
+                component={SettingHouseScreen}
+                options={{
+                    title: "Danh Sách nhà",
+                }}
+            />
+            <Stack.Screen
+                name="SettingHouseDetail"
+                component={SettingHouseDetailScreen}
+                options={{
+                    title: "Chi tiết nhà",
+                }}
+            />
+            
         </Stack.Navigator>
     );
 };

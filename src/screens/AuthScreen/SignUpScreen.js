@@ -55,10 +55,11 @@ const SignUpScreen = () => {
             setSpinner(false);
             await new Promise(r => setTimeout(r, 100));
             // data: {Code: 1, Message: "Mã đã được gửi vào số điện thoại 0979047573", Data: "2020-07-10T22:52:43.9256102Z"}
-            Alert.alert('Gửi', "Chúng tôi gửi mã xác nhận vào số điện thoại của bạn !!", [{
-                text: 'OK',
-                onPress: () => textInput.current.focus()
-            }]);
+            // Alert.alert('Gửi', "Chúng tôi gửi mã xác nhận vào số điện thoại của bạn !!", [{
+            //     text: 'OK',
+            //     onPress: () => textInput.current.focus()
+            // }]);
+            textInput.current.focus();
     
         } catch (err) {
             setSpinner(false);
@@ -86,17 +87,14 @@ const SignUpScreen = () => {
             if (res.err) throw res.err;
             if (res.Code !== 1) throw res;
             textInput.current.blur();
-            setSpinner(false);
-            await new Promise(r => setTimeout(r, 100));
-            Alert.alert('Thành công!', 'Số điện thoại đã được xác thực');
+            // Alert.alert('Thành công!', 'Số điện thoại đã được xác thực');
             await verificationSuccessAction(res.Data);
-          
+            setSpinner(false);
 
         } catch (err) {
             setSpinner(false);
-            setTimeout(() => {
-                Alert.alert('Oops!', !!err.Message ? err.Message : err);
-            }, 100);
+            await new Promise(r => setTimeout(r, 100));
+            Alert.alert('Oops!', !!err.Message ? err.Message : err);
         }
 
       
@@ -124,7 +122,7 @@ const SignUpScreen = () => {
           return (
             <View style={[{marginTop: 15}]}>
               <Text style={styles.wrongNumberText} onPress={_tryAgain}>
-                Enter the wrong number or need a new code?
+                Bấm vào đây nếu bạn nhập sai số hoặc cần mã mới ?
               </Text>
             </View>
           );
@@ -162,7 +160,7 @@ const SignUpScreen = () => {
                         textAlign: 'center',
                         fontSize: 40,
                         fontWeight: 'bold',
-                        fontFamily: 'Courier',
+                        // fontFamily: 'Courier',
                         letterSpacing: 15
                     }]}
                     returnKeyType='go'
@@ -211,7 +209,6 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: '#fff',
-        fontFamily: 'Helvetica',
         fontSize: 16,
         fontWeight: 'bold',
         textTransform: "uppercase"
@@ -219,7 +216,8 @@ const styles = StyleSheet.create({
     wrongNumberText: {
         margin: 10,
         fontSize: 14,
-        textAlign: 'center'
+        textAlign: 'center',
+        color: '#fff'
     },
     disclaimerText: {
         marginTop: 15,

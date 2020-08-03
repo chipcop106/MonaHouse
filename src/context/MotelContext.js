@@ -36,13 +36,17 @@ const getListMotels = (dispatch) => async (callback) => {
         if (res.Code === 2) {
             Alert.alert('Thông báo', 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!')
             callback();
+            return false;
         } else if (res.Code === 1 && !!res.Data) {
             dispatch({ type: 'GET_MOTEL', payload: res.Data });
+            return true;
         } else {
             dispatch({ type: 'SET_ERROR', payload: res });
+            return false;
         }
     } catch (error) {
         console.log(error.message);
+        return false;
     }
 };
 

@@ -18,7 +18,7 @@ export const color = {
     labelColor: "#707070",
     disabledTextColor: "rgba(131, 131, 131, 0.24)",
     lightWeight: "#e0e0fc",
-    iconSettingColor: "#6565a0",
+    iconSettingColor: "#8A8A8E",
     darkShadowColor: "rgba(65,63,98,1)",
     gradients: {
         primary: ["#B6F4FD", "#2BC7C7", "#75F2FF"],
@@ -27,7 +27,16 @@ export const color = {
         warning: ["#feca61", "#feca61", "#ffeb00"],
     },
 };
-
+export const shadowStyle = {
+    shadowColor: "#000",
+    shadowOffset: {
+        width: 0,
+        height: 5,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
+}
 export const sizes = {
     iconButtonSize: {
         width: 20,

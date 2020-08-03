@@ -19,9 +19,9 @@ const MoneyHistoryScreen = () => {
             getElectrictHistory(
                 {
                     motelid:
-                        motelState.listMotels[selectedMotelIndex.row - 1]?.ID ??
+                        motelState.listMotels[selectedMotelIndex - 1]?.ID ??
                         0,
-                    month: selectedMonthIndex.row + 1,
+                    month: selectedMonthIndex + 1,
                 },
                 signOut
             );
@@ -44,7 +44,7 @@ const MoneyHistoryScreen = () => {
                 keyExtractor={(item) => item.id}
                 renderItem={() => <HistoryRecord style={styles.card} />}
                 style={styles.container}
-            ></List>
+            />
         </>
     );
 };

@@ -13,15 +13,16 @@ const ElectrictHistoryScreen = () => {
     const { listElectrictHistory, filterStateDefault } = roomState;
 
     const onFilterChange = (filter) => {
+        console.log('filter', filter);
         const { selectedMonthIndex, selectedMotelIndex } = filter;
         try {
             //console.log(listMotels);
             getElectrictHistory(
                 {
                     motelid:
-                        motelState.listMotels[selectedMotelIndex.row - 1]?.ID ??
+                        motelState.listMotels[selectedMotelIndex - 1]?.ID ??
                         0,
-                    month: selectedMonthIndex.row + 1,
+                    month: selectedMonthIndex + 1,
                 },
                 signOut
             );

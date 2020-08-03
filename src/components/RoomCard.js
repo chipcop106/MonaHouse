@@ -9,7 +9,7 @@ import {
 } from '@ui-kitten/components';
 import LinearGradient from 'react-native-linear-gradient';
 import Dash from 'react-native-dash';
-import { color } from '../config';
+import { color, shadowStyle } from '../config';
 import { useNavigation } from '@react-navigation/native';
 import { currencyFormat } from '~/utils';
 
@@ -239,8 +239,8 @@ const styles = StyleSheet.create({
         padding: 15,
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderTopLeftRadius: 8,
-        borderTopRightRadius: 8,
+        borderTopLeftRadius: 6,
+        borderTopRightRadius: 6,
         position: 'relative'
     },
     roomName: {
@@ -251,15 +251,8 @@ const styles = StyleSheet.create({
     },
     item: {
         marginBottom: 20,
-        borderRadius: 8,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.23,
-        shadowRadius: 2.62,
-        elevation: 4,
+        borderRadius: 6,
+        ...shadowStyle
     },
     iconMenu: {
         width: 30,
@@ -333,7 +326,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     textButton: {
-        color: color.darkColor,
+        color: color.info,
         fontSize: 15,
         fontWeight: '600',
         marginLeft: 5,

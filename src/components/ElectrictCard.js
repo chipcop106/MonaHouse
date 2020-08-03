@@ -3,7 +3,7 @@
 import React, { useState, memo } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { Card } from "@ui-kitten/components";
-import { color } from "~/config";
+import { color, shadowStyle } from "~/config";
 import { useNavigation } from "@react-navigation/native";
 import IncludeElectrictWater from "~/components/IncludeElectrictWater";
 const noImageSrc = require("~/../assets/user.png");
@@ -29,10 +29,10 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
 const ElectrictCard = ({ roomInfo, handleValueChange }) => {
     const navigation = useNavigation();
     return (
-        <>
+        <View style={styles.item}>
             <Card
                 appearance="filled"
-                style={styles.item}
+                
                 status="basic"
                 disabled
                 header={(headerProps) =>
@@ -54,7 +54,7 @@ const ElectrictCard = ({ roomInfo, handleValueChange }) => {
                     />
                 </View>
             </Card>
-        </>
+        </View>
     );
 };
 
@@ -80,7 +80,9 @@ const styles = StyleSheet.create({
     },
     item: {
         marginBottom: 30,
-        borderRadius: 8,
+        borderRadius: 6,
+        ...shadowStyle
+
     },
     iconMenu: {
         width: 30,

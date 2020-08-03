@@ -65,7 +65,7 @@ const errorHandle = (code, { signOut }) => {
             signOut && signOut();
             break;
         default:
-            alert("Lỗi API !!");
+            alert("Lỗi API !! Code hông tồn tại!!");
             return;
             break;
     }

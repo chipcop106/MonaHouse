@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
 import { Input, Icon } from "@ui-kitten/components";
 import { color } from "../../config";
@@ -34,8 +34,8 @@ const Service = ({
                     placeholder="Số tiền"
                     value={cf(priceState)}
                     onChangeText={(nextValue) => {
-                        setPriceState(nextValue);
-                        onChangeValue({ name: nameState, price: nextValue });
+                        setPriceState(nextValue.replace(/,/g, ''));
+                        onChangeValue({ name: nameState, price: nextValue.replace(/,/g, '') });
                     }}
                     textContentType="none"
                     keyboardType="numeric"

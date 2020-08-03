@@ -58,7 +58,7 @@ const RoomManagementScreen = () => {
     // }, [])
 
     useEffect(() => {
-        loadData();
+        !!!listRooms && loadData();
     },[])
     const _pressAddNewRoom = ()=>{
     

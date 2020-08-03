@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { Text, StyleSheet, View,
-    KeyboardAvoidingView, ActivityIndicator
+    KeyboardAvoidingView, ActivityIndicator, Alert
 } from 'react-native';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import {Formik} from 'formik';
@@ -22,14 +22,21 @@ const ForgotPass = () => {
     }, [navigation, route]);
 
     const _onFormSubmit = async values => {
+        setLoading(true);
         try {
             
-            setLoading(true);
             const res = await resetPassword({newpass: values.password});
-            setLoading(false);
-        } catch (error) {
+            if(res.Code === 1){
+                Alert.alert('Chúc mừng', 'Mật khẩu mới đã được cập nhật');
+                navigation.pop();
+            } else {
+                Alert.alert('Thất bại!', 'Có lỗi xãy ra trong quá trình cập nhật, vui lòng liên hệ nhà cung cấp để lấy lại mật khẩu');
+            }
             
+        } catch (error) {
+            console.log('Submit resetPassword error',  error);
         }
+        setLoading(false);
     }
     return <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : null}

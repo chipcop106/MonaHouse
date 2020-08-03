@@ -10,7 +10,7 @@ import {
     Icon,
     Input,
 } from "@ui-kitten/components";
-import { color, sizes } from "~/config";
+import { color, sizes, shadowStyle } from "~/config";
 import { useNavigation } from "@react-navigation/native";
 const noImageSrc = require("~/../assets/user.png");
 
@@ -37,10 +37,10 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
 const MoneyCard = ({ roomInfo, handleValueChange }) => {
     const navigation = useNavigation();
     return (
-        <>
+        <View style={styles.item}>
             <Card
                 appearance="filled"
-                style={styles.item}
+                
                 status="basic"
                 disabled
                 header={(headerProps) =>
@@ -156,7 +156,7 @@ const MoneyCard = ({ roomInfo, handleValueChange }) => {
                     </View>
                 </View>
             </Card>
-        </>
+        </View>
     );
 };
 
@@ -164,6 +164,8 @@ const styles = StyleSheet.create({
     item: {
         marginBottom: 30,
         backgroundColor: "#fff",
+        borderRadius: 6,
+        ...shadowStyle
     },
     headerWrap: {
         backgroundColor: color.primary,
