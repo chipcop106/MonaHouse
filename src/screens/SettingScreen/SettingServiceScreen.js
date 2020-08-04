@@ -19,6 +19,7 @@ const reducer = (prevState, { type, value }) =>{
                 ...value
             }
         case 'ADD_BLANK_ITEM':
+           
             return {
                 ...prevState,
                 listService: [...prevState.listService, {id: `${create_UUID()}`, name: '', price: ''}]
@@ -41,10 +42,10 @@ const reducer = (prevState, { type, value }) =>{
             return prevState
     }
 }
-function updateItemByindex({index,item, array}) {
+function updateItemByindex({index, item, array}) {
     for (var i in array) {
         if (i == index) {
-              array[i] = item;
+              array[i] = {id: array[i].id, ...item};
               break; 
         }
       }
@@ -83,7 +84,7 @@ const SettingServiceScreen = () => {
             dispatch({type: 'ADD_BLANK_ITEM'})
         },
         removeByIndex: index => {
-            
+            console.log('removeByIndex', index);
             dispatch({type: 'REMOVE_ITEM_BY_INDEX', value: index })
         },
         onChangeByIndex: (index, value) => {
@@ -115,7 +116,8 @@ const SettingServiceScreen = () => {
         // item:{name: '', price: ''}
         return <Service  initialState={item} 
             onDelete={()=> localController.removeByIndex(index)}
-            onChangeValue={( value )=> localController.onChangeByIndex(index, value)}
+            // onChangeValue={( value )=> localController.onChangeByIndex(index, value)}
+            onBlur={( value )=> localController.onChangeByIndex(index, value)}
         />
     }
     return (

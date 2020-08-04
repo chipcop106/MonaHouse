@@ -297,12 +297,11 @@ const styles = StyleSheet.create({
     },
     statusWrap: {
         flexDirection: 'row',
-        marginHorizontal: -5
+        marginHorizontal: -5,
+        flexWrap: "wrap"
     },
     status: {
-        marginHorizontal: 5,
-        
-
+        margin: 5,
     },
     badge: {
         padding: 10,
@@ -347,7 +346,6 @@ const styles = StyleSheet.create({
     },
     actionButton: {
         padding: 10,
-        paddingHorizontal: 15,
         borderRadius: 6,
         minHeight: 45,
         justifyContent: "center"

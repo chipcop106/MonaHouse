@@ -61,7 +61,7 @@ const SignInScreen = ({route}) => {
         if(!!phoneNumber){
             Linking.openURL(`tel:${phoneNumber}`)
         } else {
-            Alert.alert('Thông báo', 'Chức năng đang trong quá trình xây dựng')
+            
         }
        
     }

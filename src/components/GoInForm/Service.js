@@ -8,6 +8,7 @@ const Service = ({
     initialState: { name, price },
     onDelete,
     onChangeValue,
+    onBlur,
 }) => {
     const [nameState, setNameState] = useState(name);
     const [priceState, setPriceState] = useState(price);
@@ -22,8 +23,9 @@ const Service = ({
                     value={nameState}
                     onChangeText={(nextValue) => {
                         setNameState(nextValue);
-                        onChangeValue({ name: nextValue, price: priceState });
+                        !!onChangeValue && onChangeValue({ name: nextValue, price: priceState });
                     }}
+                    onBlur={()=> (onBlur && onBlur({name: nameState, price: priceState}))}
                     textContentType="none"
                     keyboardType="default"
                 />
@@ -35,8 +37,9 @@ const Service = ({
                     value={cf(priceState)}
                     onChangeText={(nextValue) => {
                         setPriceState(nextValue.replace(/,/g, ''));
-                        onChangeValue({ name: nameState, price: nextValue.replace(/,/g, '') });
+                        !!onChangeValue && onChangeValue({ name: nameState, price: nextValue.replace(/,/g, '') });
                     }}
+                    onBlur={()=>(onBlur && onBlur({name: nameState, price: priceState}))}
                     textContentType="none"
                     keyboardType="numeric"
                 />
