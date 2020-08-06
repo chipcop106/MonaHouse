@@ -4,7 +4,7 @@ import { StyleSheet, ScrollView,
 } from "react-native";
 import {useRoute, useNavigation} from '@react-navigation/native';
 import { Input, Icon, Button, List } from "@ui-kitten/components";
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView, KeyboardAwareFlatList} from 'react-native-keyboard-aware-scroll-view';
 import Service from '~/components/GoInForm/Service'
 import Loading from '~/components/common/Loading'
 import { Context as AuthContext } from "~/context/AuthContext";
@@ -114,42 +114,45 @@ const SettingServiceScreen = () => {
     const _renderItem = ({item, index}) => {
         
         // item:{name: '', price: ''}
-        return <Service  initialState={item} 
+        return <View style={{paddingHorizontal: 5}}><Service  initialState={item} 
             onDelete={()=> localController.removeByIndex(index)}
             // onChangeValue={( value )=> localController.onChangeByIndex(index, value)}
             onBlur={( value )=> localController.onChangeByIndex(index, value)}
-        />
+        /></View>
     }
     return (
         <View style={styles.container}>
-            <KeyboardAwareScrollView
-                style={{flex: 1}}
-                contentContainerStyle={{paddingVertical: 15}}
+           
+                {/* <View style={styles.secWrap}> */}
+            <KeyboardAwareFlatList
                 refreshControl={
                     <RefreshControl
                         onRefresh={_onRefresh}
                         refreshing={isRefesh}
                     />
-                }    
-            >
-                <View style={styles.secWrap}>
-                    <List
-                        style={{paddingTop: 10}}
-                        scrollEnabled={false}
-                        extraData={state.listService}
-                        data={state.listService}
-                        renderItem={_renderItem}
-                        keyExtractor={(item, index) => `${item.id}-${index}`} 
-                    />
+                } 
+                style={{paddingVertical: 0}}
+                contentContainerStyle={[{backgroundColor: "#fff", paddingVertical: 15}, shadowStyle]}
+                extraData={state.listService}
+                data={state.listService}
+                renderItem={_renderItem}
+                keyExtractor={(item, index) => `${item.id}-${index}`}
+                ListFooterComponent={<View style={{paddingHorizontal: 10}}> 
                     <Button appearance="outline" status="info" 
                         style={[styles.btn, { marginBottom: 5}]} 
                         onPress={_onPressAdd} accessoryLeft={(props)=> <Icon name="plus-outline" {...props}  />}
                     >
                         Thêm dịch vụ
                     </Button>
-                </View>
+                </View>}
+            />
+            
+                {/* </View> */}
+            <View style={{paddingVertical: 15}}>
                 <Button style={[styles.btn, { marginHorizontal: 15}]} onPress={_onPressSubmit}>Cập nhật dịch vụ</Button>
-            </KeyboardAwareScrollView>
+            </View>
+                
+         
             {/* <Text style={styles.subTitle}>Cấu hình hệ thống</Text> */}
             
         </View>
