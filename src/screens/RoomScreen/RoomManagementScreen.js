@@ -37,6 +37,7 @@ const RoomManagementScreen = () => {
     const isFocused = useIsFocused();
     //local screen state
     const [loading, setLoading] = useState(false);
+    const [refreshing, setrefreshing] = useState(false);
     const [filterValue, setFilterValue] = useState('');
     // useEffect(() => {
     //     console.log('aaaaaaaaaaaaaaa');
@@ -58,7 +59,16 @@ const RoomManagementScreen = () => {
     // }, [])
 
     useEffect(() => {
-        !!!listRooms && loadData();
+        
+        ( async () => {
+            setLoading(true)
+            try {
+                await loadData();
+            } catch (error) {
+                
+            }
+            setLoading(false)
+        })();
     },[])
     const _pressAddNewRoom = ()=>{
     
@@ -71,7 +81,7 @@ const RoomManagementScreen = () => {
     }
     const loadData = async (filterList) => {
         console.log('filterList', filterList);
-        !!!filterList ? updateState('isLoading', true) : setLoading(true);
+        updateState('isLoading', true)
         const {
             selectedMonthIndex,
             selectedMotelIndex,
@@ -97,15 +107,21 @@ const RoomManagementScreen = () => {
         } catch (error) {
             console.log(error);
         }
-        !!!filterList ? updateState('isLoading', false) : setLoading(false);
+        updateState('isLoading', false)
     };
     const _onValueChange = (filterFormvalue) => {
         setFilterValue(filterFormvalue);
         loadData(filterFormvalue);
     }
     
-    const _onRefresh = () =>{
-        loadData(filterValue);
+    const _onRefresh = async () =>{
+        setrefreshing(true);
+       try {
+            await loadData(filterValue); 
+       } catch (error) {
+           
+       }
+       setrefreshing(false);
     }
 
     const bsFee = createRef();
@@ -123,7 +139,7 @@ const RoomManagementScreen = () => {
                     advanceFilter={true}
                     loading={loading}
                 />
-                {!!isLoading && <View
+                {!!loading && <View
                     style={{
                         flexGrow: 1,
                         alignItems: "center",
@@ -132,12 +148,12 @@ const RoomManagementScreen = () => {
                 >
                     <Loading />
                 </View> }
-                {!!!isLoading && <View style={styles.contentContainer}>
+                {!!!loading && <View style={styles.contentContainer}>
                     <List
                         refreshControl={
                             <RefreshControl
                               onRefresh={_onRefresh}
-                              refreshing={loading}
+                              refreshing={refreshing}
                             />
                         }
                         
