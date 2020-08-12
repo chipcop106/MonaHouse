@@ -19,7 +19,7 @@ const Service = ({
                 <Input
                     status="primary"
                     textStyle={styles.textInput}
-                    placeholder="Tên dịch vụ"
+                    placeholder="Internet/phí giữ xe/tiền nước bình"
                     value={nameState}
                     onChangeText={(nextValue) => {
                         setNameState(nextValue);
@@ -36,8 +36,8 @@ const Service = ({
                     placeholder="Số tiền"
                     value={cf(priceState)}
                     onChangeText={(nextValue) => {
-                        setPriceState(nextValue.replace(/,/g, ''));
-                        !!onChangeValue && onChangeValue({ name: nameState, price: nextValue.replace(/,/g, '') });
+                        setPriceState(nextValue.replace(/\./g, ''));
+                        !!onChangeValue && onChangeValue({ name: nameState, price: nextValue.replace(/\./g, '') });
                     }}
                     onBlur={()=>(onBlur && onBlur({name: nameState, price: priceState}))}
                     textContentType="none"

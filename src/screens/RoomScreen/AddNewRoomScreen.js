@@ -1,4 +1,4 @@
-import React, { useReducer, useContext } from "react";
+import React, { useReducer, useContext, useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -24,6 +24,7 @@ import { Context as AuthContext } from "~/context/AuthContext";
 import { create_UUID as randomId } from "~/utils";
 import Service from "~/components/GoInForm/Service";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const initialState = {
     isLoading: true,
@@ -57,7 +58,7 @@ const AddNewRoomScreen = () => {
     const { listMotels } = motelState;
     const navigation = useNavigation();
     const route = useRoute();
-    
+    const [spinner, setSpinner] = useState(false);
 
     const refreshList = () => {
         route.params.onGoBack();
@@ -100,12 +101,14 @@ const AddNewRoomScreen = () => {
     };
 
     const createNewRoom = async () => {
-    //     roomName: "",
-    // roomPrice: "",
-    // waterPrice: "",
-    // electrictPrice: "",
-    // description: "",
-    // services: [],
+        //     roomName: "",
+        // roomPrice: "",
+        // waterPrice: "",
+        // electrictPrice: "",
+        // description: "",
+        // services: [],
+        setSpinner(true);
+        await new Promise(r => setTimeout(r, 100));
         try {
             await createRoom(
                 {
@@ -119,9 +122,24 @@ const AddNewRoomScreen = () => {
                 },
                 { navigation, signOut, refreshList }
             );
+            setSpinner(false);
+            await new Promise(r => setTimeout(r, 100));
+            Alert.alert("Thông báo", "Tạo phòng mới thành công !", [
+                {
+                    text: "Ok",
+                    onPress: () => {
+                        navigation.pop();
+                        refreshList();
+                    },
+                },
+            ]);
+            
         } catch (error) {
+            setSpinner(false);
+            await new Promise(r => setTimeout(r, 100));
             Alert.alert(JSON.stringify(error.message));
         }
+        
     };
 
     return (
@@ -167,7 +185,7 @@ const AddNewRoomScreen = () => {
                             placeholder="vd: 3,000,000"
                             value={cf(state.roomPrice)}
                             onChangeText={(newValue) =>{
-                                    updateState("roomPrice", newValue.replace(/,/g,''))
+                                    updateState("roomPrice", newValue.replace(/\./g,''))
                                 }   
                             }
                             style={styles.input}
@@ -183,7 +201,7 @@ const AddNewRoomScreen = () => {
                                 placeholder="3.500"
                                 value={cf(state.electrictPrice)}
                                 onChangeText={(newValue) =>
-                                    updateState("electrictPrice", newValue.replace(/,/g,''))
+                                    updateState("electrictPrice", newValue.replace(/\./g,''))
                                 }
                                 style={styles.input}
                                 textStyle={styles.textInput}
@@ -196,7 +214,7 @@ const AddNewRoomScreen = () => {
                                 placeholder="5.000"
                                 value={cf(state.waterPrice)}
                                 onChangeText={(newValue) =>
-                                    updateState("waterPrice", newValue.replace(/,/g,''))
+                                    updateState("waterPrice", newValue.replace(/\./g,''))
                                 }
                                 style={styles.input}
                                 textStyle={styles.textInput}
@@ -269,6 +287,10 @@ const AddNewRoomScreen = () => {
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "position" : null}
             />
+            <Spinner
+            visible={spinner}
+            textContent={'Vui lòng chờ giây lát...'}
+            textStyle={{ color: '#fff' }} />
         </View>
     );
 };

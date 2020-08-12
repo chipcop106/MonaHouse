@@ -8,167 +8,99 @@ import {
 } from "react-native";
 import { Icon, Text, Modal, Card } from "@ui-kitten/components";
 import { color, shadowStyle } from "~/config";
-import Swiper from "react-native-swiper";
 
 const { height } = Dimensions.get("window");
 
-const styles = StyleSheet.create({
-    wrapCard: {
-        flexDirection: "row",
-        backgroundColor: "#fff",
-        flexGrow: 1,
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        alignItems: "center",
-        ...shadowStyle
-        // shadowColor: "rgba(0,0,0,.35)",
-        // shadowOffset: {
-        //     width: 0,
-        //     height: 2,
-        // },
-        // shadowOpacity: 0.25,
-        // shadowRadius: 3.84,
-
-        // elevation: 5,
-    },
-    datetime: {
-        textAlign: "center",
-        paddingRight: 15,
-    },
-    date: {
-        fontSize: 18,
-        color: "#ccc",
-        fontWeight: "600",
-        textAlign: "center",
-    },
-    year: {
-        textAlign: "center",
-        fontWeight: "600",
-        color: "#ccc",
-        fontSize: 24
-    },
-    metaIcon: {
-        width: 20,
-        height: 20,
-        marginRight: 3,
-    },
-    info: {
-        justifyContent: "space-between",
-        flexGrow: 1,
-    },
-    metaWrap: {
-        flexDirection: "row",
-        marginTop: 5,
-    },
-    meta: {
-        flex: 1,
-        flexDirection: "row",
-        marginRight: 30,
-        alignItems: "center",
-    },
+const history = StyleSheet.create({
     name: {
         fontSize: 20,
         color: color.primary,
         fontWeight: "bold",
     },
-    textNumber: {
-        letterSpacing: 1,
-        color: color.darkColor,
-        margin: 0,
-        fontSize: 16,
+    container: {
+        backgroundColor: "#fff",
+        marginBottom: 10,
+        borderRadius: 6,
+        ...shadowStyle
+    },
+    flexRow: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    iconLeft: {
+        width: 45,
+        height: 45,
+    },
+    roundIcon: {
+        width: 60,
+        height: 60,
+        borderWidth: 1,
+        borderColor: color.darkColor,
+        borderRadius: 60 / 2,
+        padding: 5,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    leftPart: {
+        flexBasis: 90,
+        padding: 15,
+    },
+    rightPart: {
+        flexGrow: 1,
+        padding: 15,
+        paddingLeft: 0,
+        justifyContent: "space-between",
+        flexBasis: 100,
+    },
+    title: {
+        fontWeight: "600",
+        marginBottom: 10,
+    },
+    money: {
+        fontSize: 18,
+        color: color.redColor,
+        fontWeight: "bold",
+    },
+    date: {
+        color: "#c0c0c0",
+        fontWeight: "600",
+    },
+    meta: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
     },
 });
 
 const HistoryRecord = ({ style, renterInfo = false, title = "Phòng 01" }) => {
     const [visible, setVisible] = React.useState(false);
     return (
-        <>
-            <View style={style}>
-                <View style={styles.wrapCard}>
-                    {!renterInfo && (
-                        <View style={styles.datetime}>
-                            <Text style={styles.date}>05/08</Text>
-                            <Text style={styles.year}>2020</Text>
-                        </View>
-                    )}
-
-                    <View style={styles.info}>
-                        <Text style={styles.name}>{title}</Text>
-                        <View style={styles.metaWrap}>
-                            {renterInfo ? (
-                                <>
-                                    <View style={styles.meta}>
-                                        <Icon
-                                            name="log-in-outline"
-                                            fill={color.darkColor}
-                                            style={styles.metaIcon}
-                                        />
-                                        <Text style={styles.textNumber}>
-                                            20/04/2020
-                                        </Text>
-                                    </View>
-                                    <View style={styles.meta}>
-                                        <Icon
-                                            name="log-out-outline"
-                                            fill={color.darkColor}
-                                            style={styles.metaIcon}
-                                        />
-                                        <Text style={styles.textNumber}>
-                                            20/06/2020
-                                        </Text>
-                                    </View>
-                                </>
-                            ) : (
-                                <>
-                                    <View style={styles.meta}>
-                                        <Icon
-                                            name="droplet-outline"
-                                            fill={color.darkColor}
-                                            style={styles.metaIcon}
-                                        />
-                                        <Text style={styles.textNumber}>
-                                            8879909
-                                        </Text>
-                                    </View>
-                                    <View style={styles.meta}>
-                                        <Icon
-                                            name="flash-outline"
-                                            fill={color.darkColor}
-                                            style={styles.metaIcon}
-                                        />
-                                        <Text style={styles.textNumber}>
-                                            3355542
-                                        </Text>
-                                    </View>
-                                </>
-                            )}
-                        </View>
-                    </View>
-                    {/* <TouchableOpacity
-                        onPress={() => setVisible(!visible)}
-                        style={styles.action}
-                    >
+        <View style={history.container}>
+            <View style={history.flexRow}>
+                <View style={history.leftPart}>
+                    <View style={history.roundIcon}>
                         <Icon
-                            name="image-outline"
+                            name="credit-card"
                             fill={color.darkColor}
-                            style={{
-                                width: 30,
-                                height: 30,
-                                textAlign: "center",
-                                marginBottom: 3,
-                            }}
+                            style={history.iconLeft}
                         />
-                        <Text
-                            style={{
-                                textAlign: "center",
-                            }}
-                        >
-                            Ảnh
+                    </View>
+                </View>
+                <View style={history.rightPart}>
+                    <Text style={history.name}>{title}</Text>
+                    <Text style={history.title}>
+                        Thanh toán tiền nhà tháng 5 hanh toán tiền
+                        nhà tháng 5 hanh toán tiền nhà tháng 5
+                    </Text>
+                    <View style={history.meta}>
+                        <Text style={history.money}>3.000.000</Text>
+                        <Text style={history.date}>
+                            20/10/2020 10:30
                         </Text>
-                    </TouchableOpacity> */}
+                    </View>
                 </View>
             </View>
-        </>
+        </View>
     );
 };
 

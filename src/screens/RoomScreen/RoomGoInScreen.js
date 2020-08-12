@@ -1,3 +1,4 @@
+
 import React, { useLayoutEffect, useContext } from "react";
 import {
     Text,
@@ -8,13 +9,16 @@ import {
     KeyboardAvoidingView,
 } from "react-native";
 import { Layout, Button, Icon } from "@ui-kitten/components";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import moment from "moment";
+import { useHeaderHeight } from "@react-navigation/stack";
 import { sizes, color } from "../../config";
 import RoomInfoForm from "../../components/GoInForm/RoomInfoForm";
 import RenterInfoForm from "../../components/GoInForm/RenterInfoForm";
 import CheckoutInfoForm from "../../components/GoInForm/CheckoutInfoForm";
 import { Context as RoomGoInContext } from "../../context/RoomGoInContext";
 import { Context as AuthContext } from "../../context/AuthContext";
-import moment from "moment";
+
 
 const titleHeader = [
     "Thông tin phòng, ki ốt",
@@ -55,6 +59,7 @@ const RenderForm = () => {
 };
 
 const RoomGoInScreen = ({ navigation, route }) => {
+    
     const { signOut } = useContext(AuthContext);
     const {
         state: RoomGoinState,
@@ -62,7 +67,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
         resetState,
         addPeopleToRoom,
     } = useContext(RoomGoInContext);
-
+    const headerHeight = useHeaderHeight();
     useLayoutEffect(() => {
         navigation.setOptions({
             headerLeft: () => (
@@ -99,49 +104,53 @@ const RoomGoInScreen = ({ navigation, route }) => {
         });
         const imageArr = [
             {
-                Name: "dong-ho-nuoc",
+                Name: 'dong-ho-nuoc',
                 DataIMG: room.roomInfo?.waterImage || [],
             },
             {
-                Name: "dong-ho-dien",
+                Name: 'dong-ho-dien',
                 DataIMG: room.roomInfo?.electrictWater || [],
             },
             {
-                Name: "giay-to",
+                Name: 'giay-to',
                 DataIMG: renter.licenseImages || [],
             },
         ];
 
         try {
+            console.log(renter.job);
+            let datein = moment(room.dateGoIn).format("DD/MM/yyyy");
+            datein === "Invalid date" && ( datein = moment().format("DD/MM/yyyy") );
             await addPeopleToRoom(
                 {
-                    roomid: parseInt(route.params?.roomid),
+                    roomid: parseInt(route.params?.roomId || 0),
                     fullname: renter.fullName || "",
                     phone: renter.phoneNumber || "",
-                    email: renter.email || "",
-                    quantity: parseInt(renter.numberPeople) || 1,
-                    relationship: parseInt(
-                        renter.relationLists[renter.relationshipIndex].id
-                    ),
+                    job: renter.job || "",
                     cityid: parseInt(renter.cityLists[renter.provinceIndex].ID),
-                    objimg: JSON.stringify(imageArr), //Thay đổi sau khi sửa API
-                    datein: moment(room.dateGoIn).format("DD/MM/yyyy"),
+                    objimg: JSON.stringify(imageArr),  // imageArr
+                    datein: datein,
                     month: parseInt(room.timeRent),
                     note: renter.note,
                     totalprice: parseInt(checkout.actuallyReceived) || 0,
                     notepaid: checkout.paymentNote,
                     monthpaid: parseInt(checkout.prePaymentTimeIndex),
                     priceroom: parseInt(room.roomPrice) || 0,
-                    electrict: parseInt(room.roomInfo?.electrictNumber ?? 0),
-                    electrictprice: parseInt(
-                        room.roomInfo?.electrictPrice ?? 0
+                    electric: parseInt(room.roomInfo?.electrictNumber || 0),
+                    electricprice: parseInt(
+                        room.roomInfo?.electrictPrice || 0
                     ),
-                    water: parseInt(room.roomInfo?.waterNumber ?? 0),
-                    waterprice: parseInt(room.roomInfo?.waterPrice ?? 0),
-                    deposit: parseInt(checkout.totalDeposit),
+                    water: parseInt(room.roomInfo?.waterNumber || 0),
+                    waterprice: parseInt(room.roomInfo?.waterPrice || 0),
                     monthdeposit: parseInt(checkout.preDepositTimeIndex) + 1,
+                    addonservice: serviceArr.length > 0 ? JSON.stringify(serviceArr) || '' : '',
+                    email: renter.email || "",
+                    quantity: parseInt(renter.numberPeople) || 1,
+                    relationship: parseInt(
+                        renter.relationLists[renter.relationshipIndex.row].id
+                    ),  
+                    // deposit: parseInt(checkout.totalDeposit),
                     typeew: 1,
-                    addonservice: JSON.stringify(serviceArr),
                 },
                 {
                     navigation,
@@ -150,6 +159,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
                 }
             );
         } catch (error) {
+            console.log('sendFormData error', error)
             alert(JSON.stringify(error.message));
         }
 
@@ -161,59 +171,53 @@ const RoomGoInScreen = ({ navigation, route }) => {
         changeStepForm(1);
     };
 
-    return (
+    return (  
         <Layout style={styles.container} level="3">
-            <KeyboardAvoidingView
+            <KeyboardAwareScrollView
                 style={{ flex: 1 }}
-                behavior={Platform.OS === "ios" ? "position" : null}
-                // keyboardVerticalOffset={-44}
+                extraScrollHeight={headerHeight}
+                // viewIsInsideTabBar={true}
+                keyboardOpeningTime={150}
             >
-                <ScrollView
-                    style={{}}
-                    contentContainerStyle={{
-                        justifyContent: "flex-end",
-                    }}
-                >
-                    <RenderForm />
-                    <View style={styles.mainWrap}>
-                        {RoomGoinState.step < 2 ? (
-                            <Button
-                                style={styles.btnFt}
-                                onPress={changeNextStep}
-                                accessoryRight={() => (
-                                    <Icon
-                                        name="arrow-right"
-                                        fill={color.whiteColor}
-                                        style={sizes.iconButtonSize}
-                                    />
-                                )}
-                                size="large"
-                                status="danger"
-                            >
-                                {RoomGoinState.step === 0
-                                    ? "Cấu hình người thuê"
-                                    : "Thông tin thanh toán"}
-                            </Button>
-                        ) : (
-                            <Button
-                                style={styles.btnFt}
-                                onPress={sendFormData}
-                                accessoryLeft={() => (
-                                    <Icon
-                                        name="save"
-                                        fill={color.whiteColor}
-                                        style={sizes.iconButtonSize}
-                                    />
-                                )}
-                                size="large"
-                                status="success"
-                            >
-                                Lưu thông tin phòng
-                            </Button>
-                        )}
-                    </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
+                <RenderForm />
+                <View style={styles.mainWrap}>
+                    {RoomGoinState.step < 2 ? (
+                        <Button
+                            style={styles.btnFt}
+                            onPress={changeNextStep}
+                            accessoryRight={() => (
+                                <Icon
+                                    name="arrow-right"
+                                    fill={color.whiteColor}
+                                    style={sizes.iconButtonSize}
+                                />
+                            )}
+                            size="large"
+                            status="danger" 
+                        >  
+                            {RoomGoinState.step === 0
+                                ? "Cấu hình người thuê"
+                                : "Thông tin thanh toán"}
+                        </Button>
+                    ) : (
+                        <Button
+                            style={styles.btnFt}
+                            onPress={sendFormData}
+                            accessoryLeft={() => (
+                                <Icon
+                                    name="save"
+                                    fill={color.whiteColor}
+                                    style={sizes.iconButtonSize}
+                                />
+                            )}
+                            size="large"
+                            status="success"
+                        >
+                            Lưu thông tin phòng
+                        </Button>
+                    )}
+                </View>
+            </KeyboardAwareScrollView>
         </Layout>
     );
 };

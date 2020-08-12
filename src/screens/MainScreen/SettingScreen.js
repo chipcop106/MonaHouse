@@ -287,7 +287,7 @@ const UserSection = props => {
                     <Image
                         defaultSource={{}}
                         source={{
-                            uri: userInfo?.AvatarThumbnail,
+                            uri: userInfo?.AvatarThumbnail || '',
                         }}
                         style={styles.image}
                     />

@@ -124,7 +124,7 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
     );
 }
 
-const RoomCard = ({ roomInfo, addFee }) => {
+const RoomCard = ({ roomInfo, onPressaddFee }) => {
     const navigation = useNavigation();
     const { item } = roomInfo;
     return (
@@ -215,7 +215,7 @@ const RoomCard = ({ roomInfo, addFee }) => {
                             </Text>
                         </View>
                         <TouchableOpacity
-                            onPress={addFee}
+                            onPress={onPressaddFee}
                             style={styles.touchButton}>
                             <Icon name="plus-circle-outline" fill={color.darkColor} style={styles.iconButton} />
                             <Text style={styles.textButton}>Thêm phí</Text>

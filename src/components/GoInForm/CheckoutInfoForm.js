@@ -96,10 +96,7 @@ const CheckoutInfoForm = () => {
                                                     return (
                                                         prev +
                                                         parseInt(
-                                                            cur.value.price.replace(
-                                                                ".",
-                                                                ""
-                                                            )
+                                                            cur.value.price.replace(/\./g, '')
                                                         )
                                                     );
                                                 },
@@ -325,7 +322,7 @@ const CheckoutInfoForm = () => {
                         <View style={[styles.formRow, styles.fullWidth]}>
                             <Input
                                 label="Ghi chú thanh toán"
-                                placeholder="0"
+                                placeholder="Ghi chú"
                                 value={stateCheckout.paymentNote}
                                 onChangeText={(nextValue) =>
                                     changeStateFormStep(
@@ -351,7 +348,7 @@ const styles = StyleSheet.create({
     section: {
         paddingTop: 15,
         paddingHorizontal: 10,
-        marginBottom: 30,
+        marginBottom: 15,
         backgroundColor: color.whiteColor,
         borderRadius: 8,
     },

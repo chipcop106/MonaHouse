@@ -199,15 +199,7 @@ const createRoom = (dispatch) => async (
     try {
         const res = await createRoomAPI(params);
         res.Code !== 1 && errorHandle(res.Code, callback);
-        Alert.alert("Thông báo", "Tạo phòng mới thành công !", [
-            {
-                text: "Ok",
-                onPress: () => {
-                    navigation.pop();
-                    refreshList();
-                },
-            },
-        ]);
+        
     } catch (error) {
         alert(JSON.stringify(error.message));
     }
@@ -286,6 +278,7 @@ export const { Context, Provider } = CreateDataContext(
             selectedMonthIndex: 0,
             selectedMotelIndex: 0,
             selectedYearIndex: 0,
+            selectedSortIndex: 0,
             searchValue: "",
         },
         listRooms: [],

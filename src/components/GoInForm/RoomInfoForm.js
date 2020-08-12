@@ -47,7 +47,7 @@ const RoomInfoForm = () => {
                                 onChangeText={(nextValue) =>
                                     changeStateFormStep(
                                         "roomPrice",
-                                        nextValue.replace(",", "")
+                                        nextValue.replace(/\./g, '')
                                     )
                                 }
                                 textContentType="none"
@@ -99,7 +99,7 @@ const RoomInfoForm = () => {
                         </View>
                         <View style={[styles.formRow, styles.fullWidth]}>
                             <Select
-                                label="Giá điện nước"
+                                label="Cách tính điện nước"
                                 value={
                                     electrictType[
                                         stateRoomInfo.electrictIndex.row
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     },
     serviceWrap: {
         paddingBottom: 0,
-        marginBottom: 30,
+        marginBottom: 15,
     },
     serviceTitle: {
         flexDirection: "row",

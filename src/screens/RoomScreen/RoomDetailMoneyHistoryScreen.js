@@ -103,9 +103,9 @@ const RoomDetailMoneyHistoryScreen = () => {
             getElectrictHistory(
                 {
                     motelid:
-                        motelState.listMotels[selectedMotelIndex.row - 1]?.ID ??
+                        motelState.listMotels[selectedMotelIndex - 1]?.ID ??
                         0,
-                    month: selectedMonthIndex.row + 1,
+                    month: selectedMonthIndex + 1,
                 },
                 signOut
             );
@@ -123,7 +123,7 @@ const RoomDetailMoneyHistoryScreen = () => {
             />
             <List
                 contentContainerStyle={styles.contentCard}
-                style={styles.listContainer}
+                style={styles.container}
                 data={listElectrictHistory}
                 keyExtractor={(item) => item.id}
                 renderItem={(item) => (
@@ -153,8 +153,7 @@ const RoomDetailMoneyHistoryScreen = () => {
                         </View>
                     </View>
                 )}
-                style={styles.container}
-            ></List>
+            />
         </>
     );
 };

@@ -1,5 +1,5 @@
 import instance, { getAccessToken } from "./instanceAPI";
-
+import { create_UUID } from '~/utils'
 const path = `/RenterApi`;
 
 export const getRelationships = async (params) => {
@@ -147,20 +147,21 @@ export const uploadRenterImage = async (params) => {
     try {
         const token = await getAccessToken();
         let formData = new FormData();
-        if (!!params && params.length > 0) {
-            [...params].map((image) => {
+        if (!!params) {
+            !Array.isArray(params) && (params = [params]);
+            [...params].map(image => {
+                console.log(image)
                 const file = {
                     uri: image.path,
                     name:
-                        image.filename ||
-                        Math.floor(Math.random() * Math.floor(999999999)) +
-                            ".jpg",
+                        image.filename || `${create_UUID()}.jpg`,
                     type: image.mime,
                 };
+                console.log(file);
                 formData.append("file", file);
             });
         }
-
+        console.log(formData);
         let res = await instance.post(`${path}/uploadIMG`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
@@ -171,6 +172,7 @@ export const uploadRenterImage = async (params) => {
         });
         result = res.data;
     } catch (error) {
+        console.log(error);
         result = error;
     }
     return result;

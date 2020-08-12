@@ -144,10 +144,10 @@ export const convertNumberToText = (number) => {
     return result;
 };
 
-export const currencyFormat = (value, seperator = ',') =>{
+export const currencyFormat = (value, seperator = '.') =>{
 
     value += '';
-    let x = value.split('.');
+    let x = value.split(',');
     let x1 = x[0];
     let x2 = x.length > 1 ? '.' + x[1] : '';
     let rgx = /(\d+)(\d{3})/;

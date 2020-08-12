@@ -5,7 +5,7 @@ import React, {
     useContext,
     useEffect,
     useMemo,
-    useLayoutEffect
+    useLayoutEffect, createContext
 } from "react";
 import { StyleSheet, View, Alert,
     TouchableOpacity, ActivityIndicator, RefreshControl
@@ -20,7 +20,7 @@ import { Portal } from "react-native-portalize";
 import LinearGradient from 'react-native-linear-gradient';
 
 import AddFeeModal from "~/components/AddFeeModal";
-import FilterHeader from "~/components/FilterHeader";
+import FilterHeader from "./FilterHeader";
 import { Context as RoomContext } from "~/context/RoomContext";
 import { Context as MotelContext } from "~/context/MotelContext";
 import { Context as AuthContext } from "~/context/AuthContext";
@@ -39,6 +39,7 @@ const RoomManagementScreen = () => {
     const [loading, setLoading] = useState(false);
     const [refreshing, setrefreshing] = useState(false);
     const [filterValue, setFilterValue] = useState('');
+    const [modelFeeData, setmodelFeeData] = useState('');
     // useEffect(() => {
     //     console.log('aaaaaaaaaaaaaaa');
     //     console.log(navigation);
@@ -71,13 +72,34 @@ const RoomManagementScreen = () => {
         })();
     },[])
     const _pressAddNewRoom = ()=>{
-    
-        navigation.navigate('AddNewRoom', {
-            onGoBack: () => {
-                console.log("loadData(filterValue)")
-                loadData(filterValue)
-            }
-        });
+        if(Array.isArray(listMotels) && listMotels.length > 0){
+            navigation.navigate('AddNewRoom', {
+                onGoBack: () => {
+                    console.log("loadData(filterValue)")
+                    loadData(filterValue)
+                }
+            });
+        } else {
+           
+            Alert.alert('Thông báo', 'Bạn chưa có nhà trọ', [
+                {
+                    text: "Trở lại",
+                    onPress: () => {
+                        
+                    },
+                },
+                {
+                    text: "Tạo nhà Trọ",
+                    onPress: () => {
+                        // navigation.navigate('AddNewMotelMutiple', {}); 
+                        alert('chức năng trong quá trình phát triển')
+                    },
+                },
+            ])
+           
+            
+        }
+        
     }
     const loadData = async (filterList) => {
         console.log('filterList', filterList);
@@ -86,6 +108,7 @@ const RoomManagementScreen = () => {
             selectedMonthIndex,
             selectedMotelIndex,
             selectedYearIndex,
+
         } = filterList || {
             selectedMonthIndex: 0,
             selectedMotelIndex: 0,
@@ -104,12 +127,14 @@ const RoomManagementScreen = () => {
                 },
                 signOut
             );
+            
         } catch (error) {
             console.log(error);
         }
         updateState('isLoading', false)
     };
     const _onValueChange = (filterFormvalue) => {
+        console.log('_onValueChange', filterFormvalue);
         setFilterValue(filterFormvalue);
         loadData(filterFormvalue);
     }
@@ -126,9 +151,18 @@ const RoomManagementScreen = () => {
 
     const bsFee = createRef();
 
-    const openAddFeeModal = () => {
+    const _onPressaddFee = (roomdata) => {
+        const { HouseID, RoomName, RoomID, RenterID }  = roomdata
+        
         bsFee.current?.open();
+        setmodelFeeData({RoomName,  RoomID })
+        
     };
+    
+
+    const  _onModalizeFeeOpen = () => {
+
+    }
     return (
         <>
             <View style={styles.container}>
@@ -153,7 +187,7 @@ const RoomManagementScreen = () => {
                         refreshControl={
                             <RefreshControl
                               onRefresh={_onRefresh}
-                              refreshing={refreshing}
+                              refreshing={refreshing || isLoading}
                             />
                         }
                         
@@ -164,19 +198,19 @@ const RoomManagementScreen = () => {
                         renderItem={(room) => (
                             <RoomCard
                                 roomInfo={room}
-                                addFee={openAddFeeModal}
+                                onPressaddFee={() => _onPressaddFee(room.item)}
                             />
                         )}
                     />
                     <Portal >
-                        <Modalize
-                            
+                        <Modalize   
                             ref={bsFee}
                             closeOnOverlayTap={false}
                             adjustToContentHeight={true}
+                            onOpen={_onModalizeFeeOpen}
                         >
                             <View style={styles.bottomSheetContent}>
-                                <AddFeeModal />
+                                <AddFeeModal  data={modelFeeData} />
                             </View>
                         </Modalize>
                     </Portal>
@@ -245,9 +279,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 4.27,
-
         elevation: 7,
-
         borderRadius: 60 / 2,
     },
     btnAdd: {
