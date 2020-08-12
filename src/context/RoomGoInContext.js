@@ -1,16 +1,18 @@
 import { IndexPath } from "@ui-kitten/components";
 import CreateDataContext from "./CreateDataContext";
 import { addRenterOnRoom } from "~/api/RenterAPI";
+import { getRoomById } from '~/api/MotelAPI'
 import { Alert } from "react-native";
 
 const initialState = {
     step: 0,
+    isLoading: true,
     dataForm: [
         {
             roomPrice: "",
             dateGoIn: "",
             timeRent: "12",
-            timeTypeIndex: new IndexPath(0),
+            timeTypeIndex: new IndexPath(1),
             roomInfo: {
                 electrictNumber: "",
                 electrictPrice: "",
@@ -30,21 +32,23 @@ const initialState = {
             email: "",
             job: "",
             provinceIndex: new IndexPath(0),
-            numberPeople: "",
+            numberPeople: "1",
             relationshipIndex: new IndexPath(0),
             note: "",
-            licenseImages: [],
+            licenseImages: null,
             cityLists: [],
+            relationLists: [],
         },
         {
             depositTypeIndex: new IndexPath(0),
             preDepositTimeIndex: new IndexPath(0),
-            totalDeposit: "3.000.000",
+            totalDeposit: "",
             prePaymentTimeIndex: new IndexPath(0),
-            totalPrepay: "30.000.000",
-            actuallyReceived: "4.000.000",
+            totalPrepay: "",
+            actuallyReceived: "",
             paymentTypeIndex: new IndexPath(0),
-            paymentNote: "Đây là ghi chú",
+            paymentNote: "",
+            paymentType: [],
         },
     ],
 };
@@ -95,11 +99,16 @@ const goInReducer = (prevstate, action) => {
                 dataForm: newFormState,
             };
         }
-
         case "RESET_STATE": {
             return initialState;
         }
+        case "SET_LOADING": {
 
+            return {
+                ...prevstate,
+                isLoading: action.payload
+            }
+        }
         default: {
             return prevstate;
         }
@@ -124,6 +133,7 @@ const changeStepForm = (dispatch) => (stepValueChange) => {
 };
 
 const changeStateFormStep = (dispatch) => (field, value) => {
+    
     dispatch({ type: "STEP_STATE_CHANGE", payload: { field, value } });
 };
 
@@ -148,7 +158,16 @@ const addPeopleToRoom = (dispatch) => async (params, actions) => {
         alert(JSON.stringify(error.message));
     }
 };
-
+const loadRoomInfo = (dispatch) =>  async (value) => {
+    const roomid = value || '';
+    dispatch({type: "SET_LOADING", payload: true});
+    try {
+        const res = await getRoomById({roomid});
+    } catch (error) {
+        console.log('loadRoomInfo error:', error.message);
+    }
+    dispatch({type: "SET_LOADING", payload: false});
+}
 const resetState = (dispatch) => (value) => {
     dispatch({ type: "RESET_STATE" });
 };
@@ -161,51 +180,6 @@ export const { Context, Provider } = CreateDataContext(
         onChangeService,
         resetState,
         addPeopleToRoom,
-    },
-    {
-        step: 0,
-        dataForm: [
-            {
-                roomPrice: "3000000",
-                dateGoIn: "",
-                timeRent: "12",
-                timeTypeIndex: new IndexPath(1),
-                roomInfo: {
-                    electrictNumber: "",
-                    electrictPrice: "",
-                    electrictPriceInclude: "",
-                    electrictImage: null,
-                    waterNumber: "",
-                    waterPrice: "",
-                    waterPriceInclude: "",
-                    waterImage: null,
-                },
-                electrictIndex: new IndexPath(0),
-                services: [],
-            },
-            {
-                fullName: "",
-                phoneNumber: "",
-                email: "",
-                provinceIndex: new IndexPath(0),
-                numberPeople: "1",
-                relationshipIndex: new IndexPath(0),
-                note: "",
-                licenseImages: null,
-                cityLists: [],
-                relationLists: [],
-            },
-            {
-                depositTypeIndex: new IndexPath(0),
-                preDepositTimeIndex: new IndexPath(0),
-                totalDeposit: "",
-                prePaymentTimeIndex: new IndexPath(0),
-                totalPrepay: "",
-                actuallyReceived: "",
-                paymentTypeIndex: new IndexPath(0),
-                paymentNote: "",
-                paymentType: [],
-            },
-        ],
-    }
+        loadRoomInfo
+    },initialState
 );

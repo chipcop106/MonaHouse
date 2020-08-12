@@ -278,7 +278,6 @@ const RoomStack = () => {
                     title: "Chi tiết phòng 01",
                 }}
             />
-
             <Stack.Screen
                 name="AddNewRoom"
                 component={AddNewRoomScreen}

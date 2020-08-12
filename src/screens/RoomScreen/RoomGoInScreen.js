@@ -1,5 +1,5 @@
 
-import React, { useLayoutEffect, useContext } from "react";
+import React, { useLayoutEffect, useContext, useEffect } from "react";
 import {
     Text,
     StyleSheet,
@@ -7,6 +7,7 @@ import {
     ScrollView,
     TouchableOpacity,
     KeyboardAvoidingView,
+    NativeModules, Platform
 } from "react-native";
 import { Layout, Button, Icon } from "@ui-kitten/components";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -18,7 +19,7 @@ import RenterInfoForm from "../../components/GoInForm/RenterInfoForm";
 import CheckoutInfoForm from "../../components/GoInForm/CheckoutInfoForm";
 import { Context as RoomGoInContext } from "../../context/RoomGoInContext";
 import { Context as AuthContext } from "../../context/AuthContext";
-
+import Loading from '~/components/common/Loading';
 
 const titleHeader = [
     "Thông tin phòng, ki ốt",
@@ -26,14 +27,14 @@ const titleHeader = [
     "Thanh toán",
 ];
 
-const RenderForm = () => {
+const RenderForm = props => {
     const {
         state: RoomGoinState,
         changeStateFormStep,
         stepStateChange,
     } = useContext(RoomGoInContext);
     const { step, dataForm } = RoomGoinState;
-
+    console.log('RenderForm step:', step);
     return (
         <>
             {step === 0 && (
@@ -64,20 +65,32 @@ const RoomGoInScreen = ({ navigation, route }) => {
     const {
         state: RoomGoinState,
         changeStepForm,
+        changeStateFormStep,
         resetState,
         addPeopleToRoom,
+        stepStateChange,
+        loadRoomInfo
     } = useContext(RoomGoInContext);
+    const { step, dataForm } = RoomGoinState;
+    
+    useEffect(() => {
+        loadRoomInfo(route.params?.roomId);
+        return () => {
+            resetState();
+        }
+    }, [])
     const headerHeight = useHeaderHeight();
+    const onPress_headerLeft = () => {
+        step === 0
+        ? navigation.pop()
+        : changeStepForm(-1)
+    }
     useLayoutEffect(() => {
-        navigation.setOptions({
+        !RoomGoinState.isLoading && navigation.setOptions({
             headerLeft: () => (
                 <TouchableOpacity
                     style={styles.backButton}
-                    onPress={() =>
-                        RoomGoinState.step === 0
-                            ? navigation.pop()
-                            : changeStepForm(-1)
-                    }
+                    onPress={onPress_headerLeft}
                 >
                     <Icon
                         name="arrow-back-outline"
@@ -89,10 +102,9 @@ const RoomGoInScreen = ({ navigation, route }) => {
             ),
             headerTitle: titleHeader[RoomGoinState.step],
         });
-    }, [navigation, RoomGoinState]);
+    }, [RoomGoinState]);
 
     const sendFormData = async () => {
-        const { dataForm } = RoomGoinState;
         const room = dataForm[0];
         const renter = dataForm[1];
         const checkout = dataForm[2];
@@ -173,13 +185,17 @@ const RoomGoInScreen = ({ navigation, route }) => {
 
     return (  
         <Layout style={styles.container} level="3">
-            <KeyboardAwareScrollView
-                style={{ flex: 1 }}
+            {!!RoomGoinState.isLoading 
+            ? <View style={{alignItems: "center", padding: 15,}}><Loading /></View> 
+            : <KeyboardAwareScrollView
+                style={{ flex: 1}}
+                contentContainerStyle={{paddingVertical: 15}}
                 extraScrollHeight={headerHeight}
                 // viewIsInsideTabBar={true}
                 keyboardOpeningTime={150}
             >
-                <RenderForm />
+                <RenderForm 
+                />
                 <View style={styles.mainWrap}>
                     {RoomGoinState.step < 2 ? (
                         <Button
@@ -217,7 +233,8 @@ const RoomGoInScreen = ({ navigation, route }) => {
                         </Button>
                     )}
                 </View>
-            </KeyboardAwareScrollView>
+            </KeyboardAwareScrollView>}
+            
         </Layout>
     );
 };
