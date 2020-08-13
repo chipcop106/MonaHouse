@@ -154,7 +154,8 @@ const styles = StyleSheet.create({
     filter: {
         flexGrow: 1,
         marginBottom: 10,
-        minHeight: 40
+        minHeight: 40,
+        paddingRight: 30
     },
     fullWidth: {
         width: "100%",

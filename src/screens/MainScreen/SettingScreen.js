@@ -276,9 +276,9 @@ const UserSection = props => {
     };
     return <View style={styles.secWrap}>
                     
-        <View style={[styles.userInfo, { paddingBottom: 40 }]}>
+        <View style={[styles.userInfo, { paddingBottom: 40,  }]}>
             <TouchableOpacity
-                    style={{alignItems: "center", flexDirection: "row"}}
+                    style={{alignItems: "center", flexDirection: "row",}}
                     onPress={() =>
                         onPressWithParrams("SettingUserDetail", { id: userInfo?.ID })
                     }
@@ -451,9 +451,9 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     userInfo: {
-        flexDirection: "row",
-        alignItems: "center",
+      
         padding: 15,
+        paddingHorizontal: 20,
         margin: -5,
         backgroundColor: '#D1D1D1',
         borderTopLeftRadius: 6,

@@ -37,23 +37,23 @@ const ModalizeSelect =  (props) => {
     const _onClosed = () => {
         !!onChange && onChange(pickerData.indexOf(selected), selected);  
     }
-    return <>
+    return <View>
         <TouchableOpacity
             onPress={_onPress}
             disabled={disabled}
             
         >
-            <View style={[styles.selectTouch, disabled && {backgroundColor: "#f8f8f8"}]}>
+            <View style={[styles.selectTouch, {  }, disabled && {backgroundColor: "#f8f8f8"}]}>
                 <Icon
                     name={leftIcon}
                     fill={color.whiteColor}
-                    style={styles.iconStyle}
+                    style={[styles.iconStyle, { position: "absolute", top: -10}]}
                 />
-                <Text style={[styles.selectedtxt,{flexGrow: 1, paddingRight: 40, backgroundColor: "transparent"}]} numberOfLines={1}>{selected}</Text>
+                <Text style={[styles.selectedtxt,{flexGrow: 1, paddingRight: 15, backgroundColor: "transparent"}]} numberOfLines={1}>{selected}</Text>
                 <Icon
                     name={'chevron-down-outline'}
                     fill={"#919cb3"}
-                    style={[{width: 25, height: 25, paddingHorizontal: 0, position: "absolute", right: 10, top: -13}]}
+                    style={[{width: 25, height: 25, paddingHorizontal: 0, position: "absolute", right: -5, top: -13, backgroundColor: "transparent"}]}
                 />
             </View>
         </TouchableOpacity>
@@ -73,7 +73,7 @@ const ModalizeSelect =  (props) => {
                 </Picker>
             </Modalize>
         </Portal>
-    </>
+    </View>
 }
 
 export default ModalizeSelect;
@@ -91,13 +91,12 @@ const styles = StyleSheet.create({
     },
     iconStyle: {
         width: 20,
-        height: 20
+        height: 20,
     },
     selectedtxt: {
         color: "#919cb3",
         fontWeight: "600",
-        paddingHorizontal: 10,
+        paddingHorizontal: 25,
         fontSize: 14,
-        paddingRight: 30
     }
 })

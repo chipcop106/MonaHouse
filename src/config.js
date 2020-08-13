@@ -20,6 +20,7 @@ export const color = {
     lightWeight: "#e0e0fc",
     iconSettingColor: "#8A8A8E",
     darkShadowColor: "rgba(65,63,98,1)",
+    success: "#2EC953",
     gradients: {
         primary: ["#B6F4FD", "#2BC7C7", "#75F2FF"],
         success: ["#2EC953", "#2EC953", "#2EC953"],

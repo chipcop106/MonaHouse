@@ -5,7 +5,7 @@ import React, {
     useContext,
     useEffect,
     useMemo,
-    useLayoutEffect, createContext
+    useLayoutEffect, createContext, memo
 } from "react";
 import { StyleSheet, View, Alert,
     TouchableOpacity, ActivityIndicator, RefreshControl
@@ -25,6 +25,10 @@ import { Context as RoomContext } from "~/context/RoomContext";
 import { Context as MotelContext } from "~/context/MotelContext";
 import { Context as AuthContext } from "~/context/AuthContext";
 import Loading from "~/components/common/Loading";
+import ModalizeAddMotel from '~/components/ModalizeAddMotel'
+
+import { create_UUID } from "~/utils";
+
 
 const RoomManagementScreen = () => {
     const { signOut } = useContext(AuthContext);
@@ -92,7 +96,8 @@ const RoomManagementScreen = () => {
                     text: "Tạo nhà Trọ",
                     onPress: () => {
                         // navigation.navigate('AddNewMotelMutiple', {}); 
-                        alert('chức năng trong quá trình phát triển')
+                        // alert('chức năng trong quá trình phát triển')
+                        bsAddMotel.current?.open();
                     },
                 },
             ])
@@ -150,18 +155,33 @@ const RoomManagementScreen = () => {
     }
 
     const bsFee = createRef();
-
+    const bsAddMotel = createRef();
     const _onPressaddFee = (roomdata) => {
         const { HouseID, RoomName, RoomID, RenterID }  = roomdata
         
         bsFee.current?.open();
-        setmodelFeeData({RoomName,  RoomID })
+        setTimeout(() => {
+            setmodelFeeData({RoomName,  RoomID })
+        }, 10);
+        
         
     };
     
 
     const  _onModalizeFeeOpen = () => {
 
+    }
+    const _onModalizeAddMotelClose = (  ) => {
+        console.log('_onModalizeAddMotelClose');
+        ( async () => {
+            setLoading(true)
+            try {
+                await loadData();
+            } catch (error) {
+                
+            }
+            setLoading(false)
+        })();
     }
     return (
         <>
@@ -202,44 +222,47 @@ const RoomManagementScreen = () => {
                             />
                         )}
                     />
+                    <TouchableOpacity
+                        onPress={_pressAddNewRoom}
+                        style={styles.addAction}
+                    >
+                        <LinearGradient
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                            useAngle={true}
+                            angle={45}
+                            angleCenter={{ x: 0.5, y: 0.25 }}
+                            colors={color.gradients.success}
+                            style={{
+                                borderRadius: 50,
+                            }}
+                        >
+                            <View style={styles.btnAdd}>
+                                <Icon
+                                    name="plus"
+                                    fill={color.whiteColor}
+                                    style={styles.btnAddIcon}
+                                />
+                            </View>
+                        </LinearGradient>
+                    </TouchableOpacity>
                     <Portal >
-                        <Modalize   
+                        <Modalize 
                             ref={bsFee}
                             closeOnOverlayTap={false}
                             adjustToContentHeight={true}
-                            onOpen={_onModalizeFeeOpen}
-                        >
+                            onOpen={_onModalizeFeeOpen}>
                             <View style={styles.bottomSheetContent}>
                                 <AddFeeModal  data={modelFeeData} />
                             </View>
                         </Modalize>
+                        <ModalizeAddMotel 
+                            modalTopOffset={0}
+                            onClose={_onModalizeAddMotelClose}
+                            ref={bsAddMotel} />
                     </Portal>
                 </View>}
             </View>
-            {!!!loading && <TouchableOpacity
-                onPress={_pressAddNewRoom}
-                style={styles.addAction}
-            >
-                <LinearGradient
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    useAngle={true}
-                    angle={45}
-                    angleCenter={{ x: 0.5, y: 0.25 }}
-                    colors={color.gradients.success}
-                    style={{
-                        borderRadius: 50,
-                    }}
-                >
-                    <View style={styles.btnAdd}>
-                        <Icon
-                            name="plus"
-                            fill={color.whiteColor}
-                            style={styles.btnAddIcon}
-                        />
-                    </View>
-                </LinearGradient>
-            </TouchableOpacity>}
         </>
     );
 };
@@ -294,4 +317,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default RoomManagementScreen;
+export default memo(RoomManagementScreen);

@@ -1,4 +1,4 @@
-import React, {useState, useContext} from "react";
+import React, {useState, useContext, memo, useEffect} from "react";
 import { StyleSheet, View, TouchableOpacity, ActivityIndicator } from "react-native";
 import {
     Icon, Input, Text, Button
@@ -10,9 +10,12 @@ const AddFeeModal = props => {
     const { data } = props;
     
     console.log('AddFeeModal', data);
-    return (
-        <>{ !!data ? <><View style={styles.formGroup}>
-                <Text category="h5" status="primary">{ data.RoomName }</Text>
+    // useEffect(() => {
+    //     console.log('new Data', data);
+    // }, [data.RoomID])
+    return (<>
+        { !!data ? <><View style={styles.formGroup}>
+                <Text category="h5" status="primary">{ data.RoomName || '' }</Text>
             </View>
         
             <View style={[styles.formGroup]}>
@@ -40,8 +43,7 @@ const AddFeeModal = props => {
                 Thêm phí cho phòng này
             </Button></> : <ActivityIndicator />
         }
-        </>
-    )
+    </>)
 }
 
 const styles = StyleSheet.create({
@@ -50,4 +52,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default AddFeeModal;
+export default memo(AddFeeModal);

@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "100%",
     },
-    wrapper: {
+    SwiperWrapper: {
         height: height / 3,
     },
     backdrop: {
@@ -212,7 +212,7 @@ const HistoryRecord = ({ style = {}, renterInfo = false, title = "Phòng 01" }) 
             >
                 <Card disabled={true}>
                     <Swiper
-                        containerStyle={styles.wrapper}
+                        containerStyle={styles.SwiperWrapper}
                         showsButtons={true}
                         loop={false}
                         buttonWrapperStyle={styles.buttonWrap}

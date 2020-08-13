@@ -17,6 +17,21 @@ export const createMotel = async (params) => {
         return error.message;
     }
 };
+export const createMotelByName = async (params) => {
+    try {
+        const token = await getAccessToken();
+        let res = await instance.get(`${path}/createmotelbyname`, {
+            params: {
+                ...params,
+                token,
+            },
+        });
+
+        return res.data;
+    } catch (error) {
+        return error.message;
+    }
+};
 
 export const updateMotel = async (params) => {
     try {
