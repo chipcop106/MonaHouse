@@ -155,7 +155,9 @@ const RoomGoInScreen = ({ navigation, route }) => {
                     water: parseInt(room.roomInfo?.waterNumber || 0),
                     waterprice: parseInt(room.roomInfo?.waterPrice || 0),
                     monthdeposit: parseInt(checkout.preDepositTimeIndex) + 1,
-                    addonservice: serviceArr.length > 0 ? JSON.stringify(serviceArr) || '' : '',
+                    addonservice: serviceArr.length > 0 ? JSON.stringify(serviceArr.map(item => {
+                        return { ID: 0 , ...item.value }
+                    })) || '' : '',
                     email: renter.email || "",
                     quantity: parseInt(renter.numberPeople) || 1,
                     relationship: parseInt(

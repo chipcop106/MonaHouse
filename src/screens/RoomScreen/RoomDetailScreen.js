@@ -404,7 +404,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                 <View
                                     style={{ ...styles.sec, paddingBottom: 0 }}
                                 >
-                                    {roomInfo.service.length > 0 ? (
+                                    {roomInfo.service?.length > 0 ? (
                                         roomInfo.service.map((item) => (
                                             <View
                                                 style={styles.rowInfo}

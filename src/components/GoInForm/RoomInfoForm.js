@@ -31,7 +31,18 @@ const RoomInfoForm = () => {
         onChangeService,
     } = useContext(RoomGoInContext);
     const stateRoomInfo = RoomGoInState.dataForm[RoomGoInState.step];
-
+    const _onPressAddService = () => {
+        changeStateFormStep("services", [
+            ...stateRoomInfo.services,
+            {
+                id: randomId(),
+                value: {
+                    name: "",
+                    price: "",
+                },
+            },
+        ])
+    }
     return (
         <>
             <View style={styles.mainWrap}>
@@ -137,18 +148,7 @@ const RoomInfoForm = () => {
                         Dịch vụ phòng
                     </Text>
                     <TouchableOpacity
-                        onPress={() =>
-                            changeStateFormStep("services", [
-                                ...stateRoomInfo.services,
-                                {
-                                    id: randomId(),
-                                    value: {
-                                        name: "",
-                                        price: "",
-                                    },
-                                },
-                            ])
-                        }
+                        onPress={_onPressAddService}
                         style={styles.addServiceBtn}
                     >
                         <Icon
@@ -163,8 +163,9 @@ const RoomInfoForm = () => {
                 </View>
 
                 <View style={[styles.section, styles.serviceWrap]}>
-                    {stateRoomInfo.services &&
+                    {!!stateRoomInfo.services &&
                     stateRoomInfo.services.length > 0 ? (
+                    
                         stateRoomInfo.services.map((service) => (
                             <Service
                                 key={`${service.id}`}

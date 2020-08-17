@@ -79,6 +79,23 @@ export const getMotels = async (params) => {
     return result;
 };
 
+export const getSortRoom = async (params) => {
+    let result = "";
+    try {
+        // const token = await getAccessToken();
+        let res = await instance.get(`${path}/getoptionsortroom`, {
+            params: {
+                // token,
+            },
+        });
+        result = res.data;
+    } catch (error) {
+        result = error;
+    }
+    return result;
+};
+
+
 /* 
     int motelid || 0, 
     int month, 

@@ -92,8 +92,8 @@ const FilterHeader = ({
                         <ModalizeSelect 
                             disabled={loading}
                             onChange={_getSelectedIndex("selectedSortIndex")}
-                            pickerData={roomSortList}
-                            selectedValue={roomSortList[selectedSortIndex || 0]}
+                            pickerData={motelState.listSortOptions.map(item => item.text)}
+                            selectedValue={motelState.listSortOptions.map(item => item.text)[selectedSortIndex || 0]}
                             leftIcon="funnel"
                             disabled={loading}
                         />

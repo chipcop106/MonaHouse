@@ -99,7 +99,7 @@ const pad = (n) => (n >= 10 ? n : `0${n}`);
 //screen
 const HomeScreen = () => {
     const { signOut } = useContext(AuthContext);
-    const { state: motelState, getListMotels } = useContext(MotelContext);
+    const { state: motelState, getListMotels, getSortOpsions } = useContext(MotelContext);
     const [pickerData, setPickerData] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -121,6 +121,7 @@ const HomeScreen = () => {
     }, [motelState]);
     const loadInitData = async () => {
         getListMotels(signOut);
+        getSortOpsions();
     }
     const _onValueSelectChange = (itemValue, itemIndex) => {
         console.log(itemValue, itemIndex);

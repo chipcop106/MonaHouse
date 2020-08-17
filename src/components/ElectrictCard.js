@@ -9,7 +9,6 @@ import IncludeElectrictWater from "~/components/IncludeElectrictWater";
 const noImageSrc = require("~/../assets/user.png");
 
 const renderItemHeader = (headerprops, roomInfo, navigation) => {
-    const { item } = roomInfo;
 
     return (
         <View {...headerprops} style={styles.headerWrap}>
@@ -19,7 +18,7 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
                     ellipsizeMode="tail"
                     numberOfLines={1}
                 >
-                    {item.RoomName}
+                    {roomInfo.RoomName}
                 </Text>
             </TouchableOpacity>
         </View>
@@ -68,9 +67,11 @@ const styles = StyleSheet.create({
         padding: 15,
         alignItems: "center",
         justifyContent: "space-between",
-        borderTopLeftRadius: 8,
-        borderTopRightRadius: 8,
+        borderTopLeftRadius: 6,
+        borderTopRightRadius: 6,
         position: "relative",
+        marginTop: -1,
+        marginHorizontal: -1
     },
     roomName: {
         fontSize: 20,
@@ -79,7 +80,6 @@ const styles = StyleSheet.create({
         paddingRight: 45,
     },
     item: {
-        marginBottom: 30,
         borderRadius: 6,
         ...shadowStyle
 

@@ -9,6 +9,8 @@ import {
     KeyboardAvoidingView,
 } from "react-native";
 import { List, Button, Icon, IndexPath } from "@ui-kitten/components";
+import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
+import { useHeaderHeight } from "@react-navigation/stack";
 import { color, settings, sizes } from "~/config";
 import { Context as RoomContext } from "~/context/RoomContext";
 import { Context as MotelContext } from "~/context/MotelContext";
@@ -36,21 +38,21 @@ const reducer = (prevState, { type, payload }) => {
                 ...prevState,
                 [payload.key]: payload.value,
             };
-            break;
         default:
             return prevState;
-            break;
+            
     }
 };
 
 const RoomElectrictCollectAllScreen = () => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const { signOut } = useContext(AuthContext);
-    const { state: roomState, getListElectrict } = useContext(RoomContext);
+    const { state: roomState, getListElectrict, updateElectrict } = useContext(RoomContext);
     const { listElectrictRooms} = roomState;
     const { state: modelState } = useContext(MotelContext);
     const { listMotels } = modelState;
     const [loading, setLoading] = useState(false);
+    const headerHeight = useHeaderHeight(); 
     const updateState = (key, value) => {
         dispatch({ type: "STATE_CHANGE", payload: { key, value } });
     };
@@ -97,9 +99,15 @@ const RoomElectrictCollectAllScreen = () => {
     //     updateState("filterState", filter);
     // };
 
-    const onChangeRoomInfo = (state) => {};
+    const onChangeRoomInfo = (state, index) => {
+        console.log('onChangeRoomInfo', index, state);
+    };
 
-    const submitAllConfirm = () => {
+    const _onValueChange = (filterFormvalue) => {
+        
+        onFilterChange(filterFormvalue);
+    }
+    const _onPressSubmit = () => {
         Alert.alert(
             "Cảnh báo",
             `Bạn có chắc chắn muốn ghi điện tất cả phòng trong tháng đã chọn ??`,
@@ -111,20 +119,32 @@ const RoomElectrictCollectAllScreen = () => {
                 },
                 {
                     text: "Tôi chắc chắn",
-                    onPress: () => alert("Đã thu thành công"),
+                    onPress: () => updateElectrict(),
                 },
             ],
             { cancelable: false }
         );
-    };
-    const _onValueChange = (filterFormvalue) => {
-        
-        onFilterChange(filterFormvalue);
     }
-    useEffect(() => {
-        onFilterChange();
-    }, []);
-
+    const _renderItem = ({item, index}) => {
+        // console.log(item);
+        return <ElectrictCard
+            roomInfo={item}
+            handleValueChange={(state) => onChangeRoomInfo(state, index)}
+        />
+    }
+    const _renderListHeader = () => (
+        <View style={styles.linkCustom}>
+            <NavLink
+                title="Lịch sử ghi điện nước"
+                icon={{
+                    name: "file-text-outline",
+                    color: color.primary,
+                }}
+                routeName="ElectrictHistory"
+                borderBottom={false}
+            />
+        </View>
+    )
     return (
         <View style={styles.container}>
             <FilterHeader
@@ -142,40 +162,44 @@ const RoomElectrictCollectAllScreen = () => {
                 >
                     <Loading />
                 </View> }
-            {!!!state.isLoading && <View style={styles.contentContainer}>
-                <List
+            {!!!state.isLoading && <><View style={styles.contentContainer}>
+                <KeyboardAwareFlatList
+                    // extraScrollHeight={headerHeight}
+                    // viewIsInsideTabBar={true}
+                    keyboardShouldPersistTaps="never"
+                    keyboardOpeningTime={150}
+                    style={{flex: 1}}
+                    contentContainerStyle={{paddingHorizontal: 15, paddingVertical: 30}}
                     refreshControl={
                         <RefreshControl
                           onRefresh={_onRefresh}
                           refreshing={loading}
                         />
                     }
-                    stickyHeaderIndices={[0]}
-                    ListHeaderComponent={() => (
-                        <View style={styles.linkCustom}>
-                            <NavLink
-                                title="Lịch sử ghi điện nước"
-                                icon={{
-                                    name: "file-text-outline",
-                                    color: color.primary,
-                                }}
-                                routeName="ElectrictHistory"
-                                borderBottom={false}
-                            />
-                        </View>
-                    )}
-                    keyExtractor={(room, index) => `${room.RoomID} - ${index}`}
-                    style={styles.listContainer}
-                    contentContainerStyle={styles.contentCard}
                     data={listElectrictRooms}
-                    renderItem={(room) => (
-                        <ElectrictCard
-                            roomInfo={room}
-                            handleValueChange={onChangeRoomInfo}
-                        />
-                    )}
+                    ListHeaderComponent={_renderListHeader}
+                    keyExtractor={(room, index) => `${room.RoomID} - ${index}`}
+                    renderItem={_renderItem}
+                    ItemSeparatorComponent={()=> <View style={{height: 10}} />}
                 />
-            </View> }    
+
+            </View>
+            <Button
+                style={{borderRadius: 0}}
+                onPress={_onPressSubmit}
+                accessoryLeft={() => (
+                    <Icon
+                        name="credit-card-outline"
+                        fill={color.whiteColor}
+                        style={sizes.iconButtonSize}
+                    />
+                )}
+                size="large"
+                status="danger"
+            >
+                Ghi điện tất cả phòng
+            </Button>
+            </> }    
             
         </View>
     );
@@ -190,28 +214,15 @@ const styles = StyleSheet.create({
     },
 
     contentContainer: {
-        flexGrow: 1,
+        flex: 1
     },
-
-    contentCard: {
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-        flexGrow: 1,
-    },
-
     listContainer: {
-        flexGrow: 1,
         backgroundColor: "#f0f0f0",
-    },
-
-    bottomSheetContent: {
-        paddingHorizontal: 15,
-        paddingVertical: 30,
-        paddingBottom: 60,
     },
     linkCustom: {
         backgroundColor: "#fff",
         shadowColor: "#000",
+        marginBottom: 10,
         shadowOffset: {
             width: 0,
             height: 2,
@@ -219,7 +230,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.23,
         shadowRadius: 2.62,
         elevation: 4,
-        marginVertical: 15,
         paddingLeft: 10,
         borderRadius: 4,
     },
