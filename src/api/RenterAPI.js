@@ -1,14 +1,14 @@
 import instance, { getAccessToken } from "./instanceAPI";
-import { create_UUID } from '~/utils'
+import { create_UUID } from "~/utils";
 const path = `/RenterApi`;
 
 export const getRelationships = async (params) => {
-    try {
-        let res = await instance.get(`${path}/getrelationship`);
-        return res.data;
-    } catch (error) {
-        return error;
-    }
+  try {
+    let res = await instance.get(`${path}/getrelationship`);
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 /*Thêm người thuê vào phòng 
@@ -40,20 +40,20 @@ string addonservice – danh sach dich vu thang
 */
 
 export const addRenterOnRoom = async (params) => {
-    let result;
-    try {
-        const token = await getAccessToken();
-        let res = await instance.get(`${path}/insertrenter`, {
-            params: {
-                ...params,
-                token,
-            },
-        });
-        result = res.data;
-    } catch (error) {
-        result = error;
-    }
-    return result;
+  let result;
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(`${path}/insertrenter`, {
+      params: {
+        ...params,
+        token,
+      },
+    });
+    result = res.data;
+  } catch (error) {
+    result = error;
+  }
+  return result;
 };
 
 /*Cập nhật thông tin người thuê
@@ -70,20 +70,20 @@ string note
 */
 
 export const updateRenterOnRoom = async (params) => {
-    let result;
-    try {
-        const token = await getAccessToken();
-        let res = await instance.get(`${path}/updaterenter`, {
-            params: {
-                ...params,
-                token,
-            },
-        });
-        result = res.data;
-    } catch (error) {
-        result = error;
-    }
-    return result;
+  let result;
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(`${path}/updaterenter`, {
+      params: {
+        ...params,
+        token,
+      },
+    });
+    result = res.data;
+  } catch (error) {
+    result = error;
+  }
+  return result;
 };
 
 /*Thêm dịch vụ phòng
@@ -97,20 +97,20 @@ int price
 */
 
 export const addService = async (params) => {
-    let result;
-    try {
-        const token = await getAccessToken();
-        let res = await instance.get(`${path}/insertservice`, {
-            params: {
-                ...params,
-                token,
-            },
-        });
-        result = res.data;
-    } catch (error) {
-        result = error;
-    }
-    return result;
+  let result;
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(`${path}/insertservice`, {
+      params: {
+        ...params,
+        token,
+      },
+    });
+    result = res.data;
+  } catch (error) {
+    result = error;
+  }
+  return result;
 };
 
 /*Xóa dịch vụ phòng
@@ -120,20 +120,20 @@ int id  // id service
 */
 
 export const deleteService = async (params) => {
-    let result;
-    try {
-        const token = await getAccessToken();
-        let res = await instance.get(`${path}/deleteservice`, {
-            params: {
-                ...params,
-                token,
-            },
-        });
-        result = res.data;
-    } catch (error) {
-        result = error;
-    }
-    return result;
+  let result;
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(`${path}/deleteservice`, {
+      params: {
+        ...params,
+        token,
+      },
+    });
+    result = res.data;
+  } catch (error) {
+    result = error;
+  }
+  return result;
 };
 
 /*Upload giấy tờ nhân viên
@@ -143,39 +143,38 @@ formData file
 */
 
 export const uploadRenterImage = async (params) => {
-    let result;
-    try {
-        const token = await getAccessToken();
-        let formData = new FormData();
-        if (!!params) {
-            !Array.isArray(params) && (params = [params]);
-            [...params].map(image => {
-                console.log(image)
-                const file = {
-                    uri: image.path,
-                    name:
-                        image.filename || `${create_UUID()}.jpg`,
-                    type: image.mime,
-                };
-                console.log(file);
-                formData.append("file", file);
-            });
-        }
-        console.log(formData);
-        let res = await instance.post(`${path}/uploadIMG`, formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-            params: {
-                token,
-            },
-        });
-        result = res.data;
-    } catch (error) {
-        console.log(error);
-        result = error;
+  let result;
+  try {
+    const token = await getAccessToken();
+    let formData = new FormData();
+    if (!!params) {
+      !Array.isArray(params) && (params = [params]);
+      [...params].map((image) => {
+        console.log(image);
+        const file = {
+          uri: image.path,
+          name: image.filename || `${create_UUID()}.jpg`,
+          type: image.mime,
+        };
+        console.log(file);
+        formData.append("file", file);
+      });
     }
-    return result;
+    console.log(formData);
+    let res = await instance.post(`${path}/uploadIMG`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      params: {
+        token,
+      },
+    });
+    result = res.data;
+  } catch (error) {
+    console.log(error);
+    result = error;
+  }
+  return result;
 };
 
 // export const uploadElectrictWaterImage = async (params) => {
@@ -218,7 +217,6 @@ string imgwater
 */
 
 export const updateElectrictWater = async (params) => {
-    let result;
     try {
         const token = await getAccessToken();
         let res = await instance.get(`${path}/writewaterelectrict`, {
@@ -247,7 +245,30 @@ export const goOut = async params => {
     } catch (error) {
         return error.message;
     }
+
 };
+
+
+export const getCustomerDebt = async (params) => {
+    // type:1 //1 nợ 2 dư
+    // search:
+    // sort:0
+    // motelid:0
+    // roomid:0
+    // //motel=0=> tất cả nhà, !=0 => list người thuê theo id nhà
+    try {
+      const token = await getAccessToken();
+      let res = await instance.get(`${path}/ListRenterDebt`, {
+        params: {
+          ...params,
+          token,
+        },
+      });
+      return res.data;
+    } catch (error) {
+      return error?.message ?? "Lỗi api";
+    }
+}
 export const ReadyGoOut = async params => {
     // MoveOut(string token, int renterid, int roomid)
     try {
