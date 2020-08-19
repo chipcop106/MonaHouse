@@ -45,7 +45,16 @@ const RoomManagementScreen = () => {
     const [filterValue, setFilterValue] = useState('');
     const [modelFeeData, setmodelFeeData] = useState('');
 
-
+    useLayoutEffect(() => {
+        console.log('roomState.isReload', roomState.isReload);
+        if(roomState.isReload){
+            loadData(filterValue);
+            updateState('isReload', false);
+        }
+        return () => {
+            
+        };
+    }, [roomState.isReload])
     const _pressAddNewRoom = ()=>{
         if(Array.isArray(listMotels) && listMotels.length > 0){
             navigation.navigate('AddNewRoom', {

@@ -52,7 +52,12 @@ const roomReducer = (prevstate, { type, payload }) => {
                 ),
             };
         }
-
+        case "SET_RELOAD": {
+            return {
+                ...prevstate,
+                isReload: payload
+            }
+        }
         default:
             return prevstate;
     }
@@ -273,6 +278,7 @@ export const { Context, Provider } = CreateDataContext(
         deleteRoom,
     },
     {
+        isReload: false,
         isLoading: false,
         filterStateDefault: {
             selectedMonthIndex: 0,

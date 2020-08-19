@@ -233,7 +233,7 @@ export const updateElectrictWater = async (params) => {
     }
 }
 
-export const GoOut = async params => {
+export const goOut = async params => {
     // MoveOut(string token, int renterid, int roomid, int paid, int payment)
     try {
         const token = await getAccessToken();
@@ -248,3 +248,19 @@ export const GoOut = async params => {
         return error.message;
     }
 };
+export const ReadyGoOut = async params => {
+    // MoveOut(string token, int renterid, int roomid)
+    try {
+        const token = await getAccessToken();
+        let res = await instance.get(`${path}/ReadyMoveOut`,{
+            params:{
+                ...params,
+                token
+            }
+        });
+        return res.data;
+    } catch (error) {
+        return error.message;
+    }
+};
+

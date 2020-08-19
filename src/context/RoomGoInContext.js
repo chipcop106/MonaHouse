@@ -6,7 +6,7 @@ import { Alert } from "react-native";
 
 const initialState = {
     step: 0,
-    isLoading: true,
+    isLoading: false,
     isLogout: false,
     dataForm: [
         {
@@ -126,6 +126,7 @@ const goInReducer = (prevstate, action) => {
             }
         }
         case "RESET_STATE": {
+            console.log(initialState);
             return initialState;
         }
         case "SET_LOADING": {
@@ -149,7 +150,6 @@ const errorHandle = (code, { signOut }) => {
         default:
             alert("Lỗi API !!");
             return;
-            break;
     }
 };
 
@@ -174,11 +174,11 @@ const addPeopleToRoom = (dispatch) => async (params, actions) => {
             {
                 text: "Ok",
                 onPress: () => {
-                    actions.resetState();
-                    actions.navigation.popToTop();
+                    
                 },
             },
         ]);
+        actions.navigation.popToTop();
     } catch (error) {
         alert(JSON.stringify(error.message));
     }
@@ -232,5 +232,53 @@ export const { Context, Provider } = CreateDataContext(
         resetState,
         addPeopleToRoom,
         loadRoomInfo
-    },initialState
+    }, {
+        step: 0,
+        isLoading: false,
+        isLogout: false,
+        dataForm: [
+        {
+            roomPrice: "",
+            dateGoIn: "",
+            timeRent: "12",
+            timeTypeIndex: new IndexPath(1),
+            roomInfo: {
+                electrictNumber: "",
+                electrictPrice: "",
+                electrictPriceInclude: "",
+                electrictImage: null,
+                waterNumber: "",
+                waterPrice: "",
+                waterPriceInclude: "",
+                waterImage: null,
+            },
+            electrictIndex: new IndexPath(0),
+            services: [],
+        },
+        {
+            fullName: "",
+            phoneNumber: "",
+            email: "",
+            job: "",
+            provinceIndex: new IndexPath(0),
+            numberPeople: "1",
+            relationshipIndex: new IndexPath(0),
+            note: "",
+            licenseImages: null,
+            cityLists: [],
+            relationLists: [],
+        },
+        {
+            depositTypeIndex: new IndexPath(0),
+            preDepositTimeIndex: new IndexPath(0),
+            totalDeposit: "",
+            prePaymentTimeIndex: new IndexPath(0),
+            totalPrepay: "",
+            actuallyReceived: "",
+            paymentTypeIndex: new IndexPath(0),
+            paymentNote: "",
+            paymentType: [],
+        },
+    ],
+    }
 );
