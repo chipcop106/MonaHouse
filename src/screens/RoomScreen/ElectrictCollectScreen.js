@@ -3,6 +3,7 @@ import { StyleSheet, View, ScrollView,
     Alert, ActivityIndicator,
     TextInput
 } from "react-native";
+import { useNavigation } from '@react-navigation/native'
 import { Text, Input, Button, Icon } from "@ui-kitten/components";
 import UserInfo from "~/components/UserInfo";
 import IncludeElectrictWater from "~/components/IncludeElectrictWater";
@@ -35,6 +36,7 @@ const renderZero = num => {
     return `0${num}`
 }
 const ElectrictCollectScreen = ({ route }, month) => {
+    const navigation  = useNavigation();
     const [state, dispatch] = useReducer(reducer, initialState);
     const roomId = route.params?.roomId ?? null;
     // const { renter, room, electric, water } = state;
@@ -78,7 +80,8 @@ const ElectrictCollectScreen = ({ route }, month) => {
             });
             
             if(res.Code === 1){
-                Alert.alert('Thành công!!', 'Số điện nước đã được cập nhật')
+                Alert.alert('Thành công!!', 'Số điện nước đã được cập nhật');
+                navigation.pop();
             } else {
                 throw res;
             }

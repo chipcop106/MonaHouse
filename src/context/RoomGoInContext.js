@@ -6,7 +6,8 @@ import { Alert } from "react-native";
 
 const initialState = {
     step: 0,
-    isLoading: true,
+    isLoading: false,
+    isLogout: false,
     dataForm: [
         {
             roomPrice: "",
@@ -52,6 +53,16 @@ const initialState = {
         },
     ],
 };
+function updateItemByindex({index, item, array}) {
+    for (let i in array) {
+        if (i == index) {
+              array[i] = item;
+              break; 
+        }
+      }
+      return array;
+    
+}
 
 const goInReducer = (prevstate, action) => {
     switch (action.type) {
@@ -69,7 +80,16 @@ const goInReducer = (prevstate, action) => {
                 dataForm: newFormState,
             };
         }
-
+        case "SET_STATE_dataForm": {
+            return {
+                ...prevstate,
+                dataForm: updateItemByindex({
+                    index: prevstate.step, 
+                    item: action.payload, 
+                    array: prevstate.dataForm
+                })
+            }
+        }
         case "UPDATE_STEP": {
             const currentStep = prevstate.step;
             const stepChange = action.payload.stepValueChange;
@@ -99,11 +119,17 @@ const goInReducer = (prevstate, action) => {
                 dataForm: newFormState,
             };
         }
+        case "SET_LOGOUT": {
+            return {
+                ...prevstate,
+                isLogout: action.payload
+            }
+        }
         case "RESET_STATE": {
+            console.log(initialState);
             return initialState;
         }
         case "SET_LOADING": {
-
             return {
                 ...prevstate,
                 isLoading: action.payload
@@ -124,7 +150,6 @@ const errorHandle = (code, { signOut }) => {
         default:
             alert("Lỗi API !!");
             return;
-            break;
     }
 };
 
@@ -149,11 +174,11 @@ const addPeopleToRoom = (dispatch) => async (params, actions) => {
             {
                 text: "Ok",
                 onPress: () => {
-                    actions.resetState();
-                    actions.navigation.popToTop();
+                    
                 },
             },
         ]);
+        actions.navigation.popToTop();
     } catch (error) {
         alert(JSON.stringify(error.message));
     }
@@ -163,6 +188,32 @@ const loadRoomInfo = (dispatch) =>  async (value) => {
     dispatch({type: "SET_LOADING", payload: true});
     try {
         const res = await getRoomById({roomid});
+        console.log(res);
+        if(res.Code === 1){
+            const {room, addonsdefault, water, electric} = res.Data
+            dispatch( { type: "SET_STATE_dataForm", payload: {
+                roomPrice: `${ room.PriceRoom }`,
+                dateGoIn: "",
+                timeRent: "12",
+                timeTypeIndex: new IndexPath(1),
+                roomInfo: {
+                    electrictNumber: `${ electric.number || 0 }`,
+                    electrictPrice: `${ room.PriceElectric || 0 }`,
+                    electrictPriceInclude: `${ electric.PriceElectric || 0 }`,
+                    electrictImage: !!electric.image_thumbnails ? `${ electric.image_thumbnails }` : null,
+                    waterNumber: `${ water.number || 0 }`,
+                    waterPrice: `${ room.PriceWater || 0 }`,
+                    waterPriceInclude: `${ room.PriceWater || 0 }`,
+                    waterImage: !!water.image_thumbnails ? `${ water.image_thumbnails }` : null,
+                },
+                electrictIndex: new IndexPath(0),
+                services: !!room.addonsdefault ? room.addonsdefault : [], // [{"ID":1,"Name":"Wifi","Price":100000}]
+            } } )
+        } else if(res.Code === 0){
+            
+        } else if(res.Code === 2){
+            dispatch({type: "SET_LOGOUT", payload: true});
+        }
     } catch (error) {
         console.log('loadRoomInfo error:', error.message);
     }
@@ -181,5 +232,53 @@ export const { Context, Provider } = CreateDataContext(
         resetState,
         addPeopleToRoom,
         loadRoomInfo
-    },initialState
+    }, {
+        step: 0,
+        isLoading: false,
+        isLogout: false,
+        dataForm: [
+        {
+            roomPrice: "",
+            dateGoIn: "",
+            timeRent: "12",
+            timeTypeIndex: new IndexPath(1),
+            roomInfo: {
+                electrictNumber: "",
+                electrictPrice: "",
+                electrictPriceInclude: "",
+                electrictImage: null,
+                waterNumber: "",
+                waterPrice: "",
+                waterPriceInclude: "",
+                waterImage: null,
+            },
+            electrictIndex: new IndexPath(0),
+            services: [],
+        },
+        {
+            fullName: "",
+            phoneNumber: "",
+            email: "",
+            job: "",
+            provinceIndex: new IndexPath(0),
+            numberPeople: "1",
+            relationshipIndex: new IndexPath(0),
+            note: "",
+            licenseImages: null,
+            cityLists: [],
+            relationLists: [],
+        },
+        {
+            depositTypeIndex: new IndexPath(0),
+            preDepositTimeIndex: new IndexPath(0),
+            totalDeposit: "",
+            prePaymentTimeIndex: new IndexPath(0),
+            totalPrepay: "",
+            actuallyReceived: "",
+            paymentTypeIndex: new IndexPath(0),
+            paymentNote: "",
+            paymentType: [],
+        },
+    ],
+    }
 );

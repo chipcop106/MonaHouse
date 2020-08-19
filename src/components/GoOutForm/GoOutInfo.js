@@ -23,7 +23,7 @@ const GoOutInfo = () => {
                         <View style={[styles.formRow, styles.fullWidth]}>
                             <Input
                                 placeholder="dd/mm/yyyy"
-                                value={stateGoOutInfo.constract}
+                                value={`Từ ${stateGoOutInfo.constract}`}
                                 label="Hợp đồng"
                                 accessoryLeft={() => (
                                     <View style={styles.leftInput}>
@@ -56,15 +56,14 @@ const GoOutInfo = () => {
                                 onSelect={(nextDate) =>
                                     changeStateFormStep("dateGoIn", nextDate)
                                 }
+                                disabled={true}
                             />
                         </View>
                         <View style={[styles.formRow, styles.halfCol]}>
                             <Datepicker
                                 label="Ngày dọn ra"
                                 date={
-                                    !!stateGoOutInfo && stateGoOutInfo.dateGoOut
-                                        ? stateGoOutInfo.dateGoOut
-                                        : new Date()
+                                    stateGoOutInfo.dateGoOut
                                 }
                                 min={stateGoOutInfo.dateGoIn}
                                 max={settings.maxRangeDatePicker}

@@ -19,6 +19,7 @@ import RenterInfoForm from "../../components/GoInForm/RenterInfoForm";
 import CheckoutInfoForm from "../../components/GoInForm/CheckoutInfoForm";
 import { Context as RoomGoInContext } from "../../context/RoomGoInContext";
 import { Context as AuthContext } from "../../context/AuthContext";
+import { Context as RoomContext } from '~/context/RoomContext'
 import Loading from '~/components/common/Loading';
 
 const titleHeader = [
@@ -72,8 +73,9 @@ const RoomGoInScreen = ({ navigation, route }) => {
         loadRoomInfo
     } = useContext(RoomGoInContext);
     const { step, dataForm } = RoomGoinState;
-    
+    const { updateState: updateState_Room } = useContext(RoomContext);
     useEffect(() => {
+        console.log('RoomGoinState', RoomGoinState);
         loadRoomInfo(route.params?.roomId);
         return () => {
             resetState();
@@ -155,7 +157,9 @@ const RoomGoInScreen = ({ navigation, route }) => {
                     water: parseInt(room.roomInfo?.waterNumber || 0),
                     waterprice: parseInt(room.roomInfo?.waterPrice || 0),
                     monthdeposit: parseInt(checkout.preDepositTimeIndex) + 1,
-                    addonservice: serviceArr.length > 0 ? JSON.stringify(serviceArr) || '' : '',
+                    addonservice: serviceArr.length > 0 ? JSON.stringify(serviceArr.map(item => {
+                        return { ID: 0 , ...item }
+                    })) || '' : '',
                     email: renter.email || "",
                     quantity: parseInt(renter.numberPeople) || 1,
                     relationship: parseInt(
@@ -170,6 +174,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
                     resetState,
                 }
             );
+            updateState_Room('isReload', true);
         } catch (error) {
             console.log('sendFormData error', error)
             alert(JSON.stringify(error.message));

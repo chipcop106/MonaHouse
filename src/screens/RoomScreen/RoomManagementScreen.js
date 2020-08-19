@@ -35,7 +35,7 @@ const RoomManagementScreen = () => {
     const { state: roomState, getListRooms, updateState } = useContext(RoomContext);
     const { state: motelState } = useContext(MotelContext);
     const { listRooms, filterStateDefault, isLoading } = roomState;
-    const { listMotels } = motelState;
+    const { listMotels, listSortOptions } = motelState;
     const navigation = useNavigation();
     const route = useRoute();
     const isFocused = useIsFocused();
@@ -44,37 +44,17 @@ const RoomManagementScreen = () => {
     const [refreshing, setrefreshing] = useState(false);
     const [filterValue, setFilterValue] = useState('');
     const [modelFeeData, setmodelFeeData] = useState('');
-    // useEffect(() => {
-    //     console.log('aaaaaaaaaaaaaaa');
-    //     console.log(navigation);
-    //     console.log(route);
-    //     // navigation.setOptions({
-    //     //     headerRight: () => <TouchableOpacity
-    //     //         style={{paddingHorizontal: 15, paddingVertical: 5, flexDirection: "row"}}
-    //     //         onPress={_pressAddNewRoom}
-    //     //     >
-    //     //         <Icon
-    //     //             name="plus-circle-outline"
-    //     //             fill={color.primary}
-    //     //             style={[sizes.iconButtonSize, { marginRight: 5 }]}
-    //     //         /> 
-    //     //         <Text style={[{color: color.primary, fontSize: 16}]}>Thêm</Text>
-    //     //     </TouchableOpacity>
-    //     // })
-    // }, [])
 
-    useEffect(() => {
-        
-        ( async () => {
-            setLoading(true)
-            try {
-                await loadData();
-            } catch (error) {
-                
-            }
-            setLoading(false)
-        })();
-    },[])
+    useLayoutEffect(() => {
+        console.log('roomState.isReload', roomState.isReload);
+        if(roomState.isReload){
+            loadData(filterValue);
+            updateState('isReload', false);
+        }
+        return () => {
+            
+        };
+    }, [roomState.isReload])
     const _pressAddNewRoom = ()=>{
         if(Array.isArray(listMotels) && listMotels.length > 0){
             navigation.navigate('AddNewRoom', {
@@ -101,19 +81,17 @@ const RoomManagementScreen = () => {
                     },
                 },
             ])
-           
-            
         }
-        
     }
-    const loadData = async (filterList) => {
+    const loadData = async (filterList, refreshing = false) => {
         console.log('filterList', filterList);
-        updateState('isLoading', true)
+        console.log('is refreshing', refreshing);
+        !refreshing && updateState('isLoading', true)
         const {
             selectedMonthIndex,
             selectedMotelIndex,
             selectedYearIndex,
-
+            selectedSortIndex,
         } = filterList || {
             selectedMonthIndex: 0,
             selectedMotelIndex: 0,
@@ -126,8 +104,9 @@ const RoomManagementScreen = () => {
             
             await getListRooms(
                 {
-                    motelid: listMotels[selectedMotelIndex - 1]?.ID ?? 0,
+                    motelid: listMotels[selectedMotelIndex - 1]?.ID || 0,
                     month: selectedMonthIndex + 1,
+                    sortby: listSortOptions[selectedSortIndex]?.id || 0,
                     year: settings.yearLists[selectedYearIndex],
                 },
                 signOut
@@ -136,7 +115,7 @@ const RoomManagementScreen = () => {
         } catch (error) {
             console.log(error);
         }
-        updateState('isLoading', false)
+        !refreshing && updateState('isLoading', false)
     };
     const _onValueChange = (filterFormvalue) => {
         console.log('_onValueChange', filterFormvalue);
@@ -147,7 +126,7 @@ const RoomManagementScreen = () => {
     const _onRefresh = async () =>{
         setrefreshing(true);
        try {
-            await loadData(filterValue); 
+            await loadData(filterValue, true); 
        } catch (error) {
            
        }
@@ -173,15 +152,7 @@ const RoomManagementScreen = () => {
     }
     const _onModalizeAddMotelClose = (  ) => {
         console.log('_onModalizeAddMotelClose');
-        ( async () => {
-            setLoading(true)
-            try {
-                await loadData();
-            } catch (error) {
-                
-            }
-            setLoading(false)
-        })();
+        loadData();
     }
     return (
         <>
@@ -191,9 +162,9 @@ const RoomManagementScreen = () => {
                     onValueChange={_onValueChange}
                     initialState={filterStateDefault}
                     advanceFilter={true}
-                    loading={loading}
+                    loading={isLoading}
                 />
-                {!!loading && <View
+                {!!isLoading && <View
                     style={{
                         flexGrow: 1,
                         alignItems: "center",
@@ -202,12 +173,12 @@ const RoomManagementScreen = () => {
                 >
                     <Loading />
                 </View> }
-                {!!!loading && <View style={styles.contentContainer}>
+                {!!!isLoading && <View style={styles.contentContainer}>
                     <List
                         refreshControl={
                             <RefreshControl
                               onRefresh={_onRefresh}
-                              refreshing={refreshing || isLoading}
+                              refreshing={refreshing}
                             />
                         }
                         

@@ -53,7 +53,12 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
         }
 
     }, [])
-    useEffect(() => {
+    const firstUpdate = useRef(true);
+    useLayoutEffect(() => {
+        if (firstUpdate.current) {
+            firstUpdate.current = false;
+            return;
+        }
         handleValueChange(state);
     }, [state]);
     const refRBSheet = useRef();

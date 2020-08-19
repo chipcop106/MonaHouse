@@ -1,7 +1,7 @@
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import CreateDataContext from './CreateDataContext';
-import { getMotels } from '../api/MotelAPI';
+import { getMotels, getOptionsSortRoom } from '../api/MotelAPI';
 
 const motelReducer = (prevstate, action) => {
     switch (action.type) {
@@ -11,6 +11,13 @@ const motelReducer = (prevstate, action) => {
                 listMotels: action.payload,
                 loading: false
             };
+        case "GET_SORT_OPT": {
+            return {
+                ...prevstate,
+                listSortOptions: action.payload,
+                loading: false
+            }
+        }
         case 'SET_ERROR':
             return {
                 ...prevstate,
@@ -49,9 +56,26 @@ const getListMotels = (dispatch) => async (callback) => {
         return false;
     }
 };
+const getSortOpsions = dispatch => async () =>{
+    dispatch({ type: 'SET_LOADING'});
+    try {
+        const res = await getOptionsSortRoom();
+    
+        if(!!!res?.Code) throw res 
+        res?.Code === 1 && dispatch({type: "GET_SORT_OPT", payload: res.Data})
+        
+    } catch (error) {
+        console.log( 'getSortOpsions error: ', error);
+    }
+}
 
 export const { Context, Provider } = CreateDataContext(
     motelReducer,
-    { getListMotels },
-    { listMotels: [], error: { }, loading: false },
+    { getListMotels, getSortOpsions },
+    {
+        listMotels: [],
+        listSortOptions: [],
+        error: {},
+        loading: false
+    },
 );

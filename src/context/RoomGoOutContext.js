@@ -3,6 +3,7 @@ import CreateDataContext from "./CreateDataContext";
 import AsyncStorage from '@react-native-community/async-storage';
 import {settings} from '~/config'
 import { updateWaterElectric } from "~/api/MotelAPI";
+import { goOut } from '~/api/RenterAPI'
 const defaultState = {
     step: 0,
     isLoading: false,
@@ -29,6 +30,9 @@ const defaultState = {
         checkoutDeposit: "",
         actuallyReceived: "",
         paymentTypeIndex: new IndexPath(0),
+        billInfo: {
+
+        }
     }],
 }
 
@@ -97,6 +101,20 @@ const goOutReducer = (prevstate, action) => {
             }
             
         }
+        case "SET_BILL": {
+            return {
+                ...prevstate,
+                dataForm: [
+                    {
+                        ...prevstate.dataForm[0]
+                    },
+                    {
+                        ...prevstate.dataForm[1],
+                        billInfo: action.payload[0]
+                    }
+                ]
+            }
+        }
         case "SET_LOADING": {
             return {
                 ...prevstate,
@@ -153,7 +171,7 @@ const renderZero = num => {
 }
 const loadDataForm = (dispatch) => async (data) => {
     try {
-        console.log('loadData goOutReducer', data);
+        console.log('loadDataForm goOutReducer', data);
         const { renter, electric, water, room } = data;
         const contractDate = new Date(renter.renter.DateOutContract);
         const dataForm = [
@@ -162,17 +180,18 @@ const loadDataForm = (dispatch) => async (data) => {
                 renterID: renter.renter.ID,
                 roomPrice: renter.renter.PriceRent || 0,
                 dateGoIn: new Date(renter.renter.Datein) || '',
-                dateGoOut:  new Date(renter.renter.Dateout) || '',
+                dateGoOut:  new Date() || '',
                 constract: `${ renderZero(contractDate.getDate()) }/${ renderZero(contractDate.getMonth() + 1) }/${ contractDate.getFullYear() }` || '',
                 roomInfo: {
                     electrictNumber: electric.number || '',
-                    electrictPrice: renter.renterElectrictPrice || 0,
+                    electrictPrice: room.PriceElectric || 0,
                     electrictPriceInclude: '',
-                    electrictImage: '',
+                    electrictImage: electric.image_thumbnails || '',
                     waterNumber: water.number || '',
-                    waterPrice: renter.renter.WaterPrice || 0,
+                    waterPrice: room.PriceWater || 0,
                     waterPriceInclude: '',
-                    waterImage:  '',
+                    waterImage: water.image_thumbnails || '',
+                    
                 },
             },
             // {
@@ -185,9 +204,31 @@ const loadDataForm = (dispatch) => async (data) => {
             // }
         ];
         dispatch({type: "LOAD_DATA", payload: dataForm});
+        return true;
     } catch (error) {
         console.log('loadData goOutReducer error: ', error);
     }
+    return false;
+}
+const loadDataBill = (dispatch) => async (data) => {
+    try {
+        console.log('loadDataBill goOutReducer', data);
+        const dataBill = [{
+            electricDiff: data?.ElectricNumber || 0,
+            waterDiff: data?.WaterNumber || 0,
+            electricDiffPrice: data?.ElectricPrice || 0,
+            waterDiffPrice: data?.WaterPrice || 0,
+            dateDiff: data?.Days || 0,
+            priceRoomBase: data?.PriceRoom || 0,
+            priceRoomByDate: data?.PriceMustCollect || 0,
+            totalPrice: data?.TotalDebt || 0
+        }]
+        await dispatch({type: "SET_BILL", payload: dataBill});
+        return true;
+    } catch (error) {
+        console.log('loadDataBill goOutReducer error: ', error);
+    }
+    return false;
 }
 const informElectrictWater = async (data) => {
     
@@ -219,9 +260,35 @@ const informElectrictWater = async (data) => {
         
     }
 }
+const moveOut = (dispatch) => async (data) => {
+    dispatch({type: "SET_LOADING", payload: true});
+    try {
+        console.log('moveOut data:', data);
+        const { dataForm } = data;
+        //pararms: {
+        // renterid:1065
+        // roomid:2378
+        // paid:0
+        // payment:1
+        //}
+
+        const res = await goOut({
+            renterid: dataForm[0].renterID,
+            roomid: dataForm[0].roomID,
+            paid: 0,
+            payment: ( dataForm[1].paymentTypeIndex.row + 1 ) || 1 
+        });
+
+        dispatch({type: "SET_LOADING", payload: false});
+    } catch (error) {
+        console.log('goOut error:', error);
+        dispatch({type: "SET_LOADING", payload: false});
+    }
+    
+}
 export const { Context, Provider } = CreateDataContext(
     goOutReducer,
     {
-        changeStepForm, changeStateFormStep, clearState, loadDataForm
+        changeStepForm, changeStateFormStep, clearState, loadDataForm, loadDataBill, moveOut
     }, defaultState
 );

@@ -1,4 +1,4 @@
-import React, { useContext, useReducer, useEffect } from "react";
+import React, { useContext, useReducer, useEffect, useState } from "react";
 import {
     StyleSheet,
     View,
@@ -6,7 +6,8 @@ import {
     Dimensions,
     ScrollView,
     KeyboardAvoidingView,
-    Alert,
+    Alert, ActivityIndicator,
+    RefreshControl
 } from "react-native";
 import {
     Card,
@@ -26,6 +27,7 @@ import NavLink from "~/components/common/NavLink";
 import { getRoomById } from "~/api/MotelAPI";
 import { currencyFormat as cf } from "~/utils";
 import { Context as RoomContext } from "~/context/RoomContext";
+import Moment from 'moment'
 const { height } = Dimensions.get("window");
 
 const initialState = {
@@ -80,14 +82,17 @@ const RoomDetailScreen = ({ navigation, route }) => {
     const { deleteRoom } = useContext(RoomContext);
     const roomId = route.params?.roomId ?? null;
     const { roomInfo } = state;
-    console.log(roomInfo);
+    const [refreshing, setrefreshing] = useState(false);
     const updateState = (key, value) => {
         dispatch({ type: "STATE_CHANGE", payload: { key, value } });
     };
 
     const showLightBoxModal = (url) => {
-        updateState("lightboxUrl", url);
-        updateState("visible", true);
+        if(!!url){
+            updateState("lightboxUrl", url);
+            updateState("visible", true);
+        }
+        
     };
 
     const loadRoomInfo = async () => {
@@ -129,7 +134,11 @@ const RoomDetailScreen = ({ navigation, route }) => {
     useEffect(() => {
         loadRoomInfo();
     }, []);
-
+    const _onRefresh = async () => {
+        setrefreshing(true);
+        await loadRoomInfo();
+        setrefreshing(false);
+    }
     return (
         <>
             {!roomInfo ? (
@@ -144,7 +153,14 @@ const RoomDetailScreen = ({ navigation, route }) => {
                 </View>
             ) : (
                 <>
-                    <ScrollView>
+                    <ScrollView
+                        refreshControl={
+                            <RefreshControl 
+                                refreshing={refreshing}
+                                onRefresh={_onRefresh}
+                            />
+                        }
+                    >
                         <View style={styles.container}>
                             <View style={{ marginHorizontal: -15 }}>
                                 <UserInfo
@@ -260,22 +276,24 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                     <View
                                         style={[gbStyle.px15, gbStyle.mTop15]}
                                     >
+                                        {!!roomInfo.renter?.renter?.ID 
+                                        && <> 
                                         <View style={styles.rowInfo}>
                                             <Text style={styles.label}>
                                                 Ngày dọn vào
                                             </Text>
                                             <Text style={styles.value}>
-                                                20/01/2019
+                                                {`${ Moment(roomInfo.renter.renter.Datein).format('DD/MM/YYYY') || `Chưa có` }`}
                                             </Text>
-                                        </View>
+                                        </View> 
                                         <View style={[styles.rowInfo]}>
                                             <Text style={styles.label}>
-                                                Tiền dư tháng trước
+                                                Tiền còn lại
                                             </Text>
                                             <Text
                                                 style={[
                                                     styles.value,
-                                                    roomInfo.dept < 0
+                                                    roomInfo?.dept > 0
                                                         ? {
                                                               color:
                                                                   color.redColor,
@@ -286,19 +304,20 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                                           },
                                                 ]}
                                             >
-                                                {cf(roomInfo.dept)}
+                                               {roomInfo?.dept > 0 && 'nợ'}{roomInfo?.dept < 0 && 'dư'} {cf(roomInfo?.dept)}
                                             </Text>
                                         </View>
+                                        
+                                        </>}
+                                        
                                         <View style={styles.rowInfo}>
                                             <Text style={styles.label}>
-                                                Điện tháng trước
+                                                Số Điện
                                             </Text>
                                             <TouchableOpacity
                                                 style={styles.flexRow}
                                                 onPress={() =>
-                                                    showLightBoxModal(
-                                                        "https://i-ngoisao.vnecdn.net/2019/06/09/1-ngoc-trinh-9-8531-1560048529.jpg"
-                                                    )
+                                                    showLightBoxModal(roomInfo?.electric.image_thumbnails)
                                                 }
                                             >
                                                 <Icon
@@ -319,20 +338,18 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                                         },
                                                     ]}
                                                 >
-                                                    33232112
+                                                    { cf(roomInfo?.electric.number || 0) }
                                                 </Text>
                                             </TouchableOpacity>
                                         </View>
                                         <View style={styles.rowInfo}>
                                             <Text style={styles.label}>
-                                                Nước tháng trước
+                                                Số Nước
                                             </Text>
                                             <TouchableOpacity
                                                 style={styles.flexRow}
                                                 onPress={() =>
-                                                    showLightBoxModal(
-                                                        "https://i-ngoisao.vnecdn.net/2019/06/09/1-ngoc-trinh-9-8531-1560048529.jpg"
-                                                    )
+                                                    showLightBoxModal(roomInfo?.water.image_thumbnails)
                                                 }
                                             >
                                                 <Icon
@@ -353,49 +370,58 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                                         },
                                                     ]}
                                                 >
-                                                    33232112
+                                                    { cf(roomInfo?.water.number || 0) }
                                                 </Text>
                                             </TouchableOpacity>
                                         </View>
-                                        <View>
-                                            <Text style={styles.label}>
-                                                Ảnh giấy tờ
-                                            </Text>
-                                            <List
-                                                data={
-                                                    roomInfo.renter.renterimage
-                                                }
-                                                style={styles.list}
-                                                keyExtractor={(item, index) =>
-                                                    `${item.ID}`
-                                                }
-                                                horizontal
-                                                showsHorizontalScrollIndicator={
-                                                    false
-                                                }
-                                                renderItem={({ item }) => {
-                                                    const url = `${settings.homeURL}/${item.LinkIMG}`;
-                                                    return (
-                                                        <TouchableOpacity
-                                                            onPress={() =>
-                                                                showLightBoxModal(
-                                                                    url
-                                                                )
-                                                            }
-                                                        >
-                                                            <Image
-                                                                source={{
-                                                                    uri: url,
-                                                                }}
-                                                                style={[
-                                                                    styles.imagePreview,
-                                                                ]}
-                                                            />
-                                                        </TouchableOpacity>
-                                                    );
+                                        {!!roomInfo.renter?.renter?.ID 
+                                        && <View>
+                                        <Text style={styles.label}>
+                                            Ảnh giấy tờ
+                                        </Text>
+                                        <List
+                                            data={
+                                                roomInfo.renter.renterimage
+                                            }
+                                            style={styles.list}
+                                            keyExtractor={(item, index) =>
+                                                `${item.ID}`
+                                            }
+                                            horizontal
+                                            showsHorizontalScrollIndicator={
+                                                false
+                                            }
+                                            renderItem={({ item }) => {
+                                                const url = `${settings.homeURL}/${item.LinkIMG}`;
+                                                return (
+                                                    <TouchableOpacity
+                                                        onPress={() =>
+                                                            showLightBoxModal(url)
+                                                        }
+                                                    >
+                                                        <Image
+                                                            source={{
+                                                                uri: url,
+                                                            }}
+                                                            style={[
+                                                                styles.imagePreview,
+                                                            ]}
+                                                        />
+                                                    </TouchableOpacity>
+                                                );
+                                            }}
+                                            ListEmptyComponent={<Text
+                                                style={{
+                                                    color: color.redColor,
+                                                    textAlign: "center",
+                                                    marginBottom: 0,
                                                 }}
-                                            />
-                                        </View>
+                                            >
+                                                Không có ảnh giấy tờ
+                                            </Text>}
+                                        />
+                                    </View>}
+                                        
                                     </View>
                                 </View>
                                 <Text style={styles.secTitle}>
@@ -404,8 +430,8 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                 <View
                                     style={{ ...styles.sec, paddingBottom: 0 }}
                                 >
-                                    {roomInfo.service.length > 0 ? (
-                                        roomInfo.service.map((item) => (
+                                    {roomInfo.addons?.length > 0 ? (
+                                        roomInfo.addons?.map((item) => (
                                             <View
                                                 style={styles.rowInfo}
                                                 key={item.ID}
@@ -431,84 +457,79 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                     )}
                                 </View>
 
+                                {!!roomInfo.renter?.renter?.ID
+                                && <View
+                                style={{
+                                    ...styles.sec,
+                                    backgroundColor: "transparent",
+                                    paddingHorizontal: 0,
+                                }}
+                            >
                                 <View
                                     style={{
-                                        ...styles.sec,
-                                        backgroundColor: "transparent",
-                                        paddingHorizontal: 0,
+                                        ...styles.flexRow,
+                                        alignItems: "center",
+                                        marginBottom: 15,
+                                        justifyContent: "space-between",
                                     }}
                                 >
-                                    <View
+                                    <Text
                                         style={{
-                                            ...styles.flexRow,
-                                            alignItems: "center",
-                                            marginBottom: 15,
-                                            justifyContent: "space-between",
+                                            ...styles.secTitle,
+                                            marginBottom: 0,
                                         }}
                                     >
-                                        <Text
-                                            style={{
-                                                ...styles.secTitle,
-                                                marginBottom: 0,
-                                            }}
-                                        >
-                                            Người ở cùng
-                                        </Text>
-                                        <TouchableOpacity
-                                            onPress={
-                                                () => alert("Chưa có API")
-                                                // navigation.navigate(
-                                                //     "AddPeople",
-                                                //     {
-                                                //         roomId,
-                                                //     }
-                                                // )
-                                            }
-                                        >
-                                            <View style={styles.flexRow}>
-                                                <Icon
-                                                    name="plus"
-                                                    fill={color.primary}
-                                                    style={{
-                                                        width: 25,
-                                                        height: 25,
-                                                        marginLeft: 15,
-                                                        marginRight: 5,
-                                                    }}
-                                                />
-                                                <Text
-                                                    status="primary"
-                                                    category="s1"
-                                                >
-                                                    Thêm người
-                                                </Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                    </View>
-                                    {[
-                                        {},
-                                        {
-                                            img:
-                                                "https://giadinh.mediacdn.vn/thumb_w/640/2019/10/30/ngoc-trinh-5-1572423107231301246873-crop-15724237122011649225014.jpg",
-                                        },
-                                        {},
-                                    ].map((people, index) => {
-                                        if (index === 0) return;
-                                        return (
-                                            <UserInfo
-                                                key={`${index}`}
-                                                avatar={people.img}
-                                                phone="0123456789"
-                                                name="Trương Văn Lam"
-                                                styleContainer={
-                                                    styles.peopleContainer
-                                                }
-                                                styleCard={styles.peopleCard}
-                                                deletePeople={_deletePeople}
+                                        Người ở cùng
+                                    </Text>
+                                    <TouchableOpacity
+                                        onPress={
+                                            () => alert("Chưa có API")
+                                            // navigation.navigate(
+                                            //     "AddPeople",
+                                            //     {
+                                            //         roomId,
+                                            //     }
+                                            // )
+                                        }
+                                    >
+                                        <View style={styles.flexRow}>
+                                            <Icon
+                                                name="plus"
+                                                fill={color.primary}
+                                                style={{
+                                                    width: 25,
+                                                    height: 25,
+                                                    marginLeft: 15,
+                                                    marginRight: 5,
+                                                }}
                                             />
-                                        );
-                                    })}
+                                            <Text
+                                                status="primary"
+                                                category="s1"
+                                            >
+                                                Thêm người
+                                            </Text>
+                                        </View>
+                                    </TouchableOpacity>
                                 </View>
+                                {[
+                                    ...roomInfo.OtherRenters
+                                ].map((people, index) => {
+                                    return (
+                                        <UserInfo
+                                            key={`${index}`}
+                                            avatar={null}
+                                            phone="0123456789"
+                                            name="Trương Văn Lam"
+                                            styleContainer={
+                                                styles.peopleContainer
+                                            }
+                                            styleCard={styles.peopleCard}
+                                            deletePeople={_deletePeople}
+                                        />
+                                    );
+                                })}
+                            </View>}
                                 <View style={styles.menuWrap}>
                                     <NavLink
                                         containerStyle={styles.navLink}

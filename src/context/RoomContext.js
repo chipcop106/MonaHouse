@@ -10,7 +10,7 @@ import {
 } from "../api/MotelAPI";
 
 import { updateElectrictWater } from "~/api/RenterAPI";
-
+import { getEWHistory } from '~/api/CollectMoneyAPI'
 const currentTime = new Date();
 const currentMonth = currentTime.getMonth() + 1;
 const currentYear = currentTime.getFullYear();
@@ -52,7 +52,12 @@ const roomReducer = (prevstate, { type, payload }) => {
                 ),
             };
         }
-
+        case "SET_RELOAD": {
+            return {
+                ...prevstate,
+                isReload: payload
+            }
+        }
         default:
             return prevstate;
     }
@@ -66,7 +71,6 @@ const errorHandle = (code, { signOut }) => {
             break;
         default:
             alert("Lỗi API !! Code hông tồn tại!!");
-            return;
             break;
     }
 };
@@ -130,7 +134,8 @@ const getListElectrict = (dispatch) => async (
             if (signOut) signOut();
         }
         res.Code !== 1 && errorHandle(res.Code, { signOut });
-        dispatch({ type: "GET_ELECTRICT", payload: res.Data });
+        const hasRenterRooms = Array.from(res.Data).filter( item =>  item.RenterID);
+        dispatch({ type: "GET_ELECTRICT", payload: hasRenterRooms });
     } catch (error) {
         alert(JSON.stringify(error.message));
     }
@@ -139,21 +144,21 @@ const getListElectrict = (dispatch) => async (
 const getElectrictHistory = (dispatch) => async (
     {
         motelid = 0,
+        roomid = 0,
         month = currentMonth,
         year = currentYear,
-        qsearch = "",
-        sortby = 0,
+        sort = 0,
         status = 0,
     },
     signOut
 ) => {
     try {
-        const res = await getRoomsByMotelId({
+        const res = await getEWHistory({
             motelid,
+            roomid,
             month,
             year,
-            qsearch,
-            sortby,
+            sort,
             status,
         });
         if (res.Code === 2) {
@@ -273,6 +278,7 @@ export const { Context, Provider } = CreateDataContext(
         deleteRoom,
     },
     {
+        isReload: false,
         isLoading: false,
         filterStateDefault: {
             selectedMonthIndex: 0,

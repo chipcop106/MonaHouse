@@ -97,6 +97,7 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
             >
                 Dọn vào
           </Button>
+          
             <Button
                 onPress={() => navigation.navigate('RoomGoOut', { roomId: item.RoomID })}
                 style={styles.actionButton}
