@@ -15,7 +15,6 @@ import Loading from "~/components/common/Loading";
 import { Context as CustomerContext } from "~context/CustomerContext";
 import { useNavigation } from "@react-navigation/native";
 
-
 const SearchBox = () => {
   const [state, setState] = useState("");
   const { setQuerySearch } = useContext(CustomerContext);
@@ -45,7 +44,7 @@ const SearchBox = () => {
 
 const RenderCardCustomer = ({ item }) => {
   const navigation = useNavigation();
-  const {MotelRoomID} = item;
+  const { MotelRoomID } = item;
   return (
     <TouchableOpacity
       onPress={() =>
