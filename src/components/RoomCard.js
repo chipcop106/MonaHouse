@@ -110,7 +110,7 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
                 Dọn ra
           </Button>
             <Button
-                onPress={() => navigation.navigate('MoneyCollect', { roomId: item.RoomID })}
+                onPress={() => navigation.navigate('MoneyCollect', { roomId: item.RoomID, data: JSON.stringify(item) })}
                 style={styles.actionButton}
                 appearance="outline"
                 status="success"

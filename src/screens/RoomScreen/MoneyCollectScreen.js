@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-community/async-storage";
-import { StyleSheet, View, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView, Alert } from "react-native";
 import {
     Input,
     Select,
@@ -11,26 +11,47 @@ import {
     IndexPath,
     Button,
 } from "@ui-kitten/components";
+import { useRoute } from '@react-navigation/native'
 import { color, sizes } from "~/config";
 import UserInfo from "~/components/UserInfo";
+import Loading from '~/components/common/Loading';
+import { currencyFormat } from '~/utils';
+import { getRoomById } from '~/api/MotelAPI';
+import { Context as AuthContext } from '~/context/AuthContext'
 
 const paymentMethod = ["Tiền mặt", "Chuyển khoản"];
-
 const MoneyCollectScreen = () => {
+    const { signOut } = useContext(AuthContext);
     const [paymentTypeIndex, setPaymentTypeIndex] = useState(new IndexPath(0));
     const [actuallyReceived, setActuallyReceived] = useState("");
     const [userInfo, setUserInfo] = useState(null);
+    const [roomInfo, setRoomInfo] = useState(null);
+    const route = useRoute();
+    const { roomId,  data} = route.params;
 
+    const loadRoomInfo = async () => {
+        try {
+            const res = await getRoomById({roomId});
+            res.Code === 1 && setRoomInfo(res.Data);
+            res.Code === 0 && Alert.alert('Lỗi !!', `${ JSON.stringify(res) }`);
+            res.Code === 2 && ( () => {
+                Alert.alert('Phiên đăng nhập của bạn đã hết hạng, hoặc tài khoản của bạn được đăng nhập ở nơi khác')
+                signOut();
+             } )();
+        } catch (error) {
+            console.log('loadRoomInfo error', error);
+        }
+    }
     useEffect(() => {
-        const loadUserInfo = async () => {
+        (async () => {
             try {
                 const userData = await AsyncStorage.getItem("userInfo");
                 setUserInfo(JSON.parse(userData));
             } catch (err) {
                 alert(JSON.stringify(err));
             }
-        };
-        loadUserInfo();
+        })();
+        loadRoomInfo();
     }, []);
 
     return (
@@ -43,16 +64,17 @@ const MoneyCollectScreen = () => {
                         phone={userInfo.Phone}
                     />
                 ) : (
-                    <Text>Loading...</Text>
+                    <View style={{padding: 15, justifyContent: "center", alignItems: "center"}}><Loading /></View>
                 )}
-                <View style={styles.mainWrap}>
+                {!!roomInfo 
+                ? ( <View style={styles.mainWrap}>
                     <View style={styles.section}>
                         <Text
                             category="h6"
                             status="primary"
                             style={{ marginBottom: 20 }}
                         >
-                            Phòng 02
+                            { roomInfo.room.NameRoom }
                         </Text>
                         <View style={[styles.formWrap]}>
                             <View style={[styles.formRow, styles.rowInfo]}>
@@ -64,7 +86,7 @@ const MoneyCollectScreen = () => {
                                         { fontWeight: "600" },
                                     ]}
                                 >
-                                    3.000.000
+                                   { currencyFormat(roomInfo.room.PriceRoom || 0) }
                                 </Text>
                             </View>
                             <View style={[styles.formRow, styles.rowInfo]}>
@@ -78,7 +100,7 @@ const MoneyCollectScreen = () => {
                                         { fontWeight: "600" },
                                     ]}
                                 >
-                                    3.000.000
+                                    { roomInfo.electric.number }
                                 </Text>
                             </View>
                             <View style={[styles.formRow, styles.rowInfo]}>
@@ -92,7 +114,7 @@ const MoneyCollectScreen = () => {
                                         { fontWeight: "600" },
                                     ]}
                                 >
-                                    3.000.000
+                                    { roomInfo.water.number }
                                 </Text>
                             </View>
                             <View style={[styles.formRow, styles.rowInfo]}>
@@ -106,7 +128,12 @@ const MoneyCollectScreen = () => {
                                         { fontWeight: "600" },
                                     ]}
                                 >
-                                    3.000.000
+                                    { !!roomInfo.addons && roomInfo.addons.length > 0 
+                                    ? (()=>{
+                                        let result = 0;
+                                        roomInfo.addons.map(item => result + parseInt(item.Price || 0));
+                                        return result
+                                    })() : 0}
                                 </Text>
                             </View>
                             <View style={[styles.formRow, styles.rowInfo]}>
@@ -116,9 +143,12 @@ const MoneyCollectScreen = () => {
                                     style={[
                                         styles.rowValue,
                                         { fontWeight: "600" },
+                                        roomInfo.dept > 0 ? {color: color.redColor} : { color:  color.greenColor}
                                     ]}
                                 >
-                                    3.000.000
+                                    { roomInfo.dept > 0 
+                                    ? ( `Nợ` ) 
+                                    : ( `Dư` ) } {  currencyFormat(Math.abs(roomInfo.dept)) }
                                 </Text>
                             </View>
                             <Divider style={styles.divider} />
@@ -195,7 +225,9 @@ const MoneyCollectScreen = () => {
                     >
                         Thu tiền phòng này
                     </Button>
-                </View>
+                </View> ) 
+                : ( <View style={{padding: 15, justifyContent: "center", alignItems: "center"}}><Loading /></View> )}
+                
             </ScrollView>
         </>
     );
