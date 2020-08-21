@@ -7,7 +7,7 @@ import {
 } from '@ui-kitten/components';
 import ImagePicker from 'react-native-image-crop-picker';
 import RBSheet from "react-native-raw-bottom-sheet";
-
+import { uploadRenterImage } from '~/api/RenterAPI'
 import { sizes, color } from '~/config';
 
 // const initialState = {
@@ -32,6 +32,18 @@ const reducer = (state, { field, value }) => ({
     ...state,
     [field]: value,
 });
+const uploadIMG = async file => {
+    try {
+        const res = await uploadRenterImage(file);
+        ires.Code === 1 && ( result = res.Data );
+        res.Code === 0  && ( result = res.Code );
+        res.Code === 2  && ( result = res.Code );
+    } catch (error) {
+        console.log('uploadIMG fail at:', error);
+        result = error;
+    }
+    return result;
+}
 
 function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay, handleValueChange, initialState, roomData }) {
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -74,11 +86,15 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 compressImageMaxHeight: 768
             };
             const res = await ImagePicker.openCamera(options);
+
+            await uploadIMG(res);
+
             !!RBSheetKey && dispatch({ field: RBSheetKey, value: res });
             RBSheetKey = '';
         } catch (error) {
             console.log('ImagePicker.openPicker error', error.message);
             alert(error.message);
+            RBSheetKey = '';
         }
     }
     const _onPressGetPhotos = async () => {
@@ -95,10 +111,15 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
             };
             const res = await ImagePicker.openPicker(options);
             console.log({ field: RBSheetKey, value: res });
+
+            await uploadIMG(res);
+
             !!RBSheetKey && dispatch({ field: RBSheetKey, value: res });
             RBSheetKey = '';
         } catch (error) {
             console.log('ImagePicker.openPicker error', error.message);
+            alert(error.message);
+            RBSheetKey = '';
         }
     }
     const _onCloseRBSheet = () => {
@@ -173,7 +194,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                         accessoryLeft={() => <Icon name="camera-outline" fill={color.whiteColor} style={sizes.iconButtonSize} />}
                     >
                         Đồng hồ điện
-        </Button>
+                    </Button>
                 </View>
                 <View style={[styles.formRow, styles.halfCol]}>
                     {!!state.waterImage && (

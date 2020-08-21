@@ -11,7 +11,7 @@ import { StyleSheet, View, Alert,
     TouchableOpacity, ActivityIndicator, RefreshControl
 } from "react-native";
 import { useNavigation, useRoute, useIsFocused} from "@react-navigation/native"
-import { Icon, Input, List, IndexPath, Text } from "@ui-kitten/components";
+import { Icon, Input, List, IndexPath, Text, Modal } from "@ui-kitten/components";
 
 import RoomCard from "~/components/RoomCard";
 import { settings, color, sizes } from "~/config";
@@ -106,7 +106,8 @@ const RoomManagementScreen = () => {
                 {
                     motelid: listMotels[selectedMotelIndex - 1]?.ID || 0,
                     month: selectedMonthIndex + 1,
-                    sortby: listSortOptions[selectedSortIndex]?.id || 0,
+                    // sortby: listSortOptions[selectedSortIndex]?.id || 0,
+                    status: listSortOptions[selectedSortIndex]?.id || 0,
                     year: settings.yearLists[selectedYearIndex],
                 },
                 signOut
@@ -137,18 +138,22 @@ const RoomManagementScreen = () => {
     const bsAddMotel = createRef();
     const _onPressaddFee = (roomdata) => {
         const { HouseID, RoomName, RoomID, RenterID }  = roomdata
-        
         bsFee.current?.open();
         setTimeout(() => {
-            setmodelFeeData({RoomName,  RoomID })
+            setmodelFeeData({RoomName, RoomID, RenterID })
+        }, 10);
+    };
+    const _onSuccessFee = () => {
+        
+        bsFee.current?.close();
+    }
+
+    const  _onModalizeFeeOpen = () => {}
+    const _onModalizeFeeClose = () => {
+        setTimeout(() => {
+            setmodelFeeData('')
         }, 10);
         
-        
-    };
-    
-
-    const  _onModalizeFeeOpen = () => {
-
     }
     const _onModalizeAddMotelClose = (  ) => {
         console.log('_onModalizeAddMotelClose');
@@ -222,9 +227,10 @@ const RoomManagementScreen = () => {
                             ref={bsFee}
                             closeOnOverlayTap={false}
                             adjustToContentHeight={true}
-                            onOpen={_onModalizeFeeOpen}>
+                            onOpen={_onModalizeFeeOpen}
+                            onClose={_onModalizeFeeClose}>
                             <View style={styles.bottomSheetContent}>
-                                <AddFeeModal  data={modelFeeData} />
+                                <AddFeeModal  data={modelFeeData} onSuccess={_onSuccessFee} />
                             </View>
                         </Modalize>
                         <ModalizeAddMotel 

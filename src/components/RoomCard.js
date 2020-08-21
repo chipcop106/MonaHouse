@@ -156,7 +156,7 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
                             <Text style={styles.infoValue}>{item.RenterDateOut ? item.RenterDateOut : 'Chưa có'}</Text>
                         </View>
                     </View>
-                    <View style={[styles.space, styles.statusWrap]}>
+                    <View style={[ item.Renter && styles.space, styles.statusWrap]}>
                         <View style={styles.status}>
                             {item.StatusRoomID === 2 ? (
                                 <LinearGradient colors={color.gradients.success} style={styles.badge}>
@@ -208,7 +208,7 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
                             )}
                         </View>
                     </View>
-                    <View style={[styles.balanceInfo]}>
+                    {!!item.Renter && <View style={[styles.balanceInfo]}>
                         <View style={styles.balance}>
                             <Text style={styles.balanceText}>
                                 Dư:
@@ -221,7 +221,7 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
                             <Icon name="plus-circle-outline" fill={color.darkColor} style={styles.iconButton} />
                             <Text style={styles.textButton}>Thêm phí</Text>
                         </TouchableOpacity>
-                    </View>
+                    </View>}
                 </View>
             </Card>
 
