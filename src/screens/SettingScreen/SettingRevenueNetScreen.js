@@ -1,10 +1,5 @@
 import React, { useReducer, useEffect, useContext, memo } from "react";
-import {
-  StyleSheet,
-  View,
-  processColor,
-  Dimensions,
-} from "react-native";
+import { StyleSheet, View, processColor, Dimensions } from "react-native";
 import { Text, Icon } from "@ui-kitten/components";
 import { color, sizes, shadowStyle, yearOptions } from "~/config";
 import ModalizeSelect from "~/components/common/ModalizeSelect";
