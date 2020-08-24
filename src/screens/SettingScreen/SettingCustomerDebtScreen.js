@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useContext, useState } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -10,70 +10,10 @@ import { Text, Input, Icon, Avatar } from "@ui-kitten/components";
 import { color, shadowStyle, sizes } from "~/config";
 import ModalizeSelect from "~/components/common/ModalizeSelect";
 import { Context as MotelContext } from "~context/MotelContext";
-import { Context as AuthContext } from "~context/AuthContext";
-import { getCustomerDebt } from "~api/RenterAPI";
 import { currencyFormat, nonAccentVietnamese } from "~/utils";
 import Loading from "~/components/common/Loading";
 import { Context as CustomerContext } from "~context/CustomerContext";
 import { useNavigation } from "@react-navigation/native";
-const initialState = {
-  motelLists: [],
-  isLoading: true,
-  activeMotel: 0,
-  queryString: "",
-  customers: [],
-  filterCustomers: [],
-};
-
-const reducer = (prevState, { type, payload }) => {
-  switch (type) {
-    case "UPDATE_MOTEL": {
-      return {
-        ...prevState,
-        motelLists: payload,
-        isLoading: true,
-      };
-    }
-    case "SET_LOADING": {
-      return {
-        ...prevState,
-        isLoading: payload,
-      };
-    }
-    case "SET_MOTEL": {
-      return {
-        ...prevState,
-        activeMotel: payload,
-      };
-    }
-    case "SET_HOUSE": {
-      return {
-        ...prevState,
-        selectedHouse: payload,
-      };
-    }
-    case "SEARCH_QUERY": {
-      return {
-        ...prevState,
-        queryString: payload,
-      };
-    }
-    case "SET_CUSTOMER": {
-      return {
-        ...prevState,
-        customers: payload,
-      };
-    }
-    case "UPDATE_FILTER": {
-      return {
-        ...prevState,
-        filterCustomers: payload,
-      };
-    }
-    default:
-      return prevState;
-  }
-};
 
 const SearchBox = ({ defaultValue = "" }) => {
   const [state, setState] = useState(defaultValue);
@@ -181,7 +121,9 @@ const RenderCardCustomer = ({ item }) => {
               name="home"
               style={sizes.iconButtonSize}
             />
-            <Text style={styles.value}>{item.MotelName}</Text>
+            <Text style={styles.value} ellipsizeMode="tail" numberOfLines={1}>
+              {item.MotelName}
+            </Text>
           </View>
         </View>
       </View>
@@ -199,7 +141,6 @@ const SettingCustomerDebtScreen = () => {
   } = useContext(CustomerContext);
   console.log({ state });
   const { state: motelState } = useContext(MotelContext);
-  const { signOut } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(true);
 
   const getListCustomer = async () => {
@@ -279,7 +220,7 @@ const SettingCustomerDebtScreen = () => {
                 CustomerID: item.ID,
                 Avatar: item.LinkIMGThumbnail,
                 FullName: item.FullName,
-                Debt: item.Deposit,
+                Debt: item.Money,
                 Status: item.StatusRen,
                 MotelName: motelState.listMotels.find(
                   (motel) => motel.ID === item.MotelID
