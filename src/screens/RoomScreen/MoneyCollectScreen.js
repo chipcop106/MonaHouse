@@ -198,11 +198,6 @@ const styles = StyleSheet.create({
   fullWidth: {
     flexBasis: "98%",
   },
-  leftInput: {
-    borderRightWidth: 1,
-    borderRightColor: color.darkColor,
-    paddingRight: 10,
-  },
   rowInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -216,9 +211,6 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     borderRightColor: color.darkColor,
     paddingRight: 10,
-  },
-  divider: {
-    marginBottom: 15,
   },
   rowLabel: {
     color: color.labelColor,

@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
-import { StyleSheet, View, Alert } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import {
   Input,
   Select,
@@ -8,9 +8,8 @@ import {
   Divider,
 } from "@ui-kitten/components";
 import Moment from "moment";
-import { color } from "../../config";
+import { color } from "~/config";
 import { Context as RoomGoOutContext } from "../../context/RoomGoOutContext";
-import { ReadyGoOut } from "~/api/RenterAPI";
 import {
   currencyFormat,
   getDaysInMonth,
@@ -18,7 +17,6 @@ import {
   roundNumberThounsand,
 } from "~/utils";
 import Loading from "~/components/common/Loading";
-import { Context as AuthContext } from "~/context/AuthContext";
 const paymentMethod = ["Tiền mặt", "Chuyển khoản"];
 
 const GoOutCheckout = () => {
@@ -27,14 +25,10 @@ const GoOutCheckout = () => {
     waterMoney: 0,
     electrictMoney: 0,
   });
-  const { state, changeStateFormStep, loadDataBill } = useContext(
-    RoomGoOutContext
-  );
-  const { signOut } = useContext(AuthContext);
+  const { state, changeStateFormStep } = useContext(RoomGoOutContext);
   const stateGoOutInfo = state.dataForm[state.step];
-  const { billInfo } = stateGoOutInfo;
   const firstRoomState = state.dataForm[0];
-  const [loading, setloading] = useState(false);
+  const [loading] = useState(false);
   console.log({ state });
   const {
     electrictNumber: newElectrictNunber,
@@ -43,7 +37,6 @@ const GoOutCheckout = () => {
     waterPrice,
     oldElectrictNumber,
     oldWaterNumber,
-    TypeEW,
   } = firstRoomState?.roomInfo;
 
   const { dateGoOut, roomPrice, renterDeposit } = firstRoomState;
@@ -69,19 +62,10 @@ const GoOutCheckout = () => {
               ))
         )
       ),
-      waterMoney: parseInt(waterUsed) * parseInt(waterPrice),
-      electrictMoney: parseInt(electrictUsed) * parseInt(electrictPrice),
+      waterMoney: waterUsed * parseInt(waterPrice),
+      electrictMoney: electrictUsed * parseInt(electrictPrice),
     });
   }, []);
-
-  useEffect(() => {
-    let number =
-      billData.dayRentMoney +
-      billData.waterMoney +
-      billData.electrictMoney -
-      renterDeposit * 1;
-    console.log(number);
-  }, [billData]);
 
   return (
     <>
@@ -267,11 +251,6 @@ const styles = StyleSheet.create({
   dangerValue: {
     color: color.redColor,
     fontWeight: "600",
-  },
-  leftInput: {
-    borderRightWidth: 1,
-    borderRightColor: color.darkColor,
-    paddingRight: 10,
   },
   divider: {
     marginBottom: 15,
