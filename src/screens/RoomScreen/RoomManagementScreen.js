@@ -22,7 +22,7 @@ import {
   useRoute,
   useIsFocused,
 } from "@react-navigation/native";
-import { Icon, Input, List, IndexPath, Text } from "@ui-kitten/components";
+import { Icon, Input, List, IndexPath, Text , Modal} from "@ui-kitten/components";
 
 import RoomCard from "~/components/RoomCard";
 import { settings, color, sizes } from "~/config";
@@ -113,7 +113,8 @@ const RoomManagementScreen = () => {
         {
           motelid: listMotels[selectedMotelIndex - 1]?.ID || 0,
           month: selectedMonthIndex + 1,
-          sortby: listSortOptions[selectedSortIndex]?.id || 0,
+          // sortby: listSortOptions[selectedSortIndex]?.id || 0,
+            status: listSortOptions[selectedSortIndex]?.id || 0,
           year: settings.yearLists[selectedYearIndex],
         },
         signOut
@@ -137,109 +138,122 @@ const RoomManagementScreen = () => {
     setrefreshing(false);
   };
 
-  const bsFee = createRef();
-  const bsAddMotel = createRef();
-  const _onPressaddFee = (roomdata) => {
-    const { HouseID, RoomName, RoomID, RenterID } = roomdata;
+    const bsFee = createRef();
+    const bsAddMotel = createRef();
+    const _onPressaddFee = (roomdata) => {
+        const { HouseID, RoomName, RoomID, RenterID }  = roomdata
+        
+        bsFee.current?.open();
+        setTimeout(() => {
+            setmodelFeeData({RoomName,  RoomID, RenterID })
+        }, 10);
+        
+        
+    };
+    const _onSuccessFee = () => {
 
-    bsFee.current?.open();
-    setTimeout(() => {
-      setmodelFeeData({ RoomName, RoomID });
-    }, 10);
-  };
+        bsFee.current?.close();
+    }
+    
 
-  const _onModalizeFeeOpen = () => {};
-  const _onModalizeAddMotelClose = () => {
-    console.log("_onModalizeAddMotelClose");
-    loadData();
-  };
-  return (
-    <>
-      <View style={styles.container}>
-        <FilterHeader
-          onValueChange={_onValueChange}
-          initialState={filterStateDefault}
-          advanceFilter={true}
-          loading={isLoading}
-        />
-        {!!isLoading && (
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              paddingTop: 30,
-              justifyContent: "center",
-            }}
-          >
-            <Loading />
-          </View>
-        )}
-        {!!!isLoading && (
-          <View style={styles.contentContainer}>
-            <List
-              refreshControl={
-                <RefreshControl
-                  onRefresh={_onRefresh}
-                  refreshing={refreshing}
+    const  _onModalizeFeeOpen = () => {
+
+    }
+    const _onModalizeFeeClose = () => {
+        setTimeout(() => {
+            setmodelFeeData('')
+        }, 10);
+
+    }
+    const _onModalizeAddMotelClose = (  ) => {
+        console.log('_onModalizeAddMotelClose');
+        loadData();
+    }
+    return (
+        <>
+            <View style={styles.container}>
+                
+                <FilterHeader
+                    onValueChange={_onValueChange}
+                    initialState={filterStateDefault}
+                    advanceFilter={true}
+                    loading={isLoading}
                 />
-              }
-              keyExtractor={(room, index) => `${room.RoomID}-${index}`}
-              style={styles.listContainer}
-              contentContainerStyle={styles.contentCard}
-              data={listRooms}
-              renderItem={(room) => (
-                <RoomCard
-                  roomInfo={room}
-                  onPressaddFee={() => _onPressaddFee(room.item)}
-                />
-              )}
-            />
-            <TouchableOpacity
-              onPress={_pressAddNewRoom}
-              style={styles.addAction}
-            >
-              <LinearGradient
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                useAngle={true}
-                angle={45}
-                angleCenter={{ x: 0.5, y: 0.25 }}
-                colors={color.gradients.success}
-                style={{
-                  borderRadius: 50,
-                }}
-              >
-                <View style={styles.btnAdd}>
-                  <Icon
-                    name="plus"
-                    fill={color.whiteColor}
-                    style={styles.btnAddIcon}
-                  />
-                </View>
-              </LinearGradient>
-            </TouchableOpacity>
-            <Portal>
-              <Modalize
-                ref={bsFee}
-                closeOnOverlayTap={false}
-                adjustToContentHeight={true}
-                onOpen={_onModalizeFeeOpen}
-              >
-                <View style={styles.bottomSheetContent}>
-                  <AddFeeModal data={modelFeeData} />
-                </View>
-              </Modalize>
-              <ModalizeAddMotel
-                modalTopOffset={0}
-                onClose={_onModalizeAddMotelClose}
-                ref={bsAddMotel}
-              />
-            </Portal>
-          </View>
-        )}
-      </View>
-    </>
-  );
+                {!!isLoading && <View
+                    style={{
+                        flexGrow: 1,
+                        alignItems: "center",
+                        paddingTop: 30,
+                        justifyContent: "center",
+                    }}
+                >
+                    <Loading />
+                </View> }
+                {!!!isLoading && <View style={styles.contentContainer}>
+                    <List
+                        refreshControl={
+                            <RefreshControl
+                              onRefresh={_onRefresh}
+                              refreshing={refreshing}
+                            />
+                        }
+                        
+                        keyExtractor={(room, index) => `${room.RoomID}-${index}`}
+                        style={styles.listContainer}
+                        contentContainerStyle={styles.contentCard}
+                        data={listRooms}
+                        renderItem={(room) => (
+                            <RoomCard
+                                roomInfo={room}
+                                onPressaddFee={() => _onPressaddFee(room.item)}
+                            />
+                        )}
+                    />
+                    <TouchableOpacity
+                        onPress={_pressAddNewRoom}
+                        style={styles.addAction}
+                    >
+                        <LinearGradient
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                            useAngle={true}
+                            angle={45}
+                            angleCenter={{ x: 0.5, y: 0.25 }}
+                            colors={color.gradients.success}
+                            style={{
+                                borderRadius: 50,
+                            }}
+                        >
+                            <View style={styles.btnAdd}>
+                                <Icon
+                                    name="plus"
+                                    fill={color.whiteColor}
+                                    style={styles.btnAddIcon}
+                                />
+                            </View>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                    <Portal >
+                        <Modalize 
+                            ref={bsFee}
+                            closeOnOverlayTap={false}
+                            adjustToContentHeight={true}
+                            onOpen={_onModalizeFeeOpen}
+                            onClose={_onModalizeFeeClose}>
+                        >
+                            <View style={styles.bottomSheetContent}>
+                                <AddFeeModal  data={modelFeeData}  onSuccess={_onSuccessFee}/>
+                            </View>
+                        </Modalize>
+                        <ModalizeAddMotel 
+                            modalTopOffset={0}
+                            onClose={_onModalizeAddMotelClose}
+                            ref={bsAddMotel} />
+                    </Portal>
+                </View>}
+            </View>
+        </>
+    );
 };
 
 const styles = StyleSheet.create({

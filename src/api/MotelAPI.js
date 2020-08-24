@@ -1,4 +1,5 @@
 import instance, { getAccessToken } from "./instanceAPI";
+import { string, number } from "yup";
 
 const path = `/MotelApi`;
 
@@ -246,3 +247,23 @@ export const getCustomerByMotelId = async (params) => {
     return error.message;
   }
 };
+export const insertRoomFee = async (params = {
+  roomid: Number(), 
+  renterid: Number(),
+  date: String(),
+  note: String(),
+  price: Number(), 
+}) => {
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(`${path}/insertFee`, {
+      params: {
+        ...params,
+        token,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error.message;
+  }
+}

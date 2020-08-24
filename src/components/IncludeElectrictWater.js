@@ -1,6 +1,5 @@
 import React, {
   useReducer,
-  useEffect,
   memo,
   useLayoutEffect,
   useRef,
@@ -11,6 +10,7 @@ import ImagePicker from "react-native-image-crop-picker";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { currencyFormat as cf } from "~/utils";
 import { sizes, color } from "~/config";
+import { uploadRenterImage } from '~/api/RenterAPI'
 
 // const initialState = {
 //   electrictNumber: '',
@@ -34,6 +34,19 @@ const reducer = (state, { field, value }) => ({
   ...state,
   [field]: value,
 });
+const uploadIMG = async file => {
+    let result = '';
+    try {
+        const res = await uploadRenterImage(file);
+        res.Code === 1 && ( result = res.Data );
+        res.Code === 0  && ( result = res.Code );
+        res.Code === 2  && ( result = res.Code );
+    } catch (error) {
+        console.log('uploadIMG fail at:', error);
+        result = error;
+    }
+    return result;
+}
 
 function IncludeElectrictWater({
   index,
@@ -46,78 +59,92 @@ function IncludeElectrictWater({
 }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const onChange = (key, value) => {
-    dispatch({ field: key, value });
-  };
-  useLayoutEffect(() => {
-    if (!!roomData) {
-      try {
-        console.log("Electtric/Water roomData", roomData);
-        // dispatch
-        // waterPrice, electrictPrice
-        dispatch({
-          field: "electrictPrice",
-          value: `${roomData.PriceElectric}`,
-        });
-        dispatch({ field: "waterPrice", value: `${roomData.PriceWater}` });
-      } catch (error) {
-        console.log("roomData error", error);
-      }
+    const onChange = (key, value) => {
+        dispatch({ field: key, value });
+    };
+    useLayoutEffect(() => {
+        if (!!roomData) {
+            try {
+                console.log('Electtric/Water roomData', roomData);
+                // dispatch
+                // waterPrice, electrictPrice
+                dispatch({ field: 'electrictPrice', value: `${roomData.PriceElectric}` });
+                dispatch({ field: 'waterPrice', value: `${roomData.PriceWater}` });
+            } catch (error) {
+                console.log('roomData error', error);
+            }
+        }
+
+    }, [])
+    const firstUpdate = useRef(true);
+    useLayoutEffect(() => {
+        if (firstUpdate.current) {
+            firstUpdate.current = false;
+            return;
+        }
+        handleValueChange(state);
+    }, [state]);
+    const refRBSheet = useRef();
+    let RBSheetKey = '';
+    const _onPressTakePhotos = async () => {
+        refRBSheet.current.close();
+        await new Promise(a => setTimeout(a, 250));
+        try {
+            const options = {
+                cropping: true,
+                cropperToolbarTitle: 'Chỉnh sửa ảnh',
+                compressImageMaxWidth: 1280,
+                compressImageMaxHeight: 768,
+                forceJpg: true
+            };
+            const rsImg = await ImagePicker.openCamera(options);
+
+            const res =  await uploadIMG(rsImg);
+            if(Array.isArray(res)){
+                !!RBSheetKey && dispatch({ field: RBSheetKey, value: res[0] });
+            }
+
+            RBSheetKey = '';
+        } catch (error) {
+            console.log('ImagePicker.openPicker error', error.message);
+            alert(error.message);
+            RBSheetKey = '';
+        }
     }
-  }, []);
-  const firstUpdate = useRef(true);
-  useLayoutEffect(() => {
-    if (firstUpdate.current) {
-      firstUpdate.current = false;
-      return;
+    const _onPressGetPhotos = async () => {
+        refRBSheet.current.close();
+        await new Promise(a => setTimeout(a, 250));
+        try {
+            const options = {
+                cropping: true,
+                cropperToolbarTitle: 'Chỉnh sửa ảnh',
+                maxFiles: 10,
+                compressImageMaxWidth: 1280,
+                compressImageMaxHeight: 768,
+                mediaType: 'photo',
+                forceJpg: true
+            };
+            const rsImg = await ImagePicker.openPicker(options);
+            console.log({ field: RBSheetKey, value: res });
+
+            const res =  await uploadIMG(rsImg);
+            if(Array.isArray(res)){
+                !!RBSheetKey && dispatch({ field: RBSheetKey, value: res[0] });
+            }
+            RBSheetKey = '';
+        } catch (error) {
+            console.log('ImagePicker.openPicker error', error.message);
+            alert(error.message);
+            RBSheetKey = '';
+        }
     }
-    handleValueChange(state);
-  }, [state]);
-  const refRBSheet = useRef();
-  let RBSheetKey = "";
-  const _onPressTakePhotos = async () => {
-    refRBSheet.current.close();
-    await new Promise((a) => setTimeout(a, 250));
-    try {
-      const options = {
-        cropping: true,
-        cropperToolbarTitle: "Chỉnh sửa ảnh",
-        compressImageMaxWidth: 1280,
-        compressImageMaxHeight: 768,
-      };
-      const res = await ImagePicker.openCamera(options);
-      !!RBSheetKey && dispatch({ field: RBSheetKey, value: res });
-      RBSheetKey = "";
-    } catch (error) {
-      console.log("ImagePicker.openPicker error", error.message);
-      alert(error.message);
+    const _onCloseRBSheet = () => {
+       
     }
-  };
-  const _onPressGetPhotos = async () => {
-    refRBSheet.current.close();
-    await new Promise((a) => setTimeout(a, 250));
-    try {
-      const options = {
-        cropping: true,
-        cropperToolbarTitle: "Chỉnh sửa ảnh",
-        maxFiles: 10,
-        compressImageMaxWidth: 1280,
-        compressImageMaxHeight: 768,
-        mediaType: "photo",
-      };
-      const res = await ImagePicker.openPicker(options);
-      console.log({ field: RBSheetKey, value: res });
-      !!RBSheetKey && dispatch({ field: RBSheetKey, value: res });
-      RBSheetKey = "";
-    } catch (error) {
-      console.log("ImagePicker.openPicker error", error.message);
-    }
-  };
-  const _onCloseRBSheet = () => {};
-  const handleChoosePhoto = (key) => {
-    RBSheetKey = key;
-    refRBSheet.current.open();
-  };
+    const handleChoosePhoto = (key) => {
+        RBSheetKey = key;
+        refRBSheet.current.open();
+    };
 
   return (
     <>
@@ -182,86 +209,62 @@ function IncludeElectrictWater({
             </>
           )}
 
-          <View style={[styles.formRow, styles.halfCol]}>
-            {!!state.electrictImage && (
-              <Image
-                source={{
-                  uri: state.electrictImage.path || state.electrictImage,
-                }}
-                style={[styles.imagePreview]}
-              />
-            )}
-            <Button
-              onPress={() => handleChoosePhoto("electrictImage")}
-              accessoryLeft={() => (
-                <Icon
-                  name="camera-outline"
-                  fill={color.whiteColor}
-                  style={sizes.iconButtonSize}
-                />
-              )}
-            >
-              Đồng hồ điện
-            </Button>
-          </View>
-          <View style={[styles.formRow, styles.halfCol]}>
-            {!!state.waterImage && (
-              <Image
-                source={{ uri: state.waterImage.path || state.waterImage }}
-                style={[styles.imagePreview]}
-              />
-            )}
-            <Button
-              onPress={() => handleChoosePhoto("waterImage")}
-              accessoryLeft={() => (
-                <Icon
-                  name="camera-outline"
-                  fill={color.whiteColor}
-                  style={sizes.iconButtonSize}
-                />
-              )}
-            >
-              Đồng hồ nước
-            </Button>
-          </View>
-        </>
-      )}
-      {index === 1 && (
-        <>
-          <View style={[styles.formRow, styles.halfCol]}>
-            <Input
-              textStyle={styles.textInput}
-              label="Tiền trọn gói điện"
-              placeholder="0"
-              value={cf(String(state.electrictPriceInclude))}
-              onChangeText={(nextValue) =>
-                onChange(
-                  "electrictPriceInclude",
-                  nextValue.replace(/[^0-9\-]/g, "")
-                )
-              }
-              textContentType="none"
-              keyboardType="numeric"
-            />
-          </View>
-          <View style={[styles.formRow, styles.halfCol]}>
-            <Input
-              textStyle={styles.textInput}
-              label="Tiền trọn gói nước"
-              placeholder="0"
-              value={cf(String(state.waterPriceInclude))}
-              onChangeText={(nextValue) =>
-                onChange(
-                  "waterPriceInclude",
-                  nextValue.replace(/[^0-9\-]/g, "")
-                )
-              }
-              textContentType="none"
-              keyboardType="numeric"
-            />
-          </View>
-        </>
-      )}
+                <View style={[styles.formRow, styles.halfCol]}>
+                    {!!state.electrictImage && (
+                        <Image
+                            source={{ uri: state.electrictImage.path || state.electrictImage.UrlIMG }}
+                            style={[styles.imagePreview]}
+                        />
+                    )}
+                    <Button
+                        onPress={() => handleChoosePhoto('electrictImage')}
+                        accessoryLeft={() => <Icon name="camera-outline" fill={color.whiteColor} style={sizes.iconButtonSize} />}
+                    >
+                        Đồng hồ điện
+                    </Button>
+                </View>
+                <View style={[styles.formRow, styles.halfCol]}>
+                    {!!state.waterImage && (
+                        <Image
+                            source={{ uri: state.waterImage.path || state.waterImage.UrlIMG }}
+                            style={[styles.imagePreview]}
+                        />
+                    )}
+                    <Button
+                        onPress={() => handleChoosePhoto('waterImage')}
+                        accessoryLeft={() => <Icon name="camera-outline" fill={color.whiteColor} style={sizes.iconButtonSize} />}
+                    >
+                        Đồng hồ nước
+        </Button>
+                </View>
+            </>
+        )}
+        {index === 1 && (
+            <>
+                <View style={[styles.formRow, styles.halfCol]}>
+                    <Input
+                        textStyle={styles.textInput}
+                        label="Tiền trọn gói điện"
+                        placeholder="0"
+                        value={String(state.electrictPriceInclude)}
+                        onChangeText={(nextValue) => onChange('electrictPriceInclude', nextValue)}
+                        textContentType="none"
+                        keyboardType="numeric"
+                    />
+                </View>
+                <View style={[styles.formRow, styles.halfCol]}>
+                    <Input
+                        textStyle={styles.textInput}
+                        label="Tiền trọn gói nước"
+                        placeholder="0"
+                        value={String(state.waterPriceInclude)}
+                        onChangeText={(nextValue) => onChange('waterPriceInclude', nextValue)}
+                        textContentType="none"
+                        keyboardType="numeric"
+                    />
+                </View>
+            </>
+        )}
 
       {index === 2 && (
         <>
@@ -306,24 +309,18 @@ function IncludeElectrictWater({
             />
           </View>
 
-          <View style={[styles.formRow]}>
-            {!!state.waterImage && (
-              <Image
-                source={{ uri: state.waterImage.path || state.waterImage }}
-                style={[styles.imagePreview]}
-              />
-            )}
-            <Button
-              onPress={() => handleChoosePhoto("waterImage")}
-              accessoryLeft={() => (
-                <Icon
-                  name="camera-outline"
-                  fill={color.whiteColor}
-                  style={sizes.iconButtonSize}
-                />
-              )}
-            >
-              Chụp ảnh đồng hồ nước
+                    <View style={[styles.formRow]}>
+                        {!!state.waterImage && (
+                            <Image
+                                source={{ uri: state.waterImage.path || state.waterImage.UrlIMG }}
+                                style={[styles.imagePreview]}
+                            />
+                        )}
+                        <Button
+                            onPress={() => handleChoosePhoto('waterImage')}
+                            accessoryLeft={() => <Icon name="camera-outline" fill={color.whiteColor} style={sizes.iconButtonSize} />}
+                        >
+                            Chụp ảnh đồng hồ nước
             </Button>
           </View>
         </>
@@ -374,104 +371,78 @@ function IncludeElectrictWater({
             />
           </View>
 
-          <View style={[styles.formRow]}>
-            {state.electrictImage && (
-              <Image
-                source={{
-                  uri: state.electrictImage.path || state.electrictImage,
-                }}
-                style={[styles.imagePreview]}
-              />
-            )}
-            <Button
-              onPress={() => handleChoosePhoto("electrictImage")}
-              accessoryLeft={() => (
-                <Icon
-                  name="camera-outline"
-                  fill={color.whiteColor}
-                  style={sizes.iconButtonSize}
-                />
-              )}
-            >
-              Chụp ảnh đồng hồ điện
-            </Button>
-          </View>
-        </>
-      )}
-      <RBSheet
-        ref={refRBSheet}
-        closeOnDragDown={true}
-        closeOnPressMask={true}
-        onClose={_onCloseRBSheet}
-        height={260}
-        customStyles={{
-          wrapper: {
-            backgroundColor: "rgba(0,0,0,0.8)",
-          },
-          container: {
-            backgroundColor: "transparent",
-            padding: 15,
-          },
-          draggableIcon: {
-            backgroundColor: "transparent",
-          },
-        }}
-      >
-        <View
-          onLayout={({
-            nativeEvent: {
-              layout: { x, y, width, height },
-            },
-          }) => {
-            // alert(height);
-          }}
-        >
-          <View style={styles.listButtonWrap}>
-            <TouchableOpacity
-              style={styles.listButton}
-              onPress={_onPressTakePhotos}
-            >
-              <Text style={[styles.listButton_txt]}>Chụp ảnh</Text>
-              <View style={styles.listButton_icon}>
-                <Icon
-                  name="camera-outline"
-                  fill={color.primary}
-                  style={{ width: 24, height: 24 }}
-                />
-              </View>
-            </TouchableOpacity>
-            <View style={{ height: 1, backgroundColor: "#e1e1e1" }} />
-            <TouchableOpacity
-              style={styles.listButton}
-              onPress={_onPressGetPhotos}
-            >
-              <Text style={[styles.listButton_txt]}>Thư viện ảnh</Text>
-              <View style={styles.listButton_icon}>
-                <Icon
-                  name="image-outline"
-                  fill={color.primary}
-                  style={{ width: 24, height: 24 }}
-                />
-              </View>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            style={[styles.listButton, styles.btnClose]}
-            onPress={() => refRBSheet.current.close()}
-          >
-            <Text
-              style={[
-                styles.listButton_txt,
-                { color: "#147AFC", textAlign: "center" },
-              ]}
-            >
-              Trở lại
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </RBSheet>
-    </>
-  );
+                <View style={[styles.formRow]}>
+                    {state.electrictImage && (
+                        <Image
+                            source={{ uri: state.electrictImage.path || state.electrictImage.UrlIMG }}
+                            style={[styles.imagePreview]}
+                        />
+                    )}
+                    <Button
+                        onPress={() => handleChoosePhoto('electrictImage')}
+                        accessoryLeft={() => <Icon name="camera-outline" fill={color.whiteColor} style={sizes.iconButtonSize} />}
+                    >
+                        Chụp ảnh đồng hồ điện
+                    </Button>
+                </View>
+
+            </>)
+        }
+        <RBSheet
+            ref={refRBSheet}
+            closeOnDragDown={true}
+            closeOnPressMask={true}
+            onClose={_onCloseRBSheet}
+            height={260}
+            customStyles={{
+                wrapper: {
+                    backgroundColor: "rgba(0,0,0,0.8)"
+                },
+                container: {
+                    backgroundColor: "transparent",
+                    padding: 15,
+                },
+                draggableIcon: {
+                    backgroundColor: "transparent"
+                }
+            }}
+        >   
+            <View onLayout={({nativeEvent: { layout: {x, y, width, height}}}) => {
+                // alert(height);
+            }}>
+                <View style={styles.listButtonWrap}>
+                    <TouchableOpacity
+                        style={styles.listButton}
+                        onPress={_onPressTakePhotos}
+                    >
+                        
+                        <Text style={[styles.listButton_txt]}>Chụp ảnh</Text>
+                        <View style={styles.listButton_icon}>
+                            <Icon name="camera-outline" fill={color.primary} style={{width: 24, height: 24}}/>
+                        </View>
+                    </TouchableOpacity>
+                    <View  style={{height: 1,backgroundColor: "#e1e1e1"}} />
+                    <TouchableOpacity
+                        style={styles.listButton}
+                        onPress={_onPressGetPhotos}
+                    >   
+                        
+                        <Text style={[styles.listButton_txt]}>Thư viện ảnh</Text>
+                        <View style={styles.listButton_icon}>
+                            <Icon name="image-outline" fill={color.primary} style={{width: 24, height: 24, }}/>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                    style={[styles.listButton, styles.btnClose]}
+                    onPress={ () => refRBSheet.current.close() }
+                >
+                    <Text style={[styles.listButton_txt, {color: '#147AFC', textAlign: "center"}]}>Trở lại</Text>
+                </TouchableOpacity>
+            </View>
+            
+        </RBSheet>
+    </>);
 }
 
 const styles = StyleSheet.create({

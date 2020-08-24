@@ -18,10 +18,12 @@ const defaultState = {
         electrictPrice: "5000",
         electrictPriceInclude: "",
         electrictImage: null,
+          electrictImageID: '',
         waterNumber: "",
         waterPrice: "3000",
         waterPriceInclude: "",
         waterImage: null,
+          waterImageID: ''
       },
     },
     {

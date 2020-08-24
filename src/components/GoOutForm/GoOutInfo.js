@@ -6,85 +6,87 @@ import { color, settings } from "~/config";
 import { Context as RoomGoOutContext } from "../../context/RoomGoOutContext";
 
 const GoOutInfo = () => {
-  const { state, changeStateFormStep } = useContext(RoomGoOutContext);
-  const stateGoOutInfo = state.dataForm[state.step];
-  useEffect(() => {
-    console.log(state);
-  }, []);
-  return (
-    <>
-      <View style={styles.mainWrap}>
-        <View style={styles.section}>
-          <View style={[styles.formWrap]}>
-            <View style={[styles.formRow, styles.fullWidth]}>
-              <Input
-                placeholder="dd/mm/yyyy"
-                value={`Từ ${stateGoOutInfo.constract}`}
-                label="Hợp đồng"
-                accessoryLeft={() => (
-                  <View style={styles.leftInput}>
-                    <Text>12 tháng</Text>
-                  </View>
-                )}
-                disabled
-                textStyle={{ color: color.redColor }}
-                onChangeText={(nextValue) =>
-                  changeStateFormStep("constract", nextValue)
-                }
-                dataService={settings.formatDateService}
-              />
+    const { state, changeStateFormStep } = useContext(RoomGoOutContext);
+    const stateGoOutInfo = state.dataForm[state.step];
+    useEffect(() => {
+       console.log(state);
+    }, [])
+    const _handleValueChange = stateValue =>{
+        console.log('IncludeElectrictWater:', stateValue);
+        changeStateFormStep("roomInfo", stateValue);
+    }
+    return (
+        <>
+            <View style={styles.mainWrap}>
+                <View style={styles.section}>
+                    <View style={[styles.formWrap]}>
+                        <View style={[styles.formRow, styles.fullWidth]}>
+                            <Input
+                                placeholder="dd/mm/yyyy"
+                                value={`Từ ${stateGoOutInfo.constract}`}
+                                label="Hợp đồng"
+                                accessoryLeft={() => (
+                                    <View style={styles.leftInput}>
+                                        <Text>12 tháng</Text>
+                                    </View>
+                                )}
+                                disabled
+                                textStyle={{color: color.redColor}}
+                                onChangeText={(nextValue) => changeStateFormStep('constract', nextValue)}
+                                dataService={settings.formatDateService}
+                            />
+                        </View>
+                        <View style={[styles.formRow, styles.halfCol]}>
+                            <Datepicker
+                                label="Ngày dọn vào"
+                                placeholder="dd/mm/yyyy"
+                                date={
+                                    !!stateGoOutInfo && stateGoOutInfo.dateGoIn
+                                        ? stateGoOutInfo.dateGoIn
+                                        : new Date()
+                                }
+                                status="basic"
+                                min={settings.minRangeDatePicker}
+                                max={settings.maxRangeDatePicker}
+                                dataService={settings.formatDateService}
+                                onSelect={(nextDate) =>
+                                    changeStateFormStep("dateGoIn", nextDate)
+                                }
+                                disabled={true}
+                            />
+                        </View>
+                        <View style={[styles.formRow, styles.halfCol]}>
+                            <Datepicker
+                                label="Ngày dọn ra"
+                                date={
+                                    stateGoOutInfo.dateGoOut
+                                }
+                                min={stateGoOutInfo.dateGoIn}
+                                max={settings.maxRangeDatePicker}
+                                status="basic"
+                                dataService={settings.formatDateService}
+                                onSelect={(nextDate) =>
+                                    changeStateFormStep("dateGoOut", nextDate)
+                                }
+                            />
+                        </View>
+                        <IncludeElectrictWater
+                            index={
+                                state.roomInfo?.room.TypeEW
+                                    ? parseInt(state.roomInfo?.room.TypeEW) - 1
+                                    : 0
+                            }
+                            waterTitle="Nước tháng này"
+                            electrictTitle="Điện tháng này"
+                            priceDisplay={false}
+                            initialState={stateGoOutInfo.roomInfo}
+                            handleValueChange={_handleValueChange}
+                        />
+                    </View>
+                </View>
             </View>
-            <View style={[styles.formRow, styles.halfCol]}>
-              <Datepicker
-                label="Ngày dọn vào"
-                placeholder="dd/mm/yyyy"
-                date={
-                  !!stateGoOutInfo && stateGoOutInfo.dateGoIn
-                    ? stateGoOutInfo.dateGoIn
-                    : new Date()
-                }
-                status="basic"
-                min={settings.minRangeDatePicker}
-                max={settings.maxRangeDatePicker}
-                dataService={settings.formatDateService}
-                onSelect={(nextDate) =>
-                  changeStateFormStep("dateGoIn", nextDate)
-                }
-                disabled={true}
-              />
-            </View>
-            <View style={[styles.formRow, styles.halfCol]}>
-              <Datepicker
-                label="Ngày dọn ra"
-                date={stateGoOutInfo.dateGoOut}
-                min={stateGoOutInfo.dateGoIn}
-                max={settings.maxRangeDatePicker}
-                status="basic"
-                dataService={settings.formatDateService}
-                onSelect={(nextDate) =>
-                  changeStateFormStep("dateGoOut", nextDate)
-                }
-              />
-            </View>
-            <IncludeElectrictWater
-              index={
-                state.roomInfo?.room.TypeEW
-                  ? parseInt(state.roomInfo?.room.TypeEW) - 1
-                  : 0
-              }
-              waterTitle="Nước tháng này"
-              electrictTitle="Điện tháng này"
-              priceDisplay={false}
-              initialState={stateGoOutInfo.roomInfo}
-              handleValueChange={(stateValue) =>
-                changeStateFormStep("roomInfo", stateValue)
-              }
-            />
-          </View>
-        </View>
-      </View>
-    </>
-  );
+        </>
+    );
 };
 
 const styles = StyleSheet.create({
