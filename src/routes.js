@@ -54,6 +54,10 @@ import SettingRoomTypeScreen from "~/screens/SettingScreen/SettingRoomTypeScreen
 import SettingCustomerRentingScreen from "~/screens/SettingScreen/SettingCustomerRentingScreen";
 import SettingCustomerOldScreen from "~/screens/SettingScreen/SettingCustomerOldScreen";
 import SettingCustomerDebtScreen from "~/screens/SettingScreen/SettingCustomerDebtScreen";
+import SettingRevenueIncomeScreen from "~/screens/SettingScreen/SettingRevenueIncomeScreen";
+import SettingRevenueNetScreen from "~/screens/SettingScreen/SettingRevenueNetScreen";
+import SettingExpectedProfitScreen from "~/screens/SettingScreen/SettingExpectedProfitScreen";
+import SettingCollateralDamageScreen from "~/screens/SettingScreen/SettingCollateralDamageScreen";
 import { Provider as CustomerProvider } from "~/context/CustomerContext";
 export const isMountedRef = React.createRef();
 
@@ -473,6 +477,35 @@ const SettingStack = () => {
         component={SettingCustomerStack}
         options={{
           headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="SettingRevenueIncome"
+        component={SettingRevenueIncomeScreen}
+        options={{
+          title: "Doanh thu thực tế",
+        }}
+      />
+      <Stack.Screen
+        name="SettingRevenueNet"
+        component={SettingRevenueNetScreen}
+        options={{
+          title: "Lợi nhuận thực tế",
+        }}
+      />
+      <Stack.Screen
+        name="SettingExpectedProfit"
+        component={SettingExpectedProfitScreen}
+        options={{
+          title: "Lợi nhuận dự kiến",
+        }}
+      />
+      <Stack.Screen
+        name="SettingCollateralDamage"
+        component={SettingCollateralDamageScreen}
+        options={{
+          title: "Tổn thất dự kiến",
         }}
       />
     </Stack.Navigator>
