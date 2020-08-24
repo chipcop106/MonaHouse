@@ -144,27 +144,26 @@ const goOutReducer = (prevstate, action) => {
 };
 
 const changeStepForm = (dispatch) => async (stepValueChange, data) => {
-  // if (stepValueChange === 1) {
-  //   dispatch({ type: "SET_LOADING", payload: true });
-  //   try {
-  //     const res = await informElectrictWater(data);
-  //     console.log("changeStepForm - updateWaterElectric", res);
-  //
-  //     dispatch({ type: "SET_LOADING", payload: false });
-  //     if (res.Code === 1) {
-  //       dispatch({ type: "UPDATE_STEP", payload: { stepValueChange } });
-  //     } else {
-  //       console.log("res.Code susscess fail handle", res);
-  //     }
-  //   } catch (error) {
-  //     console.log("changeStepForm - updateWaterElectric error: ", error);
-  //     dispatch({ type: "SET_LOADING", payload: false });
-  //   }
-  //
-  // } else {
-  //   dispatch({ type: "UPDATE_STEP", payload: { stepValueChange } });
-  // }
-  dispatch({ type: "UPDATE_STEP", payload: { stepValueChange } });
+  if (stepValueChange === 1) {
+    dispatch({ type: "SET_LOADING", payload: true });
+    try {
+      const res = await informElectrictWater(data);
+      console.log("changeStepForm - updateWaterElectric", res);
+
+      dispatch({ type: "SET_LOADING", payload: false });
+      if (res.Code === 1) {
+        dispatch({ type: "UPDATE_STEP", payload: { stepValueChange } });
+      } else {
+        console.log("res.Code susscess fail handle", res);
+      }
+    } catch (error) {
+      console.log("changeStepForm - updateWaterElectric error: ", error);
+      dispatch({ type: "SET_LOADING", payload: false });
+    }
+  } else {
+    dispatch({ type: "UPDATE_STEP", payload: { stepValueChange } });
+  }
+  //dispatch({ type: "UPDATE_STEP", payload: { stepValueChange } });
 };
 
 const changeStateFormStep = (dispatch) => (field, value) => {
@@ -198,11 +197,11 @@ const loadDataForm = (dispatch) => async (data) => {
         roomInfo: {
           ...room,
           electrictNumber: electric.number || "",
-          electrictPrice: room.PriceElectric || 0,
+          electrictPrice: renter?.renter?.ElectrictPrice ?? 0,
           electrictPriceInclude: "",
           electrictImage: electric.image_thumbnails || "",
           waterNumber: water.number || "",
-          waterPrice: room.PriceWater || 0,
+          waterPrice: renter?.renter?.WaterPrice ?? 0,
           waterPriceInclude: "",
           waterImage: water.image_thumbnails || "",
           oldElectrictNumber: electric?.number ?? 0,
@@ -230,14 +229,18 @@ const loadDataBill = (dispatch) => async (data) => {
     console.log("loadDataBill goOutReducer", data);
     const dataBill = [
       {
-        electricDiff: data?.ElectricNumber || 0,
-        waterDiff: data?.WaterNumber || 0,
-        electricDiffPrice: data?.ElectricPrice || 0,
-        waterDiffPrice: data?.WaterPrice || 0,
-        dateDiff: data?.Days || 0,
-        priceRoomBase: data?.PriceRoom || 0,
-        priceRoomByDate: data?.PriceMustCollect || 0,
-        totalPrice: data?.TotalDebt || 0,
+        electricDiff: data?.ElectricNumber ?? 0,
+        waterDiff: data?.WaterNumber ?? 0,
+        electricDiffPrice: data?.ElectricPrice ?? 0,
+        waterDiffPrice: data?.WaterPrice ?? 0,
+        dateDiff: data?.Days ?? 0,
+        priceAddon: data?.PriceAddon ?? 0,
+        priceRoomBase: data?.PriceRoom ?? 0,
+        priceRoomByDate: data?.PriceMustCollect ?? 0,
+        totalDebt: data?.TotalDebt ?? 0,
+        incurredFee: data?.FeeIncurred ?? 0,
+        deposit: data?.Deposit,
+        totalCollect: data?.TotalCollect ?? 0,
       },
     ];
     await dispatch({ type: "SET_BILL", payload: dataBill });

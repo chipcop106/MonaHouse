@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Alert } from "react-native";
 import {
   Input,
   Select,
@@ -9,7 +9,8 @@ import {
 } from "@ui-kitten/components";
 import Moment from "moment";
 import { color } from "~/config";
-import { Context as RoomGoOutContext } from "../../context/RoomGoOutContext";
+import { Context as RoomGoOutContext } from "~/context/RoomGoOutContext";
+import { Context as AuthContext } from "~/context/AuthContext";
 import {
   currencyFormat,
   getDaysInMonth,
@@ -17,6 +18,7 @@ import {
   roundNumberThounsand,
 } from "~/utils";
 import Loading from "~/components/common/Loading";
+import { ReadyGoOut } from "~/api/RenterAPI";
 const paymentMethod = ["Tiền mặt", "Chuyển khoản"];
 
 const GoOutCheckout = () => {
@@ -25,46 +27,34 @@ const GoOutCheckout = () => {
     waterMoney: 0,
     electrictMoney: 0,
   });
-  const { state, changeStateFormStep } = useContext(RoomGoOutContext);
+  const { state, changeStateFormStep, loadDataBill } = useContext(
+    RoomGoOutContext
+  );
+  const { signOut } = useContext(AuthContext);
   const stateGoOutInfo = state.dataForm[state.step];
+  const { billInfo } = stateGoOutInfo;
   const firstRoomState = state.dataForm[0];
-  const [loading] = useState(false);
-  console.log({ state });
-  const {
-    electrictNumber: newElectrictNunber,
-    electrictPrice,
-    waterNumber: newWaterNumber,
-    waterPrice,
-    oldElectrictNumber,
-    oldWaterNumber,
-  } = firstRoomState?.roomInfo;
-
-  const { dateGoOut, roomPrice, renterDeposit } = firstRoomState;
-
-  const waterUsed =
-    newWaterNumber - oldWaterNumber > 0 ? newWaterNumber - oldWaterNumber : 0;
-  const electrictUsed =
-    newElectrictNunber - oldElectrictNumber > 0
-      ? newElectrictNunber - oldElectrictNumber
-      : 0;
+  const [loading, setLoading] = useState(false);
+  console.log(state);
+  const loadBillInfo = async () => {
+    setLoading(true);
+    try {
+      const res = await ReadyGoOut({
+        roomid: firstRoomState.roomID,
+        renterid: firstRoomState.renterID,
+      });
+      res.Code === 1 && (await loadDataBill(res.Data));
+      res.Code === 2 && signOut();
+      res.Code === 0 && Alert.alert("Lỗi code 0 !", `${JSON.stringify(res)}`);
+    } catch (e) {
+      console.log(e?.message ?? "Lỗi call api load bill info");
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
     console.log("RoomGoOutContext", state);
-    setBillData({
-      ...billData,
-      dayRentMoney: roundNumberThounsand(
-        Math.ceil(
-          Number(getDiffDayFromFirstDayOfMonth(dateGoOut)) *
-            (parseInt(roomPrice) /
-              getDaysInMonth(
-                new Date(dateGoOut).getMonth(),
-                new Date(dateGoOut).getFullYear()
-              ))
-        )
-      ),
-      waterMoney: waterUsed * parseInt(waterPrice),
-      electrictMoney: electrictUsed * parseInt(electrictPrice),
-    });
+    loadBillInfo();
   }, []);
 
   return (
@@ -83,45 +73,61 @@ const GoOutCheckout = () => {
             <View style={[styles.formWrap]}>
               <View style={[styles.formRow, styles.rowInfo]}>
                 <Text style={styles.rowLabel}>
-                  {electrictUsed} kW{" "}
+                  {billInfo?.electricDiff ?? 0} kW{" "}
                   <Text style={{ fontWeight: "bold" }}>X</Text>{" "}
-                  {`${currencyFormat(electrictPrice)}`}
+                  {`${currencyFormat(
+                    firstRoomState.roomInfo?.electrictPrice ?? 0
+                  )}`}
                 </Text>
                 <Text
                   status="basic"
                   style={[styles.rowValue]}
-                >{`${currencyFormat(billData.electrictMoney)}`}</Text>
+                >{`${currencyFormat(billInfo?.electricDiffPrice ?? 0)}`}</Text>
               </View>
               <View style={[styles.formRow, styles.rowInfo]}>
                 <Text style={styles.rowLabel}>
-                  {waterUsed} Khối <Text style={{ fontWeight: "bold" }}>X</Text>{" "}
-                  {`${currencyFormat(waterPrice)}`}
+                  {billInfo?.waterDiff} Khối{" "}
+                  <Text style={{ fontWeight: "bold" }}>X</Text>{" "}
+                  {`${currencyFormat(firstRoomState.roomInfo?.waterPrice)}`}
                 </Text>
                 <Text
                   status="basic"
                   style={[styles.rowValue]}
-                >{`${currencyFormat(billData.waterMoney)}`}</Text>
+                >{`${currencyFormat(billInfo?.waterDiffPrice)}`}</Text>
               </View>
               <View style={[styles.formRow, styles.rowInfo]}>
                 <Text style={styles.rowLabel}>Tiền thuê:</Text>
                 <Text
                   status="basic"
                   style={[styles.rowValue]}
-                >{`${currencyFormat(roomPrice)}`}</Text>
+                >{`${currencyFormat(billInfo?.priceRoomBase ?? 0)}`}</Text>
               </View>
               <View style={[styles.formRow, styles.rowInfo]}>
                 <Text style={styles.rowLabel}>
-                  Tiền thuê ({getDiffDayFromFirstDayOfMonth(dateGoOut)} ngày)
+                  Tiền thuê ({billInfo?.dateDiff ?? 0} ngày)
                 </Text>
+                <Text status="basic" style={[styles.rowValue]}>{`${
+                  currencyFormat(billInfo?.priceRoomByDate) ?? 0
+                }`}</Text>
+              </View>
+              <View style={[styles.formRow, styles.rowInfo]}>
+                <Text style={styles.rowLabel}>Tiền dịch vụ:</Text>
                 <Text
                   status="basic"
                   style={[styles.rowValue]}
-                >{`${currencyFormat(billData.dayRentMoney)}`}</Text>
+                >{`${currencyFormat(billInfo?.priceAddon ?? 0)}`}</Text>
+              </View>
+              <View style={[styles.formRow, styles.rowInfo]}>
+                <Text style={styles.rowLabel}>Chi phí phát sinh khác:</Text>
+                <Text
+                  status="basic"
+                  style={[styles.rowValue]}
+                >{`${currencyFormat(billInfo?.incurredFee ?? 0)}`}</Text>
               </View>
               <View style={[styles.formRow, styles.rowInfo]}>
                 <Text style={styles.rowLabel}>Trừ tiền đã cọc:</Text>
                 <Text status="danger" style={[styles.rowValue]}>
-                  -{currencyFormat(renterDeposit)}
+                  -{currencyFormat(billInfo?.deposit)}
                 </Text>
               </View>
               {/* <View style={[styles.formRow, styles.rowInfo]}>
@@ -135,12 +141,7 @@ const GoOutCheckout = () => {
                   status="basic"
                   style={[styles.rowValue, { fontWeight: "600" }]}
                 >
-                  {currencyFormat(
-                    billData.dayRentMoney +
-                      billData.waterMoney +
-                      billData.electrictMoney -
-                      renterDeposit * 1
-                  )}
+                  {currencyFormat(billInfo?.totalCollect ?? 0)}
                 </Text>
               </View>
               {/*<View style={[styles.formRow, styles.rowInfo]}>*/}
