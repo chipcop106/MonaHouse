@@ -15,6 +15,10 @@ const GoOutInfo = () => {
     useEffect(() => {
        console.log(state);
     }, [])
+    const _handleValueChange = stateValue =>{
+        console.log('IncludeElectrictWater:', stateValue);        
+        changeStateFormStep("roomInfo", stateValue);
+    }
     return (
         <>
             <View style={styles.mainWrap}>
@@ -84,9 +88,7 @@ const GoOutInfo = () => {
                             electrictTitle="Điện tháng này"
                             priceDisplay={false}
                             initialState={stateGoOutInfo.roomInfo}
-                            handleValueChange={(stateValue) =>
-                                changeStateFormStep("roomInfo", stateValue)
-                            }
+                            handleValueChange={_handleValueChange}
                         />
                     </View>
                 </View>

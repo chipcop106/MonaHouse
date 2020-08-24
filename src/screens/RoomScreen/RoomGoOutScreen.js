@@ -1,6 +1,6 @@
 import React, { useContext, useLayoutEffect, useState, useEffect } from "react";
 import { StyleSheet, View, TouchableOpacity, ScrollView, Linking, ActivityIndicator, 
-    RefreshControl
+    RefreshControl, Alert
 } from "react-native";
 import { Text, Layout, Button, Icon, Avatar } from '@ui-kitten/components';
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -95,16 +95,24 @@ const RoomGoOutScreen = ({ navigation }) => {
             await loaddata();
             setloading(false);
         })();
-        
+        return () => {
+            
+        }
     }, [])
 
     const sendFormData = async () => {
         setspinner(true);
         await moveOut(RoomGoOutState);
         setspinner(false);
-        clearState();
-        navigation.pop();
-        updateState_Room('isReload', true);
+        await new Promise(a => setTimeout(a, 200));
+        Alert.alert('Dọn ra thành công !!', '', [{
+            text: "Ok",
+            onPress: () => {
+                clearState();
+                navigation.pop();
+                updateState_Room('isReload', true);
+            },
+        },]);
         
     };
     const _onRefresh = async () => {

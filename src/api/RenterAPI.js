@@ -150,7 +150,8 @@ export const uploadRenterImage = async (params) => {
     if (!!params) {
       !Array.isArray(params) && (params = [params]);
       [...params].map((image) => {
-        console.log(image);
+        !!image.filename?.includes('.HEIC') && ( 
+          image.filename = `${image.filename.split(".")[0]}.JPG` )
         const file = {
           uri: image.path,
           name: image.filename || `${create_UUID()}.jpg`,

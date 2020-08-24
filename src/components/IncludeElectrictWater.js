@@ -33,9 +33,10 @@ const reducer = (state, { field, value }) => ({
     [field]: value,
 });
 const uploadIMG = async file => {
+    let result = '';
     try {
         const res = await uploadRenterImage(file);
-        ires.Code === 1 && ( result = res.Data );
+        res.Code === 1 && ( result = res.Data );
         res.Code === 0  && ( result = res.Code );
         res.Code === 2  && ( result = res.Code );
     } catch (error) {
@@ -83,13 +84,16 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 cropping: true,
                 cropperToolbarTitle: 'Chỉnh sửa ảnh',
                 compressImageMaxWidth: 1280,
-                compressImageMaxHeight: 768
+                compressImageMaxHeight: 768,
+                forceJpg: true
             };
-            const res = await ImagePicker.openCamera(options);
+            const rsImg = await ImagePicker.openCamera(options);
 
-            await uploadIMG(res);
+            const res =  await uploadIMG(rsImg);
+            if(Array.isArray(res)){
+                !!RBSheetKey && dispatch({ field: RBSheetKey, value: res[0] });
+            }
 
-            !!RBSheetKey && dispatch({ field: RBSheetKey, value: res });
             RBSheetKey = '';
         } catch (error) {
             console.log('ImagePicker.openPicker error', error.message);
@@ -108,13 +112,15 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 compressImageMaxWidth: 1280,
                 compressImageMaxHeight: 768,
                 mediaType: 'photo',
+                forceJpg: true
             };
-            const res = await ImagePicker.openPicker(options);
+            const rsImg = await ImagePicker.openPicker(options);
             console.log({ field: RBSheetKey, value: res });
 
-            await uploadIMG(res);
-
-            !!RBSheetKey && dispatch({ field: RBSheetKey, value: res });
+            const res =  await uploadIMG(rsImg);
+            if(Array.isArray(res)){
+                !!RBSheetKey && dispatch({ field: RBSheetKey, value: res[0] });
+            }
             RBSheetKey = '';
         } catch (error) {
             console.log('ImagePicker.openPicker error', error.message);
@@ -185,7 +191,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 <View style={[styles.formRow, styles.halfCol]}>
                     {!!state.electrictImage && (
                         <Image
-                            source={{ uri: state.electrictImage.path || state.electrictImage }}
+                            source={{ uri: state.electrictImage.path || state.electrictImage.UrlIMG }}
                             style={[styles.imagePreview]}
                         />
                     )}
@@ -199,7 +205,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 <View style={[styles.formRow, styles.halfCol]}>
                     {!!state.waterImage && (
                         <Image
-                            source={{ uri: state.waterImage.path || state.waterImage }}
+                            source={{ uri: state.waterImage.path || state.waterImage.UrlIMG }}
                             style={[styles.imagePreview]}
                         />
                     )}
@@ -279,7 +285,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                     <View style={[styles.formRow]}>
                         {!!state.waterImage && (
                             <Image
-                                source={{ uri: state.waterImage.path || state.waterImage }}
+                                source={{ uri: state.waterImage.path || state.waterImage.UrlIMG }}
                                 style={[styles.imagePreview]}
                             />
                         )}
@@ -333,7 +339,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 <View style={[styles.formRow]}>
                     {state.electrictImage && (
                         <Image
-                            source={{ uri: state.electrictImage.path || state.electrictImage }}
+                            source={{ uri: state.electrictImage.path || state.electrictImage.UrlIMG }}
                             style={[styles.imagePreview]}
                         />
                     )}
