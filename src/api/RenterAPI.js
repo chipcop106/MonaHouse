@@ -2,7 +2,7 @@ import instance, { getAccessToken } from "./instanceAPI";
 import { create_UUID } from "~/utils";
 const path = `/RenterApi`;
 
-export const getRelationships = async (params) => {
+export const getRelationships = async () => {
   try {
     let res = await instance.get(`${path}/getrelationship`);
     return res.data;
@@ -217,49 +217,34 @@ string imgwater
 */
 
 export const updateElectrictWater = async (params) => {
-    try {
-        const token = await getAccessToken();
-        let res = await instance.get(`${path}/writewaterelectrict`, {
-            params: {
-                ...params,
-                token,
-            },
-        });
-        return res.data;
-    } catch (error) {
-        return error.message;
-    }
-}
-
-export const goOut = async params => {
-    // MoveOut(string token, int renterid, int roomid, int paid, int payment)
-    try {
-        const token = await getAccessToken();
-        let res = await instance.get(`${path}/MoveOut`,{
-            params:{
-                ...params,
-                token
-            }
-        });
-        return res.data;
-    } catch (error) {
-        return error.message;
-    }
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(`${path}/writewaterelectrict`, {
+      params: {
+        ...params,
+        token,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error.message;
+  }
 };
-export const ReadyGoOut = async params => {
-    // MoveOut(string token, int renterid, int roomid)
-    try {
-        const token = await getAccessToken();
-        let res = await instance.get(`${path}/ReadyMoveOut`,{
-            params:{
-                ...params,
-                token
-            }
-        });
-        return res.data;
-    } catch (error) {
-        return error.message;
-    }
+
+export const goOut = async (params) => {
+  // MoveOut(string token, int renterid, int roomid, int paid, int payment)
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(`${path}/MoveOut`, {
+      params: {
+        ...params,
+        token,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error.message;
+  }
 };
 
 export const getCustomerRenting = async (params) => {
@@ -279,41 +264,6 @@ export const getCustomerRenting = async (params) => {
 };
 
 export const getCustomerDebt = async (params) => {
-    // type:1 //1 nợ 2 dư
-    // search:
-    // sort:0
-    // motelid:0
-    // roomid:0
-    // //motel=0=> tất cả nhà, !=0 => list người thuê theo id nhà
-    try {
-      const token = await getAccessToken();
-      let res = await instance.get(`${path}/ListRenterDebt`, {
-        params: {
-          ...params,
-          token,
-        },
-      });
-      return res.data;
-    } catch (error) {
-      return error?.message ?? "Lỗi api";
-    }
-}
-export const ReadyGoOut = async params => {
-    // MoveOut(string token, int renterid, int roomid)
-    try {
-        const token = await getAccessToken();
-        let res = await instance.get(`${path}/ReadyMoveOut`,{
-            params:{
-                ...params,
-                token
-            }
-        });
-        return res.data;
-    } catch (error) {
-        return error.message;
-    }
-};
-
   // type:1 //1 nợ 2 dư
   // search:
   // sort:0
@@ -331,5 +281,20 @@ export const ReadyGoOut = async params => {
     return res.data;
   } catch (error) {
     return error?.message ?? "Lỗi api";
+  }
+};
+export const ReadyGoOut = async (params) => {
+  // MoveOut(string token, int renterid, int roomid)
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(`${path}/ReadyMoveOut`, {
+      params: {
+        ...params,
+        token,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error.message;
   }
 };
