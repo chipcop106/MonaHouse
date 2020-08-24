@@ -119,20 +119,41 @@ const RoomGoInScreen = ({ navigation, route }) => {
         const imageArr = [
             {
                 Name: 'dong-ho-nuoc',
-                DataIMG: room.roomInfo?.waterImage || [],
+                DataIMG: !!room.roomInfo?.waterImage ?  !!room.waterImage?.ID ? [{
+                    ID: room.waterImage.ID,
+                    URL: room.waterImage.UrlIMG
+                }] : [{
+                    ID: 0,
+                    URL: room.roomInfo?.waterImage
+                }] : [],
             },
             {
                 Name: 'dong-ho-dien',
-                DataIMG: room.roomInfo?.electrictWater || [],
+                DataIMG: !!room.roomInfo?.electrictImage ?  !!room.electrictImage?.ID ? [{
+                    ID: room.electrictImage.ID,
+                    URL: room.electrictImage.UrlIMG
+                }] : [{
+                    ID: 0,
+                    URL: room.roomInfo?.electrictImage
+                }] : [],
             },
             {
                 Name: 'giay-to',
-                DataIMG: renter.licenseImages || [],
+                DataIMG: ( ()=>{
+                    let rs = [];
+                    try {
+                        Array.isArray(renter?.licenseImages) && renter?.licenseImages.length > 0 && renter?.licenseImages.map( it =>  rs.push({ID: it.ID, URL: it.UrlIMG}))
+                    } catch (error) {
+                        console.log('giay-to DataIMG error', error);
+                    }
+
+                    return rs;
+                } )() ,
             },
         ];
-
+        console.log('imageArr', imageArr);
+        
         try {
-            console.log(renter.job);
             let datein = moment(room.dateGoIn).format("DD/MM/yyyy");
             datein === "Invalid date" && ( datein = moment().format("DD/MM/yyyy") );
             await addPeopleToRoom(

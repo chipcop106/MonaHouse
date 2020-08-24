@@ -48,7 +48,7 @@ const uploadIMG = async file => {
 
 function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay, handleValueChange, initialState, roomData }) {
     const [state, dispatch] = useReducer(reducer, initialState);
-
+    console.log('initialState', initialState)
     const onChange = (key, value) => {
         dispatch({ field: key, value });
     };
@@ -57,7 +57,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
             try {
                 console.log('Electtric/Water roomData', roomData);
                 // dispatch
-                // waterPrice, electrictPrice
+                // waterPrice, electricPrice
                 dispatch({ field: 'electrictPrice', value: `${roomData.PriceElectric}` });
                 dispatch({ field: 'waterPrice', value: `${roomData.PriceWater}` });
             } catch (error) {
@@ -191,7 +191,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 <View style={[styles.formRow, styles.halfCol]}>
                     {!!state.electrictImage && (
                         <Image
-                            source={{ uri: state.electrictImage.path || state.electrictImage.UrlIMG }}
+                            source={{ uri:  state.electrictImage.UrlIMG || state.electrictImage}}
                             style={[styles.imagePreview]}
                         />
                     )}
@@ -205,7 +205,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 <View style={[styles.formRow, styles.halfCol]}>
                     {!!state.waterImage && (
                         <Image
-                            source={{ uri: state.waterImage.path || state.waterImage.UrlIMG }}
+                            source={{ uri: state.waterImage.UrlIMG || state.waterImage}}
                             style={[styles.imagePreview]}
                         />
                     )}
@@ -285,7 +285,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                     <View style={[styles.formRow]}>
                         {!!state.waterImage && (
                             <Image
-                                source={{ uri: state.waterImage.path || state.waterImage.UrlIMG }}
+                                source={{ uri: state.waterImage.UrlIMG || state.waterImage}}
                                 style={[styles.imagePreview]}
                             />
                         )}
@@ -339,7 +339,7 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                 <View style={[styles.formRow]}>
                     {state.electrictImage && (
                         <Image
-                            source={{ uri: state.electrictImage.path || state.electrictImage.UrlIMG }}
+                            source={{ uri: state.electrictImage.UrlIMG || state.electrictImage }}
                             style={[styles.imagePreview]}
                         />
                     )}

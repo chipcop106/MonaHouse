@@ -293,7 +293,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                             <Text
                                                 style={[
                                                     styles.value,
-                                                    roomInfo?.dept > 0
+                                                    roomInfo?.dept < 0
                                                         ? {
                                                               color:
                                                                   color.redColor,
@@ -304,7 +304,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                                           },
                                                 ]}
                                             >
-                                               {roomInfo?.dept > 0 && 'nợ'}{roomInfo?.dept < 0 && 'dư'} {cf(roomInfo?.dept)}
+                                               {roomInfo?.dept < 0 && 'nợ'}{roomInfo?.dept > 0 && 'dư'} {cf(Math.abs(roomInfo?.dept))}
                                             </Text>
                                         </View>
                                         
@@ -392,7 +392,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                                 false
                                             }
                                             renderItem={({ item }) => {
-                                                const url = `${settings.homeURL}/${item.LinkIMG}`;
+                                                const url = item.LinkIMG;
                                                 return (
                                                     <TouchableOpacity
                                                         onPress={() =>
@@ -401,7 +401,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                                     >
                                                         <Image
                                                             source={{
-                                                                uri: url,
+                                                                uri: item.LinkIMGThumbnail,
                                                             }}
                                                             style={[
                                                                 styles.imagePreview,

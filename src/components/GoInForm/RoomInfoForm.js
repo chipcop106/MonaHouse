@@ -43,6 +43,11 @@ const RoomInfoForm = () => {
             },
         ])
     }
+    const _handleValueChangeIncludeElectrictWater = (value) =>{
+        console.log('_handleValueChangeIncludeElectrictWater', value)
+        changeStateFormStep("roomInfo", value)
+    }
+    
     return (
         <>
             <View style={styles.mainWrap}>
@@ -133,9 +138,7 @@ const RoomInfoForm = () => {
                         </View>
                         <IncludeElectrictWater
                             initialState={stateRoomInfo.roomInfo}
-                            handleValueChange={(value) =>
-                                changeStateFormStep("roomInfo", value)
-                            }
+                            handleValueChange={_handleValueChangeIncludeElectrictWater}
                             index={
                                 stateRoomInfo.electrictIndex?.row ??
                                 new IndexPath(0).row

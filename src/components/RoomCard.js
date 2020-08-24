@@ -211,8 +211,8 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
                     {!!item.Renter && <View style={[styles.balanceInfo]}>
                         <View style={styles.balance}>
                             <Text style={styles.balanceText}>
-                                Dư:
-                            <Text style={styles.balanceValue}> {currencyFormat(item.MoneyDebtID)} đ</Text>
+                                { item.MoneyDebtID > 0 ? 'Dư:' : 'Nợ:'} 
+                            <Text style={[styles.balanceValue, item.MoneyDebtID < 0 && { color: color.redColor }]}> {currencyFormat(Math.abs(item.MoneyDebtID))} đ</Text>
                             </Text>
                         </View>
                         <TouchableOpacity
