@@ -230,20 +230,6 @@ export const updateElectrictWater = async (params) => {
     } catch (error) {
         return error.message;
     }
-}
-  let result;
-  try {
-    const token = await getAccessToken();
-    let res = await instance.get(`${path}/writewaterelectrict`, {
-      params: {
-        ...params,
-        token,
-      },
-    });
-    return res.data;
-  } catch (error) {
-    return error.message;
-  }
 };
 
 export const goOut = async params => {
@@ -251,35 +237,6 @@ export const goOut = async params => {
     try {
         const token = await getAccessToken();
         let res = await instance.get(`${path}/MoveOut`,{
-            params:{
-                ...params,
-                token
-            }
-        });
-        return res.data;
-    } catch (error) {
-        return error.message;
-    }
-export const goOut = async params => {
-    // MoveOut(string token, int renterid, int roomid, int paid, int payment)
-    try {
-        const token = await getAccessToken();
-        let res = await instance.get(`${path}/MoveOut`,{
-            params:{
-                ...params,
-                token
-            }
-        });
-        return res.data;
-    } catch (error) {
-        return error.message;
-    }
-};
-export const ReadyGoOut = async params => {
-    // MoveOut(string token, int renterid, int roomid)
-    try {
-        const token = await getAccessToken();
-        let res = await instance.get(`${path}/ReadyMoveOut`,{
             params:{
                 ...params,
                 token
@@ -328,25 +285,6 @@ export const getCustomerDebt = async (params) => {
     return error?.message ?? "Lỗi api";
   }
 };
-    // type:1 //1 nợ 2 dư
-    // search:
-    // sort:0
-    // motelid:0
-    // roomid:0
-    // //motel=0=> tất cả nhà, !=0 => list người thuê theo id nhà
-    try {
-      const token = await getAccessToken();
-      let res = await instance.get(`${path}/ListRenterDebt`, {
-        params: {
-          ...params,
-          token,
-        },
-      });
-      return res.data;
-    } catch (error) {
-      return error?.message ?? "Lỗi api";
-    }
-}
 export const ReadyGoOut = async params => {
     // MoveOut(string token, int renterid, int roomid)
     try {
