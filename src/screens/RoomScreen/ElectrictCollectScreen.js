@@ -73,9 +73,9 @@ const ElectrictCollectScreen = ({ route }, month) => {
             const res = await updateWaterElectric({
                 date: `${ renderZero(nowDate.getDate()) }/${ renderZero(nowDate.getMonth() + 1) }/${ nowDate.getFullYear() }`,
                 data: JSON.stringify([{RoomID: roomId,
-                    WaterNumber: waterNumber,
+                    WaterNumber: waterNumber || 0,
                     WaterIMG: waterImage?.ID || 0, 
-                    ElectricNumber: electrictNumber,
+                    ElectricNumber: electrictNumber || 0,
                     ElectricIMG: electrictImage?.ID || 0}])
 
             });
