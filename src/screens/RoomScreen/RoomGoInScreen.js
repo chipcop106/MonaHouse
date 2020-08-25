@@ -19,13 +19,13 @@ import RenterInfoForm from "../../components/GoInForm/RenterInfoForm";
 import CheckoutInfoForm from "../../components/GoInForm/CheckoutInfoForm";
 import { Context as RoomGoInContext } from "../../context/RoomGoInContext";
 import { Context as AuthContext } from "../../context/AuthContext";
-import { Context as RoomContext } from '~/context/RoomContext'
-import Loading from '~/components/common/Loading';
+import { Context as RoomContext } from "~/context/RoomContext";
+import Loading from "~/components/common/Loading";
 
 const titleHeader = [
-    "Thông tin phòng, ki ốt",
-    "Thông tin người thuê",
-    "Thanh toán",
+  "Thông tin phòng, ki ốt",
+  "Thông tin người thuê",
+  "Thanh toán",
 ];
 
 const RenderForm = props => {
@@ -61,50 +61,48 @@ const RenderForm = props => {
 };
 
 const RoomGoInScreen = ({ navigation, route }) => {
-    
-    const { signOut } = useContext(AuthContext);
-    const {
-        state: RoomGoinState,
-        changeStepForm,
-        changeStateFormStep,
-        resetState,
-        addPeopleToRoom,
-        stepStateChange,
-        loadRoomInfo
-    } = useContext(RoomGoInContext);
-    const { step, dataForm } = RoomGoinState;
-    const { updateState: updateState_Room } = useContext(RoomContext);
-    useEffect(() => {
-        console.log('RoomGoinState', RoomGoinState);
-        loadRoomInfo(route.params?.roomId);
-        return () => {
-            resetState();
-        }
-    }, [])
-    const headerHeight = useHeaderHeight();
-    const onPress_headerLeft = () => {
-        step === 0
-        ? navigation.pop()
-        : changeStepForm(-1)
-    }
-    useLayoutEffect(() => {
-        !RoomGoinState.isLoading && navigation.setOptions({
-            headerLeft: () => (
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={onPress_headerLeft}
-                >
-                    <Icon
-                        name="arrow-back-outline"
-                        fill={color.primary}
-                        style={sizes.iconButtonSize}
-                    />
-                    <Text style={styles.backButtonText}>Back</Text>
-                </TouchableOpacity>
-            ),
-            headerTitle: titleHeader[RoomGoinState.step],
-        });
-    }, [RoomGoinState]);
+  const { signOut } = useContext(AuthContext);
+  const {
+    state: RoomGoinState,
+    changeStepForm,
+    changeStateFormStep,
+    resetState,
+    addPeopleToRoom,
+    stepStateChange,
+    loadRoomInfo,
+  } = useContext(RoomGoInContext);
+  const { step, dataForm } = RoomGoinState;
+  const { updateState: updateState_Room } = useContext(RoomContext);
+  useEffect(() => {
+    console.log("RoomGoinState", RoomGoinState);
+    loadRoomInfo(route.params?.roomId);
+    return () => {
+      resetState();
+    };
+  }, []);
+  const headerHeight = useHeaderHeight();
+  const onPress_headerLeft = () => {
+    step === 0 ? navigation.pop() : changeStepForm(-1);
+  };
+  useLayoutEffect(() => {
+    !RoomGoinState.isLoading &&
+      navigation.setOptions({
+        headerLeft: () => (
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={onPress_headerLeft}
+          >
+            <Icon
+              name="arrow-back-outline"
+              fill={color.primary}
+              style={sizes.iconButtonSize}
+            />
+            <Text style={styles.backButtonText}>Back</Text>
+          </TouchableOpacity>
+        ),
+        headerTitle: titleHeader[RoomGoinState.step],
+      });
+  }, [RoomGoinState]);
 
     const sendFormData = async () => {
         const room = dataForm[0];
@@ -152,7 +150,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
             },
         ];
         console.log('imageArr', imageArr);
-        
+
         try {
             let datein = moment(room.dateGoIn).format("DD/MM/yyyy");
             datein === "Invalid date" && ( datein = moment().format("DD/MM/yyyy") );

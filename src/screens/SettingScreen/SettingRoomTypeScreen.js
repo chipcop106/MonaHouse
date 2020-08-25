@@ -107,7 +107,10 @@ const SettingRoomTypeScreen = () => {
     setLoading(true);
     try {
       const res = await getTypeRoomByMotelID({
-        MotelID: motelState.listMotels[state?.activeMotel ?? 0]?.ID ?? 0,
+        MotelID:
+          state.activeMotel === 0
+            ? 0
+            : motelState.listMotels[state.activeMotel - 1].ID,
       });
       res.Code === 1 && setChartData(res.Data);
       res.Code === 0 && signOut();
@@ -137,9 +140,9 @@ const SettingRoomTypeScreen = () => {
       <View style={styles.filterWrap}>
         <ModalizeSelect
           onChange={_onMotelChange}
-          pickerData={state?.motelLists ?? []}
+          pickerData={["Tất cả nhà trọ", ...state?.motelLists] ?? []}
           selectedValue={
-            state?.motelLists[state?.activeMotel ?? 0] ?? "Chọn nhà trọ"
+            ["Tất cả nhà trọ", ...state?.motelLists][state.activeMotel]
           }
           leftIcon="home"
           disabled={state?.isLoading}

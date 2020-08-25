@@ -9,6 +9,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import RBSheet from "react-native-raw-bottom-sheet";
 import { uploadRenterImage } from '~/api/RenterAPI'
 import { sizes, color } from '~/config';
+import { currencyFormat as cf } from "~/utils";
 
 // const initialState = {
 //   electrictNumber: '',
@@ -48,7 +49,7 @@ const uploadIMG = async file => {
 
 function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay, handleValueChange, initialState, roomData }) {
     const [state, dispatch] = useReducer(reducer, initialState);
-    console.log('initialState', initialState)
+
     const onChange = (key, value) => {
         dispatch({ field: key, value });
     };
@@ -136,57 +137,68 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
         refRBSheet.current.open();
     };
 
-    return (<>
-        {index === 0 && (
+  return (
+    <>
+      {index === 0 && (
+        <>
+          <View style={[styles.formRow, styles.halfCol]}>
+            <Input
+              textStyle={styles.textInput}
+              label={electrictTitle}
+              placeholder="0"
+              value={String(state.electrictNumber)}
+              onChangeText={(nextValue) =>
+                onChange("electrictNumber", nextValue.replace(/[^0-9\-]/g, ""))
+              }
+              textContentType="none"
+              keyboardType="numeric"
+            />
+          </View>
+          <View style={[styles.formRow, styles.halfCol]}>
+            <Input
+              textStyle={styles.textInput}
+              label={waterTitle}
+              placeholder="0"
+              value={String(state.waterNumber)}
+              onChangeText={(nextValue) => onChange("waterNumber", nextValue)}
+              textContentType="none"
+              keyboardType="numeric"
+            />
+          </View>
+          {!!priceDisplay && (
             <>
-                <View style={[styles.formRow, styles.halfCol]}>
-                    <Input
-                        textStyle={styles.textInput}
-                        label={electrictTitle}
-                        placeholder="0"
-                        value={String(state.electrictNumber)}
-                        onChangeText={(nextValue) => onChange('electrictNumber', nextValue)}
-                        textContentType="none"
-                        keyboardType="numeric"
-                    />
-                </View>
-                <View style={[styles.formRow, styles.halfCol]}>
-                    <Input
-                        textStyle={styles.textInput}
-                        label={waterTitle}
-                        placeholder="0"
-                        value={String(state.waterNumber)}
-                        onChangeText={(nextValue) => onChange('waterNumber', nextValue)}
-                        textContentType="none"
-                        keyboardType="numeric"
-                    />
-                </View>
-                {!!priceDisplay && (
-                    <>
-                        <View style={[styles.formRow, styles.halfCol]}>
-                            <Input
-                                textStyle={styles.textInput}
-                                label="Giá điện / kW"
-                                placeholder="0"
-                                value={String(state.electrictPrice)}
-                                onChangeText={(nextValue) => onChange('electrictPrice', nextValue)}
-                                textContentType="none"
-                                keyboardType="numeric"
-                            />
-                        </View>
-                        <View style={[styles.formRow, styles.halfCol]}>
-                            <Input
-                                textStyle={styles.textInput}
-                                label="Giá nước / m3"
-                                placeholder="0"
-                                value={String(state.waterPrice)}
-                                onChangeText={(nextValue) => onChange('waterPrice', nextValue)}
-                                textContentType="none"
-                                keyboardType="numeric"
-                            />
-                        </View>
-                    </>
-                )}
+              <View style={[styles.formRow, styles.halfCol]}>
+                <Input
+                  textStyle={styles.textInput}
+                  label="Giá điện / kW"
+                  placeholder="0"
+                  value={cf(String(state.electrictPrice))}
+                  onChangeText={(nextValue) => {
+                    onChange(
+                      "electrictPrice",
+                      nextValue.replace(/[^0-9\-]/g, "")
+                    );
+                    console.log(nextValue.replace(/[^0-9\-]/g, ""));
+                  }}
+                  textContentType="none"
+                  keyboardType="numeric"
+                />
+              </View>
+              <View style={[styles.formRow, styles.halfCol]}>
+                <Input
+                  textStyle={styles.textInput}
+                  label="Giá nước / m3"
+                  placeholder="0"
+                  value={cf(String(state.waterPrice))}
+                  onChangeText={(nextValue) =>
+                    onChange("waterPrice", nextValue.replace(/[^0-9\-]/g, ""))
+                  }
+                  textContentType="none"
+                  keyboardType="numeric"
+                />
+              </View>
+            </>
+          )}
 
                 <View style={[styles.formRow, styles.halfCol]}>
                     {!!state.electrictImage && (
@@ -295,46 +307,54 @@ function IncludeElectrictWater({ index, waterTitle, electrictTitle, priceDisplay
                         >
                             Chụp ảnh đồng hồ nước
             </Button>
-                    </View>
-                </>
-            )
-        }
-        {
-            index === 3 && (<>
-                <View style={[styles.formRow]}>
-                    <Input
-                        textStyle={styles.textInput}
-                        label="Tiền trọn gói nước"
-                        placeholder="0"
-                        value={String(state.waterPriceInclude)}
-                        onChangeText={(nextValue) => onChange('waterPriceInclude', nextValue)}
-                        textContentType="none"
-                        keyboardType="numeric"
-                    />
-                </View>
-                <View style={[styles.formRow]}>
-                    <Input
-                        textStyle={styles.textInput}
-                        label="Số điện lúc dọn vào"
-                        placeholder="0"
-                        value={String(state.electrictNumber)}
-                        onChangeText={(nextValue) => onChange('electrictNumber', nextValue)}
-                        textContentType="none"
-                        keyboardType="numeric"
-                    />
-                </View>
+          </View>
+        </>
+      )}
+      {index === 3 && (
+        <>
+          <View style={[styles.formRow]}>
+            <Input
+              textStyle={styles.textInput}
+              label="Tiền trọn gói nước"
+              placeholder="0"
+              value={cf(String(state.waterPriceInclude))}
+              onChangeText={(nextValue) =>
+                onChange(
+                  "waterPriceInclude",
+                  nextValue.replace(/[^0-9\-]/g, "")
+                )
+              }
+              textContentType="none"
+              keyboardType="numeric"
+            />
+          </View>
+          <View style={[styles.formRow]}>
+            <Input
+              textStyle={styles.textInput}
+              label="Số điện lúc dọn vào"
+              placeholder="0"
+              value={String(state.electrictNumber)}
+              onChangeText={(nextValue) =>
+                onChange("electrictNumber", nextValue)
+              }
+              textContentType="none"
+              keyboardType="numeric"
+            />
+          </View>
 
-                <View style={[styles.formRow]}>
-                    <Input
-                        textStyle={styles.textInput}
-                        label="Tiền điện theo kw"
-                        placeholder="0"
-                        value={String(state.electrictPrice)}
-                        onChangeText={(nextValue) => onChange('electrictPrice', nextValue)}
-                        textContentType="none"
-                        keyboardType="numeric"
-                    />
-                </View>
+          <View style={[styles.formRow]}>
+            <Input
+              textStyle={styles.textInput}
+              label="Tiền điện theo kw"
+              placeholder="0"
+              value={cf(String(state.electrictPrice))}
+              onChangeText={(nextValue) =>
+                onChange("electrictPrice", nextValue.replace(/[^0-9\-]/g, ""))
+              }
+              textContentType="none"
+              keyboardType="numeric"
+            />
+          </View>
 
                 <View style={[styles.formRow]}>
                     {state.electrictImage && (

@@ -141,16 +141,11 @@ export const convertNumberToText = (number) => {
   return result;
 };
 
-export const currencyFormat = (value, seperator = ".") => {
+export const currencyFormat = (value, seperator = ".", locale = "vi-VN") => {
   value += "";
-  let x = value.split(",");
-  let x1 = x[0];
-  let x2 = x.length > 1 ? "." + x[1] : "";
-  let rgx = /(\d+)(\d{3})/;
-  while (rgx.test(x1)) {
-    x1 = x1.replace(rgx, "$1" + seperator + "$2");
-  }
-  return x1 + x2;
+  let input = value.replace(/[^0-9\-]/g, "");
+  input = Number(input);
+  return input.toLocaleString(locale); // , en-VN || . vi-VN  // default vi-VN
 };
 
 export const randomDataChart = (length, min, max, currency) => {
@@ -168,7 +163,7 @@ export const randomDataChart = (length, min, max, currency) => {
 export const pad = (n) => (n >= 10 ? n : `0${n}`);
 
 export const filterDuplicateArr = (arr, key) => {
-  const filteredArr = arr.reduce((acc, current) => {
+  return arr.reduce((acc, current) => {
     const x = acc.find((item) => item[key] === current[key]);
     if (!x) {
       return acc.concat([current]);
@@ -176,7 +171,6 @@ export const filterDuplicateArr = (arr, key) => {
       return acc;
     }
   }, []);
-  return filteredArr;
 };
 
 export const formatDate = () => {
@@ -214,4 +208,22 @@ export const nonAccentVietnamese = (str) => {
   str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // Huyền sắc hỏi ngã nặng
   str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // Â, Ê, Ă, Ơ, Ư
   return str;
+};
+
+export const getDiffDayFromFirstDayOfMonth = (toDate) => {
+  if (typeof toDate !== "object") return;
+  toDate = new Date(toDate);
+  return Math.ceil(
+    (toDate.getTime() - toDate.setDate(1)) / (1000 * 60 * 60 * 24)
+  );
+};
+
+export const getDaysInMonth = (monthIndex, year) => {
+  console.log(new Date(year, monthIndex + 1, 0).getDate());
+  return new Date(year, monthIndex + 1, 0).getDate();
+};
+
+export const roundNumberThounsand = (number) => {
+  number *= 1;
+  return number >= 1000 ? Math.ceil(number * 0.001) * 1000 : number;
 };

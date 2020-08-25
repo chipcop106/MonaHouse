@@ -1,12 +1,8 @@
-import React, { useContext, useEffect, useLayoutEffect } from "react";
-import {
-    StyleSheet, View,
-} from "react-native";
-import {
-    Input, Datepicker, Text, IndexPath
-} from "@ui-kitten/components";
+import React, { useContext, useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import { Input, Datepicker, Text } from "@ui-kitten/components";
 import IncludeElectrictWater from "../IncludeElectrictWater";
-import { sizes, color, settings } from "../../config";
+import { color, settings } from "~/config";
 import { Context as RoomGoOutContext } from "../../context/RoomGoOutContext";
 
 const GoOutInfo = () => {

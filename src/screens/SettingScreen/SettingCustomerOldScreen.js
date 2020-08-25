@@ -122,7 +122,9 @@ const RenderCardCustomer = ({ item }) => {
               name="home"
               style={sizes.iconButtonSize}
             />
-            <Text style={styles.value}>{item.MotelName}</Text>
+            <Text style={styles.value} ellipsizeMode="tail" numberOfLines={1}>
+              {item.MotelName}
+            </Text>
           </View>
         </View>
       </View>

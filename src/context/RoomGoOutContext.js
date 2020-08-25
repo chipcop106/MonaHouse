@@ -1,9 +1,9 @@
 import { IndexPath } from "@ui-kitten/components";
 import CreateDataContext from "./CreateDataContext";
-import AsyncStorage from '@react-native-community/async-storage';
-import {settings} from '~/config'
+import AsyncStorage from "@react-native-community/async-storage";
+import { settings } from "~/config";
 import { updateWaterElectric } from "~/api/MotelAPI";
-import { goOut } from '~/api/RenterAPI'
+import { goOut } from "~/api/RenterAPI";
 const defaultState = {
     step: 0,
     isLoading: false,
@@ -26,17 +26,16 @@ const defaultState = {
         },
     },
     {
-        moneyLastMonth: '',
-        depositMoney: '',
-        depositType: '',
-        checkoutDeposit: "",
-        actuallyReceived: "",
-        paymentTypeIndex: new IndexPath(0),
-        billInfo: {
-
-        }
-    }],
-}
+      moneyLastMonth: "",
+      depositMoney: "",
+      depositType: "",
+      checkoutDeposit: "",
+      actuallyReceived: "",
+      paymentTypeIndex: new IndexPath(0),
+      billInfo: {},
+    },
+  ],
+};
 
 const goOutReducer = (prevstate, action) => {
     switch (action.type) {
@@ -172,125 +171,155 @@ const renderZero = num => {
     return `0${num}`
 }
 const loadDataForm = (dispatch) => async (data) => {
-    try {
-        console.log('loadDataForm goOutReducer', data);
-        const { renter, electric, water, room } = data;
-        const contractDate = new Date(renter.renter.DateOutContract);
-        const dataForm = [
-            {
-                roomID: room.ID,
-                renterID: renter.renter.ID,
-                roomPrice: renter.renter.PriceRent || 0,
-                dateGoIn: new Date(renter.renter.Datein) || '',
-                dateGoOut:  new Date() || '',
-                constract: `${ renderZero(contractDate.getDate()) }/${ renderZero(contractDate.getMonth() + 1) }/${ contractDate.getFullYear() }` || '',
-                roomInfo: {
-                    electrictNumber: electric.number || '',
-                    electrictPrice: room.PriceElectric || 0,
-                    electrictPriceInclude: '',
-                    electrictImage: electric.image_thumbnails || '',
-                    waterNumber: water.number || '',
-                    waterPrice: room.PriceWater || 0,
-                    waterPriceInclude: '',
-                    waterImage: water.image_thumbnails || '',
-                    
-                },
-            },
-            // {
-            //     moneyLastMonth: '',
-            //     depositMoney: '',
-            //     depositType: '',
-            //     checkoutDeposit: "",
-            //     actuallyReceived: "",
-            //     paymentTypeIndex: new IndexPath(0),
-            // }
-        ];
-        dispatch({type: "LOAD_DATA", payload: dataForm});
-        return true;
-    } catch (error) {
-        console.log('loadData goOutReducer error: ', error);
-    }
-    return false;
-}
+  try {
+    console.log("loadDataForm goOutReducer", data);
+    const { renter, electric, water, room } = data;
+    const contractDate = new Date(renter.renter.DateOutContract);
+    const dataForm = [
+      {
+        roomID: room.ID,
+        renterID: renter.renter.ID,
+        roomPrice: renter.renter.PriceRent || 0,
+        dateGoIn: new Date(renter.renter.Datein) || "",
+        dateGoOut: new Date() || "",
+        renterDeposit: renter?.renter?.Deposit ?? 0,
+        constract:
+          `${renderZero(contractDate.getDate())}/${renderZero(
+            contractDate.getMonth() + 1
+          )}/${contractDate.getFullYear()}` || "",
+        roomInfo: {
+          ...room,
+          electrictNumber: electric.number || "",
+          electrictPrice: renter?.renter?.ElectrictPrice ?? 0,
+          electrictPriceInclude: "",
+          electrictImage: electric.image_thumbnails || "",
+          waterNumber: water.number || "",
+          waterPrice: renter?.renter?.WaterPrice ?? 0,
+          waterPriceInclude: "",
+          waterImage: water.image_thumbnails || "",
+          oldElectrictNumber: electric?.number ?? 0,
+          oldWaterNumber: water?.number ?? 0,
+        },
+      },
+      // {
+      //     moneyLastMonth: '',
+      //     depositMoney: '',
+      //     depositType: '',
+      //     checkoutDeposit: "",
+      //     actuallyReceived: "",
+      //     paymentTypeIndex: new IndexPath(0),
+      // }
+    ];
+    dispatch({ type: "LOAD_DATA", payload: dataForm });
+    return true;
+  } catch (error) {
+    console.log("loadData goOutReducer error: ", error);
+  }
+  return false;
+};
 const loadDataBill = (dispatch) => async (data) => {
-    try {
-        console.log('loadDataBill goOutReducer', data);
-        const dataBill = [{
-            electricDiff: data?.ElectricNumber || 0,
-            waterDiff: data?.WaterNumber || 0,
-            electricDiffPrice: data?.ElectricPrice || 0,
-            waterDiffPrice: data?.WaterPrice || 0,
-            dateDiff: data?.Days || 0,
-            priceRoomBase: data?.PriceRoom || 0,
-            priceRoomByDate: data?.PriceMustCollect || 0,
-            totalPrice: data?.TotalDebt || 0
-        }]
-        await dispatch({type: "SET_BILL", payload: dataBill});
-        return true;
-    } catch (error) {
-        console.log('loadDataBill goOutReducer error: ', error);
-    }
-    return false;
-}
+  try {
+    console.log("loadDataBill goOutReducer", data);
+    const dataBill = [
+      {
+        electricDiff: data?.ElectricNumber ?? 0,
+        waterDiff: data?.WaterNumber ?? 0,
+        electricDiffPrice: data?.ElectricPrice ?? 0,
+        waterDiffPrice: data?.WaterPrice ?? 0,
+        dateDiff: data?.Days ?? 0,
+        priceAddon: data?.PriceAddon ?? 0,
+        priceRoomBase: data?.PriceRoom ?? 0,
+        priceRoomByDate: data?.PriceMustCollect ?? 0,
+        totalDebt: data?.TotalDebt ?? 0,
+        incurredFee: data?.FeeIncurred ?? 0,
+        deposit: data?.Deposit,
+        totalCollect: data?.TotalCollect ?? 0,
+      },
+    ];
+    await dispatch({ type: "SET_BILL", payload: dataBill });
+    return true;
+  } catch (error) {
+    console.log("loadDataBill goOutReducer error: ", error);
+  }
+  return false;
+};
 const informElectrictWater = async (data) => {
-    
-    try {
-      
-        const {waterNumber, electrictNumber, waterImage, electrictImage} = data[0]?.roomInfo;
-        const {roomId} = data
-        
-        const nowDate = new Date();
-        const res = await updateWaterElectric({
-            date: `${ renderZero(nowDate.getDate()) }/${ renderZero(nowDate.getMonth() + 1) }/${ nowDate.getFullYear() }`,
-            data: JSON.stringify([{RoomID: roomId,
-                WaterNumber: waterNumber || 0,
-                WaterIMG: waterImage.ID || 0, 
-                ElectricNumber: electrictNumber || 0,
-                ElectricIMG: electrictImage.ID || 0}])
-        });
-       
-        if(res.Code === 1){
-            console.log('Thành công!!', res);
-            return res;
-           
-        } else {
-            throw res;
-        }
-    } catch (error) {
-        console.log('informElectrictWater goOutReducer error: ' ,error);
-        return error;        
-        
+  try {
+    const {
+      waterNumber,
+      electrictNumber,
+      waterImage,
+      electrictImage,
+    } = data[0]?.roomInfo;
+    const { roomId } = data;
+
+    const nowDate = new Date();
+    const res = await updateWaterElectric({
+      date: `${renderZero(nowDate.getDate())}/${renderZero(
+        nowDate.getMonth() + 1
+      )}/${nowDate.getFullYear()}`,
+      data: JSON.stringify([
+        {
+          RoomID: roomId,
+          WaterNumber: parseInt(waterNumber) || 0,
+          WaterIMG: parseInt(waterImage) || 0,
+          ElectricNumber: parseInt(electrictNumber) || 0,
+          ElectricIMG: parseInt(electrictImage) || 0,
+        },
+      ]),
+    });
+
+    if (res.Code === 1) {
+      console.log("Thành công!!", res);
+      return res;
+    } else {
+      throw res;
     }
-}
+  } catch (error) {
+    console.log("informElectrictWater goOutReducer error: ", error);
+    return error;
+  }
+};
 const moveOut = (dispatch) => async (data) => {
-    dispatch({type: "SET_LOADING", payload: true});
-    try {
-        console.log('moveOut data:', data);
-        const { dataForm } = data;
-        //pararms: {
-        // renterid:1065
-        // roomid:2378
-        // paid:0
-        // payment:1
-        //}
+  dispatch({ type: "SET_LOADING", payload: true });
+  try {
+    console.log("moveOut data:", data);
+    const { dataForm } = data;
+    //pararms: {
+    // renterid:1065
+    // roomid:2378
+    // paid:0
+    // payment:1
+    //}
+    console.log({
+      renterid: parseInt(dataForm[0].renterID, 10),
+      roomid: parseInt(dataForm[0].roomID, 10),
+      paid: parseInt(dataForm[1].actuallyReceived, 10),
+      payment: dataForm[1].paymentTypeIndex.row + 1 || 1,
+    });
 
-        const res = await goOut({
-            renterid: dataForm[0].renterID,
-            roomid: dataForm[0].roomID,
-            paid: 0,
-            payment: ( dataForm[1].paymentTypeIndex.row + 1 ) || 1 
-        });
+    const res = await goOut({
+      renterid: parseInt(dataForm[0].renterID, 10),
+      roomid: parseInt(dataForm[0].roomID, 10),
+      paid: parseInt(dataForm[1].actuallyReceived, 10),
+      payment: dataForm[1].paymentTypeIndex.row + 1 || 1,
+    });
 
-        dispatch({type: "SET_LOADING", payload: false});
-    } catch (error) {
-        console.log('goOut error:', error);
-        dispatch({type: "SET_LOADING", payload: false});
-    }
-    
-}
+    dispatch({ type: "SET_LOADING", payload: false });
+  } catch (error) {
+    console.log("goOut error:", error);
+    dispatch({ type: "SET_LOADING", payload: false });
+  }
+};
 export const { Context, Provider } = CreateDataContext(
-    goOutReducer,
-    {
-        changeStepForm, changeStateFormStep, clearState, loadDataForm, loadDataBill, moveOut
-    }, defaultState
+  goOutReducer,
+  {
+    changeStepForm,
+    changeStateFormStep,
+    clearState,
+    loadDataForm,
+    loadDataBill,
+    moveOut,
+  },
+  defaultState
 );

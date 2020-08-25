@@ -69,7 +69,7 @@ const SettingScreen = () => {
               routerParams: { id: null },
               leftIcon: (
                 <Icon
-                  name="droplet-outline"
+                  name="home-outline"
                   fill={color.iconSettingColor}
                   style={styles.settingIcon}
                 />
@@ -84,7 +84,7 @@ const SettingScreen = () => {
               },
               leftIcon: (
                 <Icon
-                  name="droplet-outline"
+                  name="grid-outline"
                   fill={color.iconSettingColor}
                   style={styles.settingIcon}
                 />
@@ -96,7 +96,7 @@ const SettingScreen = () => {
               routerParams: { id: null },
               leftIcon: (
                 <Icon
-                  name="droplet-outline"
+                  name="layers-outline"
                   fill={color.iconSettingColor}
                   style={styles.settingIcon}
                 />
@@ -118,7 +118,7 @@ const SettingScreen = () => {
               },
               leftIcon: (
                 <Icon
-                  name="person-outline"
+                  name="people-outline"
                   fill={color.iconSettingColor}
                   style={styles.settingIcon}
                 />
@@ -135,7 +135,7 @@ const SettingScreen = () => {
               },
               leftIcon: (
                 <Icon
-                  name="person-outline"
+                  name="person-delete-outline"
                   fill={color.iconSettingColor}
                   style={styles.settingIcon}
                 />
@@ -152,7 +152,7 @@ const SettingScreen = () => {
               },
               leftIcon: (
                 <Icon
-                  name="person-outline"
+                  name="person-remove-outline"
                   fill={color.iconSettingColor}
                   style={styles.settingIcon}
                 />
@@ -194,11 +194,11 @@ const SettingScreen = () => {
           menuData={[
             {
               routerTitle: "Doanh thu thực tế",
-              routerName: "",
+              routerName: "SettingRevenueIncome",
               routerParams: {},
               leftIcon: (
                 <Icon
-                  name="droplet-outline"
+                  name="bar-chart-outline"
                   fill={color.iconSettingColor}
                   style={styles.settingIcon}
                 />
@@ -206,11 +206,11 @@ const SettingScreen = () => {
             },
             {
               routerTitle: "Lợi nhuận thực tế",
-              routerName: "",
+              routerName: "SettingRevenueNet",
               routerParams: {},
               leftIcon: (
                 <Icon
-                  name="droplet-outline"
+                  name="bar-chart-outline"
                   fill={color.iconSettingColor}
                   style={styles.settingIcon}
                 />
@@ -218,11 +218,11 @@ const SettingScreen = () => {
             },
             {
               routerTitle: "Lợi nhuận dự kiến",
-              routerName: "",
+              routerName: "SettingExpectedProfit",
               routerParams: {},
               leftIcon: (
                 <Icon
-                  name="droplet-outline"
+                  name="activity-outline"
                   fill={color.iconSettingColor}
                   style={styles.settingIcon}
                 />
@@ -230,11 +230,11 @@ const SettingScreen = () => {
             },
             {
               routerTitle: "Thất thoát dự kiến",
-              routerName: "",
+              routerName: "SettingCollateralDamage",
               routerParams: {},
               leftIcon: (
                 <Icon
-                  name="droplet-outline"
+                  name="alert-triangle-outline"
                   fill={color.iconSettingColor}
                   style={styles.settingIcon}
                 />
@@ -246,7 +246,7 @@ const SettingScreen = () => {
               routerParams: {},
               leftIcon: (
                 <Icon
-                  name="droplet-outline"
+                  name="credit-card-outline"
                   fill={color.iconSettingColor}
                   style={styles.settingIcon}
                 />
@@ -258,7 +258,7 @@ const SettingScreen = () => {
               routerParams: {},
               leftIcon: (
                 <Icon
-                  name="droplet-outline"
+                  name="credit-card-outline"
                   fill={color.iconSettingColor}
                   style={styles.settingIcon}
                 />

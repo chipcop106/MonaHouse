@@ -2,14 +2,14 @@ import React, { useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-community/async-storage";
 import { StyleSheet, View, ScrollView, Alert } from "react-native";
 import {
-    Input,
-    Select,
-    SelectItem,
-    Icon,
-    Text,
-    Divider,
-    IndexPath,
-    Button,
+  Input,
+  Select,
+  SelectItem,
+  Icon,
+  Text,
+  Divider,
+  IndexPath,
+  Button,
 } from "@ui-kitten/components";
 import { useRoute } from '@react-navigation/native'
 import { color, sizes } from "~/config";
@@ -20,12 +20,12 @@ import { getRoomById } from '~/api/MotelAPI';
 import { Context as AuthContext } from '~/context/AuthContext'
 
 const paymentMethod = ["Tiền mặt", "Chuyển khoản"];
+
 const MoneyCollectScreen = () => {
     const { signOut } = useContext(AuthContext);
     const [paymentTypeIndex, setPaymentTypeIndex] = useState(new IndexPath(0));
     const [actuallyReceived, setActuallyReceived] = useState("");
     const [userInfo, setUserInfo] = useState(null);
-    const [roomInfo, setRoomInfo] = useState(null);
     const route = useRoute();
     const { roomId,  data} = route.params;
 
@@ -66,7 +66,7 @@ const MoneyCollectScreen = () => {
                 ) : (
                     <View style={{padding: 15, justifyContent: "center", alignItems: "center"}}><Loading /></View>
                 )}
-                {!!roomInfo 
+                {!!roomInfo
                 ? ( <View style={styles.mainWrap}>
                     <View style={styles.section}>
                         <Text
@@ -128,7 +128,7 @@ const MoneyCollectScreen = () => {
                                         { fontWeight: "600" },
                                     ]}
                                 >
-                                    { !!roomInfo.addons && roomInfo.addons.length > 0 
+                                    { !!roomInfo.addons && roomInfo.addons.length > 0
                                     ? (()=>{
                                         let result = 0;
                                         roomInfo.addons.map(item => result + parseInt(item.Price || 0));
@@ -146,8 +146,8 @@ const MoneyCollectScreen = () => {
                                         roomInfo.dept > 0 ? {color: color.redColor} : { color:  color.greenColor}
                                     ]}
                                 >
-                                    { roomInfo.dept > 0 
-                                    ? ( `Nợ` ) 
+                                    { roomInfo.dept > 0
+                                    ? ( `Nợ` )
                                     : ( `Dư` ) } {  currencyFormat(Math.abs(roomInfo.dept)) }
                                 </Text>
                             </View>
@@ -167,25 +167,22 @@ const MoneyCollectScreen = () => {
                                 </Text>
                             </View>
 
-                            <View style={[styles.formRow, styles.rowInfo]}>
-                                <Text style={styles.rowLabel}>Thực nhận:</Text>
-                                <Input
-                                    style={[
-                                        styles.rowValue,
-                                        styles.formControl,
-                                    ]}
-                                    placeholder="0"
-                                    keyboardType="numeric"
-                                    value={actuallyReceived}
-                                    textStyle={{
-                                        color: color.redColor,
-                                        textAlign: "right",
-                                    }}
-                                    onChangeText={(nextValue) =>
-                                        setActuallyReceived(nextValue)
-                                    }
-                                />
-                            </View>
+              <View style={[styles.formRow, styles.rowInfo]}>
+                <Text style={styles.rowLabel}>Thực nhận:</Text>
+                <Input
+                  style={[styles.rowValue, styles.formControl]}
+                  placeholder="0"
+                  keyboardType="numeric"
+                  value={currencyFormat(actuallyReceived)}
+                  textStyle={{
+                    color: color.redColor,
+                    textAlign: "right",
+                  }}
+                  onChangeText={(nextValue) =>
+                    setActuallyReceived(nextValue.replace(/[^0-9\-]/g, ""))
+                  }
+                />
+              </View>
 
                             <View style={[styles.formRow, styles.rowInfo]}>
                                 <Text style={styles.rowLabel}>Hình thức:</Text>
@@ -225,93 +222,83 @@ const MoneyCollectScreen = () => {
                     >
                         Thu tiền phòng này
                     </Button>
-                </View> ) 
-                : ( <View style={{padding: 15, justifyContent: "center", alignItems: "center"}}><Loading /></View> )}
-                
+                </View>
             </ScrollView>
         </>
     );
 };
 
 const styles = StyleSheet.create({
-    mainWrap: {
-        paddingHorizontal: 15,
-    },
-    section: {
-        paddingTop: 15,
-        paddingHorizontal: 15,
-        marginBottom: 30,
-        backgroundColor: color.whiteColor,
-        borderRadius: 8,
-    },
-    secTitle: {
-        fontSize: 20,
-        fontWeight: "700",
-        marginBottom: 15,
-    },
-    container: {
-        flex: 1,
-    },
-    formWrap: {
-        marginHorizontal: "-1%",
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
-    },
-    formRow: {
-        marginBottom: 20,
-        flexGrow: 1,
-        marginHorizontal: "1%",
-        alignItems: "center",
-    },
-    halfCol: {
-        flexBasis: "48%",
-    },
-    fullWidth: {
-        flexBasis: "98%",
-    },
-    leftInput: {
-        borderRightWidth: 1,
-        borderRightColor: color.darkColor,
-        paddingRight: 10,
-    },
-    rowInfo: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        width: "98%",
-    },
-    dangerValue: {
-        color: color.redColor,
-        fontWeight: "600",
-    },
-    leftInput: {
-        borderRightWidth: 1,
-        borderRightColor: color.darkColor,
-        paddingRight: 10,
-    },
-    divider: {
-        marginBottom: 15,
-    },
-    rowLabel: {
-        color: color.labelColor,
-    },
-    rowValue: {
-        fontWeight: "600",
-        flexGrow: 1,
-        textAlign: "right",
-        paddingLeft: 30,
-    },
-    formControl: {
-        width: "60%",
-        flexGrow: 0,
-    },
-    divider: {
-        flexGrow: 1,
-        width: "98%",
-        marginHorizontal: "1%",
-        backgroundColor: color.grayColor,
-        marginBottom: 20,
-    },
+  mainWrap: {
+    paddingHorizontal: 15,
+  },
+  section: {
+    paddingTop: 15,
+    paddingHorizontal: 15,
+    marginBottom: 30,
+    backgroundColor: color.whiteColor,
+    borderRadius: 8,
+  },
+  secTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 15,
+  },
+  container: {
+    flex: 1,
+  },
+  formWrap: {
+    marginHorizontal: "-1%",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  formRow: {
+    marginBottom: 20,
+    flexGrow: 1,
+    marginHorizontal: "1%",
+    alignItems: "center",
+  },
+  halfCol: {
+    flexBasis: "48%",
+  },
+  fullWidth: {
+    flexBasis: "98%",
+  },
+  rowInfo: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "98%",
+  },
+  dangerValue: {
+    color: color.redColor,
+    fontWeight: "600",
+  },
+  leftInput: {
+    borderRightWidth: 1,
+    borderRightColor: color.darkColor,
+    paddingRight: 10,
+  },
+  rowLabel: {
+    color: color.labelColor,
+  },
+  rowValue: {
+    fontWeight: "600",
+    flexGrow: 1,
+    textAlign: "right",
+    paddingLeft: 30,
+  },
+  formControl: {
+    width: "60%",
+    flexGrow: 0,
+  },
+  divider: {
+    flexGrow: 1,
+    width: "98%",
+    marginHorizontal: "1%",
+    backgroundColor: color.grayColor,
+    marginBottom: 20,
+  },
 });
 
 export default MoneyCollectScreen;

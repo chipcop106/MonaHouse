@@ -293,7 +293,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                             <Text
                                                 style={[
                                                     styles.value,
-                                                    roomInfo?.dept < 0
+                                                    roomInfo?.dept > 0
                                                         ? {
                                                               color:
                                                                   color.redColor,
@@ -304,7 +304,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                                           },
                                                 ]}
                                             >
-                                               {roomInfo?.dept < 0 && 'nợ'}{roomInfo?.dept > 0 && 'dư'} {cf(Math.abs(roomInfo?.dept))}
+                                               {roomInfo?.dept > 0 && 'nợ'}{roomInfo?.dept < 0 && 'dư'} {cf(roomInfo?.dept)}
                                             </Text>
                                         </View>
                                         
@@ -333,8 +333,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                                                     style={[
                                                         styles.value,
                                                         {
-                                                            color:
-                                                                color.primary,
+                                                            color: color.primary,
                                                         },
                                                     ]}
                                                 >
