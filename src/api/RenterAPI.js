@@ -246,7 +246,7 @@ export const goOut = async (params) => {
   } catch (error) {
     return error.message;
   }
-
+};
 
 export const getCustomerRenting = async (params) => {
   // Params: string token, int motelid
