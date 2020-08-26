@@ -117,70 +117,107 @@ const RoomGoInScreen = ({ navigation, route }) => {
     const imageArr = [
       {
         Name: "dong-ho-nuoc",
-        DataIMG: room.roomInfo?.waterImage || [],
+        DataIMG: !!room.roomInfo?.waterImage
+          ? !!room.roomInfo?.waterImage?.ID
+            ? [
+                {
+                  ID: room.roomInfo?.waterImage.ID,
+                  URL: room.roomInfo?.waterImage.UrlIMG,
+                },
+              ]
+            : [
+                {
+                  ID: 0,
+                  URL: room.roomInfo?.waterImage,
+                },
+              ]
+          : [],
       },
       {
         Name: "dong-ho-dien",
-        DataIMG: room.roomInfo?.electrictWater || [],
+        DataIMG: !!room.roomInfo?.electrictImage
+          ? !!room.roomInfo?.electrictImage?.ID
+            ? [
+                {
+                  ID: room.roomInfo?.electrictImage.ID,
+                  URL: room.roomInfo?.electrictImage.UrlIMG,
+                },
+              ]
+            : [
+                {
+                  ID: 0,
+                  URL: room.roomInfo?.electrictImage,
+                },
+              ]
+          : [],
       },
       {
         Name: "giay-to",
-        DataIMG: renter.licenseImages || [],
+        DataIMG: (() => {
+          let rs = [];
+          try {
+            Array.isArray(renter?.licenseImages) &&
+              renter?.licenseImages.length > 0 &&
+              renter?.licenseImages.map((it) =>
+                rs.push({ ID: it.ID, URL: it.UrlIMG })
+              );
+          } catch (error) {
+            console.log("giay-to DataIMG error", error);
+          }
+
+          return rs;
+        })(),
       },
     ];
+    console.log("imageArr", imageArr);
 
-    try {
-      console.log(renter.job);
-      let datein = moment(room.dateGoIn).format("DD/MM/yyyy");
-      datein === "Invalid date" && (datein = moment().format("DD/MM/yyyy"));
-      console.log(checkout);
-      await addPeopleToRoom(
-        {
-          roomid: parseInt(route.params?.roomId || 0),
-          fullname: renter.fullName || "",
-          phone: renter.phoneNumber || "",
-          job: renter.job || "",
-          cityid: parseInt(renter.cityLists[renter.provinceIndex.row].ID),
-          objimg: JSON.stringify(imageArr), // imageArr
-          datein: datein,
-          month: parseInt(room.timeRent),
-          note: renter.note,
-          totalprice: parseInt(checkout.actuallyReceived) || 0,
-          notepaid: checkout.paymentNote,
-          monthpaid: parseInt(checkout.prePaymentTimeIndex.row) + 1 || 0,
-          priceroom: parseInt(room.roomPrice) || 0,
-          electric: parseInt(room.roomInfo?.electrictNumber || 0),
-          electricprice: parseInt(room.roomInfo?.electrictPrice || 0),
-          water: parseInt(room.roomInfo?.waterNumber || 0),
-          waterprice: parseInt(room.roomInfo?.waterPrice || 0),
-          monthdeposit: parseInt(checkout.preDepositTimeIndex.row) + 1,
-          addonservice:
-            serviceArr.length > 0
-              ? JSON.stringify(
-                  serviceArr.map((item) => {
-                    return { ID: 0, ...item };
-                  })
-                ) || ""
-              : "",
-          email: renter.email || "",
-          quantity: parseInt(renter.numberPeople) || 1,
-          relationship: parseInt(
-            renter.relationLists[renter.relationshipIndex.row].id
-          ),
-          // deposit: parseInt(checkout.totalDeposit),
-          typeew: 1,
-        },
-        {
-          navigation,
-          signOut,
-          resetState,
+        try {
+            let datein = moment(room.dateGoIn).format("DD/MM/yyyy");
+            datein === "Invalid date" && ( datein = moment().format("DD/MM/yyyy") );
+            await addPeopleToRoom(
+                {
+                    roomid: parseInt(route.params?.roomId || 0),
+                    fullname: renter.fullName || "",
+                    phone: renter.phoneNumber || "",
+                    job: renter.job || "",
+                    cityid: parseInt(renter.cityLists[renter.provinceIndex.row].ID),
+                    objimg: JSON.stringify(imageArr),  // imageArr
+                    datein: datein,
+                    month: parseInt(room.timeRent),
+                    note: renter.note,
+                    totalprice: parseInt(checkout.actuallyReceived) || 0,
+                    notepaid: checkout.paymentNote,
+                    monthpaid: parseInt(checkout.prePaymentTimeIndex.row) + 1 || 1,
+                    priceroom: parseInt(room.roomPrice) || 0,
+                    electric: parseInt(room.roomInfo?.electrictNumber || 0),
+                    electricprice: parseInt(
+                        room.roomInfo?.electrictPrice || 0
+                    ),
+                    water: parseInt(room.roomInfo?.waterNumber || 0),
+                    waterprice: parseInt(room.roomInfo?.waterPrice || 0),
+                    monthdeposit: parseInt(checkout.preDepositTimeIndex.row) + 1,
+                    addonservice: serviceArr.length > 0 ? JSON.stringify(serviceArr.map(item => {
+                        return { ID: 0 , ...item }
+                    })) || '' : '',
+                    email: renter.email || "",
+                    quantity: parseInt(renter.numberPeople) || 1,
+                    relationship: parseInt(
+                        renter.relationLists[renter.relationshipIndex.row].id
+                    ),  
+                    // deposit: parseInt(checkout.totalDeposit),
+                    typeew: 1,
+                },
+                {
+                    navigation,
+                    signOut,
+                    resetState,
+                }
+            );
+            updateState_Room('isReload', true);
+        } catch (error) {
+            console.log('sendFormData error', error)
+            alert(JSON.stringify(error.message));
         }
-      );
-      updateState_Room("isReload", true);
-    } catch (error) {
-      console.log("sendFormData error", error);
-      alert(JSON.stringify(error.message));
-    }
 
     // navigation.pop();
     // resetState();
