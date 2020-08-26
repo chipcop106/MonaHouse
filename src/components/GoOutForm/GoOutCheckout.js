@@ -11,22 +11,14 @@ import Moment from "moment";
 import { color } from "~/config";
 import { Context as RoomGoOutContext } from "~/context/RoomGoOutContext";
 import { Context as AuthContext } from "~/context/AuthContext";
-import {
-  currencyFormat,
-  getDaysInMonth,
-  getDiffDayFromFirstDayOfMonth,
-  roundNumberThounsand,
-} from "~/utils";
+import { currencyFormat } from "~/utils";
 import Loading from "~/components/common/Loading";
 import { ReadyGoOut } from "~/api/RenterAPI";
+
+
 const paymentMethod = ["Tiền mặt", "Chuyển khoản"];
 
 const GoOutCheckout = () => {
-  const [billData, setBillData] = useState({
-    dayRentMoney: 0,
-    waterMoney: 0,
-    electrictMoney: 0,
-  });
   const { state, changeStateFormStep, loadDataBill } = useContext(
     RoomGoOutContext
   );
@@ -35,23 +27,27 @@ const GoOutCheckout = () => {
   const { billInfo } = stateGoOutInfo;
   const firstRoomState = state.dataForm[0];
   const [loading, setLoading] = useState(false);
-  console.log(state);
   const loadBillInfo = async () => {
     setLoading(true);
     try {
       const res = await ReadyGoOut({
         roomid: firstRoomState.roomID,
         renterid: firstRoomState.renterID,
+        dateout: Moment(firstRoomState.dateGoOut).format("DD/MM/YYYY")
       });
       res.Code === 1 && (await loadDataBill(res.Data));
       res.Code === 2 && signOut();
-      res.Code === 0 && Alert.alert("Lỗi code 0 !", `${JSON.stringify(res)}`);
+      res.Code === 0 && Alert.alert("Lỗi !", `${JSON.stringify(res)}`);
     } catch (e) {
-      console.log(e?.message ?? "Lỗi call api load bill info");
+      console.log('loadBillInfo error:', e);
     }
     setLoading(false);
   };
-
+  const totalMoneyRender = () => {
+    let rs = 0;
+    // billInfo?.deposit
+    return rs > 0 ? ( '' ) : ( '' );
+  };
   useEffect(() => {
     console.log("RoomGoOutContext", state);
     loadBillInfo();
@@ -74,7 +70,7 @@ const GoOutCheckout = () => {
               <View style={[styles.formRow, styles.rowInfo]}>
                 <Text style={styles.rowLabel}>
                   {billInfo?.electricDiff ?? 0} kW{" "}
-                  <Text style={{ fontWeight: "bold" }}>X</Text>{" "}
+                  <Text style={{ fontWeight: "bold" }}>x</Text>{" "}
                   {`${currencyFormat(
                     firstRoomState.roomInfo?.electrictPrice ?? 0
                   )}`}
@@ -87,7 +83,7 @@ const GoOutCheckout = () => {
               <View style={[styles.formRow, styles.rowInfo]}>
                 <Text style={styles.rowLabel}>
                   {billInfo?.waterDiff} Khối{" "}
-                  <Text style={{ fontWeight: "bold" }}>X</Text>{" "}
+                  <Text style={{ fontWeight: "bold" }}>x</Text>{" "}
                   {`${currencyFormat(firstRoomState.roomInfo?.waterPrice)}`}
                 </Text>
                 <Text
@@ -124,17 +120,7 @@ const GoOutCheckout = () => {
                   style={[styles.rowValue]}
                 >{`${currencyFormat(billInfo?.incurredFee ?? 0)}`}</Text>
               </View>
-              <View style={[styles.formRow, styles.rowInfo]}>
-                <Text style={styles.rowLabel}>Trừ tiền đã cọc:</Text>
-                <Text status="danger" style={[styles.rowValue]}>
-                  -{currencyFormat(billInfo?.deposit)}
-                </Text>
-              </View>
-              {/* <View style={[styles.formRow, styles.rowInfo]}>
-                        <Text style={styles.rowLabel}>Loại cọc:</Text>
-                        <Text status="basic" style={[styles.rowValue]}>Cọc giữ hạn tới hết hợp đồng</Text>
-                    </View> */}
-              <Divider style={styles.divider} />
+              <View style={styles.divider} />
               <View style={[styles.formRow, styles.rowInfo]}>
                 <Text style={styles.rowLabel}>Tổng thu:</Text>
                 <Text
@@ -144,6 +130,24 @@ const GoOutCheckout = () => {
                   {currencyFormat(billInfo?.totalCollect ?? 0)}
                 </Text>
               </View>
+              <View style={[styles.formRow, styles.rowInfo]}>
+                <Text style={styles.rowLabel}>Tiền cọc còn:</Text>
+                <Text style={[styles.rowValue]}>
+                  {currencyFormat(billInfo?.deposit)}
+                </Text>
+              </View>
+              <View style={styles.divider} />
+              <View style={[styles.formRow, styles.rowInfo]}>
+                <Text style={styles.rowLabel}>Tổng tiền:</Text>
+                <Text style={[styles.rowValue]}>
+                  { totalMoneyRender() }
+                </Text>
+              </View>
+              {/* <View style={[styles.formRow, styles.rowInfo]}>
+                        <Text style={styles.rowLabel}>Loại cọc:</Text>
+                        <Text status="basic" style={[styles.rowValue]}>Cọc giữ hạn tới hết hợp đồng</Text>
+                    </View> */}
+
               {/*<View style={[styles.formRow, styles.rowInfo]}>*/}
               {/*  <Text style={styles.rowLabel}>Trả cọc:</Text>*/}
               {/*  <Input*/}
@@ -255,6 +259,9 @@ const styles = StyleSheet.create({
   },
   divider: {
     marginBottom: 15,
+    height: 1,
+    backgroundColor: "#e1e1e1",
+    width: "100%"
   },
   rowLabel: {
     color: color.labelColor,

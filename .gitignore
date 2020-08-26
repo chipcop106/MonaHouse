@@ -84,6 +84,7 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 
+
 # Android/IntelliJ
 #
 build/
@@ -91,7 +92,7 @@ build/
 .gradle
 local.properties
 *.iml
-
+project.pbxproj
 # node.js
 #
 node_modules/

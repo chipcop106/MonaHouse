@@ -12,7 +12,7 @@ const GoOutInfo = () => {
        console.log(state);
     }, [])
     const _handleValueChange = stateValue =>{
-        console.log('IncludeElectrictWater:', stateValue);        
+        console.log('IncludeElectrictWater:', stateValue);
         changeStateFormStep("roomInfo", stateValue);
     }
     return (
@@ -34,10 +34,6 @@ const GoOutInfo = () => {
                                 textStyle={{color: color.redColor}}
                                 onChangeText={(nextValue) => changeStateFormStep('constract', nextValue)}
                                 dataService={settings.formatDateService}
-                                textStyle={{ color: color.redColor }}
-                                onChangeText={(nextValue) =>
-                                    changeStateFormStep("constract", nextValue)
-                                }
                             />
                         </View>
                         <View style={[styles.formRow, styles.halfCol]}>

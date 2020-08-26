@@ -5,25 +5,26 @@ import { settings } from "~/config";
 import { updateWaterElectric } from "~/api/MotelAPI";
 import { goOut } from "~/api/RenterAPI";
 const defaultState = {
-    step: 0,
-    isLoading: false,
-    dataForm: [{
-        roomPrice: "",
-        dateGoIn: new Date("10/20/2019"),
-        dateGoOut: "",
-        constract: "20/10/2020",
-        roomInfo: {
-            electrictNumber: '',
-            electrictPrice: '5000',
-            electrictPriceInclude: '',
-            electrictImage: null,
-            electrictImageID: '',
-            waterNumber: '',
-            waterPrice: '3000',
-            waterPriceInclude: '',
-            waterImage: null,
-            waterImageID: ''
-        },
+  step: 0,
+  isLoading: false,
+  dataForm: [
+    {
+      roomPrice: "",
+      dateGoIn: new Date("10/20/2019"),
+      dateGoOut: "",
+      constract: "20/10/2020",
+      roomInfo: {
+        electrictNumber: "",
+        electrictPrice: "5000",
+        electrictPriceInclude: "",
+        electrictImage: null,
+          electrictImageID: '',
+        waterNumber: "",
+        waterPrice: "3000",
+        waterPriceInclude: "",
+        waterImage: null,
+          waterImageID: ''
+      },
     },
     {
       moneyLastMonth: "",
@@ -38,138 +39,146 @@ const defaultState = {
 };
 
 const goOutReducer = (prevstate, action) => {
-    switch (action.type) {
-        case "STEP_STATE_CHANGE": {
-            const newFormState = prevstate.dataForm.map((item, index) => {
-                if (index === prevstate.step) {
-                    const changeItem = item;
-                    changeItem[action.payload.field] = action.payload.value;
-                    return changeItem;
-                } return item;
-            });
-            return {
-                ...prevstate,
-                dataForm: newFormState,
-            };
+  switch (action.type) {
+    case "STEP_STATE_CHANGE": {
+      const newFormState = prevstate.dataForm.map((item, index) => {
+        if (index === prevstate.step) {
+          const changeItem = item;
+          changeItem[action.payload.field] = action.payload.value;
+          return changeItem;
         }
-
-        case "UPDATE_STEP": {
-            const currentStep = prevstate.step;
-            const stepChange = action.payload.stepValueChange;
-            if (currentStep + stepChange > 2 || currentStep + stepChange < 0) { return prevstate; }
-            return { ...prevstate, step: currentStep + stepChange };
-        }
-
-        case "SERVICE_CHANGE": {
-            const newFormState = prevstate.dataForm.map((item, index) => {
-                if (index === prevstate.step) {
-                    const { services } = item;
-                    return {
-                        ...item,
-                        services: services.map((service) => (service.id === action.payload.id ? { ...service, value: action.payload.value } : service)),
-                    };
-                } return item;
-            });
-            return {
-                ...prevstate,
-                dataForm: newFormState,
-            };
-        }
-        case "LOAD_DATA": {
-            if(!!!action.payload[0].moneyLastMonth){
-                return {
-                    ...prevstate,
-                    dataForm: [{
-                        ...action.payload[0]
-                    }, {
-                        ...prevstate.dataForm[1]
-                    }],
-                }
-            } else if(!!!action.payload[0].roomInfo) {
-                return {
-                    ...prevstate,
-                    dataForm: [{
-                        ...prevstate.dataForm[0]
-                    }, {
-                        ...action.payload[0]
-                    }],
-                }
-            } else {
-                return {
-                    ...prevstate,
-                    dataForm: action.payload
-                }
-            }
-            
-        }
-        case "SET_BILL": {
-            return {
-                ...prevstate,
-                dataForm: [
-                    {
-                        ...prevstate.dataForm[0]
-                    },
-                    {
-                        ...prevstate.dataForm[1],
-                        billInfo: action.payload[0]
-                    }
-                ]
-            }
-        }
-        case "SET_LOADING": {
-            return {
-                ...prevstate,
-                isLoading: action.payload
-            }
-        }
-        case "RESET_STATE": {
-            return defaultState;
-        }
-        default: {
-            return prevstate;
-        }
+        return item;
+      });
+      return {
+        ...prevstate,
+        dataForm: newFormState,
+      };
     }
+
+    case "UPDATE_STEP": {
+      const currentStep = prevstate.step;
+      const stepChange = action.payload.stepValueChange;
+      if (currentStep + stepChange > 2 || currentStep + stepChange < 0) {
+        return prevstate;
+      }
+      return { ...prevstate, step: currentStep + stepChange };
+    }
+
+    case "SERVICE_CHANGE": {
+      const newFormState = prevstate.dataForm.map((item, index) => {
+        if (index === prevstate.step) {
+          const { services } = item;
+          return {
+            ...item,
+            services: services.map((service) =>
+              service.id === action.payload.id
+                ? { ...service, value: action.payload.value }
+                : service
+            ),
+          };
+        }
+        return item;
+      });
+      return {
+        ...prevstate,
+        dataForm: newFormState,
+      };
+    }
+    case "LOAD_DATA": {
+      if (!!!action.payload[0].moneyLastMonth) {
+        return {
+          ...prevstate,
+          dataForm: [
+            {
+              ...action.payload[0],
+            },
+            {
+              ...prevstate.dataForm[1],
+            },
+          ],
+        };
+      } else if (!!!action.payload[0].roomInfo) {
+        return {
+          ...prevstate,
+          dataForm: [
+            {
+              ...prevstate.dataForm[0],
+            },
+            {
+              ...action.payload[0],
+            },
+          ],
+        };
+      } else {
+        return {
+          ...prevstate,
+          dataForm: action.payload,
+        };
+      }
+    }
+    case "SET_BILL": {
+      return {
+        ...prevstate,
+        dataForm: [
+          {
+            ...prevstate.dataForm[0],
+          },
+          {
+            ...prevstate.dataForm[1],
+            billInfo: action.payload[0],
+          },
+        ],
+      };
+    }
+    case "SET_LOADING": {
+      return {
+        ...prevstate,
+        isLoading: action.payload,
+      };
+    }
+    case "RESET_STATE": {
+      return defaultState;
+    }
+    default: {
+      return prevstate;
+    }
+  }
 };
 
+const changeStepForm = (dispatch) => async (stepValueChange, data) => {
+  if (stepValueChange === 1) {
+    dispatch({ type: "SET_LOADING", payload: true });
+    try {
+      const res = await informElectrictWater(data);
+      console.log("changeStepForm - updateWaterElectric", res);
 
-const changeStepForm = dispatch => async (stepValueChange, data) => {
-   
-    if (stepValueChange === 1){
-        dispatch({type: "SET_LOADING", payload: true});
-        try {
-            const res = await informElectrictWater(data);
-            console.log('changeStepForm - updateWaterElectric', res);
-
-            dispatch({type: "SET_LOADING", payload: false});
-            if(res.Code === 1){
-                dispatch({ type: "UPDATE_STEP", payload: { stepValueChange } })
-            } else {
-                console.log('res.Code susscess fail handle', res);
-            }
-            
-
-        } catch (error) {
-            console.log('changeStepForm - updateWaterElectric error: ', error);
-            dispatch({type: "SET_LOADING", payload: false});
-        }
-    } else {
-        dispatch({ type: "UPDATE_STEP", payload: { stepValueChange } })
+      dispatch({ type: "SET_LOADING", payload: false });
+      if (res.Code === 1) {
+        dispatch({ type: "UPDATE_STEP", payload: { stepValueChange } });
+      } else {
+        console.log("res.Code susscess fail handle", res);
+      }
+    } catch (error) {
+      console.log("changeStepForm - updateWaterElectric error: ", error);
+      dispatch({ type: "SET_LOADING", payload: false });
     }
-    // dispatch({ type: "UPDATE_STEP", payload: { stepValueChange } });
+  } else {
+    dispatch({ type: "UPDATE_STEP", payload: { stepValueChange } });
+  }
+  //dispatch({ type: "UPDATE_STEP", payload: { stepValueChange } });
 };
 
 const changeStateFormStep = (dispatch) => (field, value) => {
-    dispatch({ type: "STEP_STATE_CHANGE", payload: { field, value } });
+  dispatch({ type: "STEP_STATE_CHANGE", payload: { field, value } });
 };
 
 const clearState = (dispatch) => () => {
-    dispatch({ type: "RESET_STATE" });
-}
-const renderZero = num => {
-    
-    if(num > 9) return `${num}`;
-    return `0${num}`
-}
+  dispatch({ type: "RESET_STATE" });
+};
+const renderZero = (num) => {
+  if (num > 9) return `${num}`;
+  return `0${num}`;
+};
 const loadDataForm = (dispatch) => async (data) => {
   try {
     console.log("loadDataForm goOutReducer", data);

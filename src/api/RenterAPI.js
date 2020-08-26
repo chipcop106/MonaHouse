@@ -2,7 +2,7 @@ import instance, { getAccessToken } from "./instanceAPI";
 import { create_UUID } from "~/utils";
 const path = `/RenterApi`;
 
-export const getRelationships = async (params) => {
+export const getRelationships = async () => {
   try {
     let res = await instance.get(`${path}/getrelationship`);
     return res.data;
@@ -150,7 +150,7 @@ export const uploadRenterImage = async (params) => {
     if (!!params) {
       !Array.isArray(params) && (params = [params]);
       [...params].map((image) => {
-        !!image.filename?.includes('.HEIC') && (
+        !!image.filename?.includes('.HEIC') && ( 
           image.filename = `${image.filename.split(".")[0]}.JPG` )
         const file = {
           uri: image.path,
@@ -232,21 +232,21 @@ export const updateElectrictWater = async (params) => {
     }
 };
 
-export const goOut = async params => {
-    // MoveOut(string token, int renterid, int roomid, int paid, int payment)
-    try {
-        const token = await getAccessToken();
-        let res = await instance.get(`${path}/MoveOut`,{
-            params:{
-                ...params,
-                token
-            }
-        });
-        return res.data;
-    } catch (error) {
-        return error.message;
-    }
-};
+export const goOut = async (params) => {
+  // MoveOut(string token, int renterid, int roomid, int paid, int payment)
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(`${path}/MoveOut`, {
+      params: {
+        ...params,
+        token,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error.message;
+  }
+
 
 export const getCustomerRenting = async (params) => {
   // Params: string token, int motelid
@@ -263,7 +263,6 @@ export const getCustomerRenting = async (params) => {
     return error?.message ?? "Lỗi api";
   }
 };
-
 
 export const getCustomerDebt = async (params) => {
   // type:1 //1 nợ 2 dư
@@ -285,19 +284,18 @@ export const getCustomerDebt = async (params) => {
     return error?.message ?? "Lỗi api";
   }
 };
-export const ReadyGoOut = async params => {
-    // MoveOut(string token, int renterid, int roomid)
-    try {
-        const token = await getAccessToken();
-        let res = await instance.get(`${path}/ReadyMoveOut`,{
-            params:{
-                ...params,
-                token
-            }
-        });
-        return res.data;
-    } catch (error) {
-        return error.message;
-    }
+export const ReadyGoOut = async (params) => {
+  // MoveOut(string token, int renterid, int roomid)
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(`${path}/ReadyMoveOut`, {
+      params: {
+        ...params,
+        token,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error.message;
+  }
 };
-
