@@ -11,22 +11,12 @@ import Moment from "moment";
 import { color } from "~/config";
 import { Context as RoomGoOutContext } from "~/context/RoomGoOutContext";
 import { Context as AuthContext } from "~/context/AuthContext";
-import {
-  currencyFormat,
-  getDaysInMonth,
-  getDiffDayFromFirstDayOfMonth,
-  roundNumberThounsand,
-} from "~/utils";
+import { currencyFormat } from "~/utils";
 import Loading from "~/components/common/Loading";
 import { ReadyGoOut } from "~/api/RenterAPI";
 const paymentMethod = ["Tiền mặt", "Chuyển khoản"];
 
 const GoOutCheckout = () => {
-  const [billData, setBillData] = useState({
-    dayRentMoney: 0,
-    waterMoney: 0,
-    electrictMoney: 0,
-  });
   const { state, changeStateFormStep, loadDataBill } = useContext(
     RoomGoOutContext
   );
