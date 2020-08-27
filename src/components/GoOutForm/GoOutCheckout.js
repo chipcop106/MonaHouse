@@ -45,8 +45,12 @@ const GoOutCheckout = () => {
   };
   const totalMoneyRender = () => {
     let rs = 0;
-    // billInfo?.deposit
-    return rs > 0 ? ( '' ) : ( '' );
+    try {
+      rs =  billInfo?.deposit  -  billInfo?.totalCollect;
+    } catch (e) {
+      console.log('totalMoneyRender error', totalMoneyRender);
+    }
+    return rs > 0 ? ( `Trả lại ${ Math.abs(rs) }` ) : ( rs === 0 ? ( `` ) : ( `Thu thêm ${ Math.abs(rs) }` ) );
   };
   useEffect(() => {
     console.log("RoomGoOutContext", state);

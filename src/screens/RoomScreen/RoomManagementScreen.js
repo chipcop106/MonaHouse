@@ -56,11 +56,11 @@ const RoomManagementScreen = () => {
   const { listRooms, filterStateDefault, isLoading } = roomState;
   const { listMotels, listSortOptions } = motelState;
   const navigation = useNavigation();
-  const route = useRoute();
-  const isFocused = useIsFocused();
+  // const route = useRoute();
+  // const isFocused = useIsFocused();
   //local screen state
-  const [loading, setLoading] = useState(false);
-  const [refreshing, setrefreshing] = useState(false);
+  // const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [filterValue, setFilterValue] = useState("");
   const [modelFeeData, setmodelFeeData] = useState("");
 
@@ -129,18 +129,18 @@ const RoomManagementScreen = () => {
     }
     !refreshing && updateState("isLoading", false);
   };
-  const _onValueChange = (filterFormvalue) => {
-    console.log("_onValueChange", filterFormvalue);
-    setFilterValue(filterFormvalue);
-    loadData(filterFormvalue);
+  const _onValueChange = (filterFormValue) => {
+    console.log("_onValueChange", filterFormValue);
+    setFilterValue(filterFormValue);
+    loadData(filterFormValue);
   };
 
   const _onRefresh = async () => {
-    setrefreshing(true);
+    setRefreshing(true);
     try {
       await loadData(filterValue, true);
     } catch (error) {}
-    setrefreshing(false);
+    setRefreshing(false);
   };
 
   const bsFee = createRef();
@@ -239,7 +239,6 @@ const RoomManagementScreen = () => {
                       onOpen={_onModalizeFeeOpen}
                       onClose={_onModalizeFeeClose}
                     >
-                        >
                         <View style={styles.bottomSheetContent}>
                             <AddFeeModal data={modelFeeData} onSuccess={_onSuccessFee} />
                         </View>

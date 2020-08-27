@@ -180,20 +180,20 @@ const RoomGoInScreen = ({ navigation, route }) => {
           fullname: renter.fullName || "",
           phone: renter.phoneNumber || "",
           job: renter.job || "",
-          cityid: parseInt(renter.cityLists[renter.provinceIndex].ID),
+          cityid: parseInt(renter.cityLists[renter.provinceIndex.row].ID),
           objimg: JSON.stringify(imageArr), // imageArr
           datein: datein,
           month: parseInt(room.timeRent),
           note: renter.note,
           totalprice: parseInt(checkout.actuallyReceived) || 0,
           notepaid: checkout.paymentNote,
-          monthpaid: parseInt(checkout.prePaymentTimeIndex),
+          monthpaid: parseInt(checkout.prePaymentTimeIndex.row),
           priceroom: parseInt(room.roomPrice) || 0,
           electric: parseInt(room.roomInfo?.electrictNumber || 0),
           electricprice: parseInt(room.roomInfo?.electrictPrice || 0),
           water: parseInt(room.roomInfo?.waterNumber || 0),
           waterprice: parseInt(room.roomInfo?.waterPrice || 0),
-          monthdeposit: parseInt(checkout.preDepositTimeIndex) + 1,
+          monthdeposit: parseInt(checkout.preDepositTimeIndex.row) + 1,
           addonservice:
             serviceArr.length > 0
               ? JSON.stringify(
