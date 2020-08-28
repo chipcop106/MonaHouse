@@ -1,11 +1,9 @@
 /* eslint-disable no-nested-ternary */
-import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
+import React, { useContext } from "react";
+import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-
-import AsyncStorage from "@react-native-community/async-storage";
 import { Icon } from "@ui-kitten/components";
 import SignInScreen from "./screens/AuthScreen/SignInScreen";
 import SignUpScreen from "./screens/AuthScreen/SignUpScreen";
@@ -16,10 +14,7 @@ import ReportElectrictScreen from "./screens/MainScreen/ReportElectrictScreen";
 import ReportFillRateScreen from "./screens/MainScreen/ReportFillRateScreen";
 import ReportRoomTypeScreen from "./screens/MainScreen/ReportRoomTypeScreen";
 import WelcomeScreen from "./screens/AuthScreen/WelcomeScreen";
-import {
-  Context as AuthContext,
-  Provider as AuthProvider,
-} from "./context/AuthContext";
+import { Context as AuthContext } from "./context/AuthContext";
 
 import { color, sizes } from "./config";
 import ElectrictCollectScreen from "./screens/RoomScreen/ElectrictCollectScreen";
@@ -59,6 +54,7 @@ import SettingRevenueNetScreen from "~/screens/SettingScreen/SettingRevenueNetSc
 import SettingExpectedProfitScreen from "~/screens/SettingScreen/SettingExpectedProfitScreen";
 import SettingCollateralDamageScreen from "~/screens/SettingScreen/SettingCollateralDamageScreen";
 import { Provider as CustomerProvider } from "~/context/CustomerContext";
+import RenterDetailScreen from "~/screens/RoomScreen/RenterDetailScreen";
 export const isMountedRef = React.createRef();
 
 export const navigationRef = React.createRef();
@@ -107,6 +103,34 @@ const headerOptions = {
     />
   ),
 };
+//
+// const HeaderBack = ({ navigation, route, onPress }) => {
+//   return (
+//     <TouchableOpacity
+//       style={{
+//         flexDirection: "row",
+//         alignItems: "center",
+//         marginLeft: 10,
+//       }}
+//       onPress={onPress}
+//     >
+//       <Icon
+//         name="arrow-back-outline"
+//         fill={color.primary}
+//         style={sizes.iconButtonSize}
+//       />
+//       <Text
+//         style={{
+//           color: color.primary,
+//           marginLeft: 5,
+//           fontSize: 16,
+//         }}
+//       >
+//         Back
+//       </Text>
+//     </TouchableOpacity>
+//   );
+// };
 
 // Home stack
 const HomeStack = () => {
@@ -232,6 +256,15 @@ const RoomDetailStack = ({ navigation }) => {
           headerShown: true,
           title: "Lịch sử thuê phòng",
         }}
+      />
+
+      <Stack.Screen
+        name="RenterDetail"
+        component={RenterDetailScreen}
+        options={() => ({
+          headerShown: true,
+          title: "Thông tin người thuê",
+        })}
       />
     </Stack.Navigator>
   );
