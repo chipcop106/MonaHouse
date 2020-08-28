@@ -29,11 +29,16 @@ import { getRoomById } from "~/api/MotelAPI";
 import { currencyFormat as cf } from "~/utils";
 import { Context as RoomContext } from "~/context/RoomContext";
 import Moment from "moment";
+import ProgressiveImage from "~/components/common/ProgressiveImage";
+import { getCity } from "~/api/AccountAPI";
+import { getRelationships } from "~/api/RenterAPI";
 const { height } = Dimensions.get("window");
 
 const initialState = {
   visible: false,
   lightboxUrl: null,
+  cityLists: [],
+  relationLists: [],
   roomInfo: null,
 };
 
@@ -48,30 +53,6 @@ const reducer = (prevstate, { type, payload }) => {
     default:
       return prevstate;
   }
-};
-
-const People = ({ phone = "", name = "", img }) => {
-  return (
-    <View style={styles.peopleContainer}>
-      <View style={styles.flexRow}>
-        <Avatar
-          size="giant"
-          source={img ? { uri: img } : require("./../../../assets/user.png")}
-        />
-        <View style={styles.peopleInfo}>
-          <Text style={styles.peopleName}>Trương Văn Lam</Text>
-          <View style={{ ...styles.flexRow, marginTop: 5 }}>
-            <Icon
-              name="phone"
-              style={{ width: 25, height: 25 }}
-              fill={color.darkColor}
-            />
-            <Text style={styles.phoneNumber}>0123456789</Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
 };
 
 const RoomDetailScreen = ({ navigation, route }) => {
@@ -123,10 +104,6 @@ const RoomDetailScreen = ({ navigation, route }) => {
     ]);
   };
 
-  const _deletePeople = () => {
-    alert("delete people");
-  };
-
   useEffect(() => {
     loadRoomInfo();
   }, []);
@@ -155,17 +132,6 @@ const RoomDetailScreen = ({ navigation, route }) => {
             }
           >
             <View style={styles.container}>
-              <View style={{ marginHorizontal: -15 }}>
-                <UserInfo
-                  name={
-                    roomInfo.renter.renter.FullName
-                      ? roomInfo.renter.renter.FullName
-                      : "Chưa có khách"
-                  }
-                  phone={roomInfo.renter.renter.Phone}
-                />
-              </View>
-
               <View style={styles.secWrap}>
                 <View
                   style={{
@@ -278,7 +244,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                       <TouchableOpacity
                         style={styles.flexRow}
                         onPress={() =>
-                          showLightBoxModal(roomInfo?.electric.image_thumbnails)
+                          showLightBoxModal(roomInfo?.electric.image)
                         }
                       >
                         <Icon
@@ -306,9 +272,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                       <Text style={styles.label}>Số Nước</Text>
                       <TouchableOpacity
                         style={styles.flexRow}
-                        onPress={() =>
-                          showLightBoxModal(roomInfo?.water.image_thumbnails)
-                        }
+                        onPress={() => showLightBoxModal(roomInfo?.water.image)}
                       >
                         <Icon
                           name="image-outline"
@@ -341,12 +305,12 @@ const RoomDetailScreen = ({ navigation, route }) => {
                           horizontal
                           showsHorizontalScrollIndicator={false}
                           renderItem={({ item }) => {
-                            const url = `${settings.homeURL}/${item.LinkIMG}`;
+                            const url = item.LinkIMG;
                             return (
                               <TouchableOpacity
                                 onPress={() => showLightBoxModal(url)}
                               >
-                                <Image
+                                <ProgressiveImage
                                   source={{
                                     uri: url,
                                   }}
@@ -372,10 +336,15 @@ const RoomDetailScreen = ({ navigation, route }) => {
                   </View>
                 </View>
                 <Text style={styles.secTitle}>Dịch vụ phòng</Text>
-                <View style={{ ...styles.sec, paddingBottom: 0 }}>
+                <View
+                  style={{ ...styles.sec, paddingBottom: 0, marginBottom: 15 }}
+                >
                   {roomInfo.addons?.length > 0 ? (
                     roomInfo.addons?.map((item) => (
-                      <View style={styles.rowInfo} key={item.ID}>
+                      <View
+                        style={{ ...styles.rowInfo, marginBottom: 15 }}
+                        key={item.ID}
+                      >
                         <Text style={styles.label}>{item.AddOnName}</Text>
                         <Text style={styles.value}>{cf(item.Price)}</Text>
                       </View>
@@ -405,7 +374,6 @@ const RoomDetailScreen = ({ navigation, route }) => {
                       style={{
                         ...styles.flexRow,
                         alignItems: "center",
-                        marginBottom: 15,
                         justifyContent: "space-between",
                       }}
                     >
@@ -415,22 +383,19 @@ const RoomDetailScreen = ({ navigation, route }) => {
                           marginBottom: 0,
                         }}
                       >
-                        Người ở cùng
+                        Người thuê
                       </Text>
                       <TouchableOpacity
-                        onPress={
-                          () => alert("Chưa có API")
-                          // navigation.navigate(
-                          //     "AddPeople",
-                          //     {
-                          //         roomId,
-                          //     }
-                          // )
+                        onPress={() =>
+                          navigation.navigate("RenterDetail", {
+                            roomInfo,
+                            refreshRoomDetail: () => _onRefresh(),
+                          })
                         }
                       >
                         <View style={styles.flexRow}>
                           <Icon
-                            name="plus"
+                            name="edit-2"
                             fill={color.primary}
                             style={{
                               width: 25,
@@ -440,24 +405,36 @@ const RoomDetailScreen = ({ navigation, route }) => {
                             }}
                           />
                           <Text status="primary" category="s1">
-                            Thêm người
+                            Chỉnh sửa
                           </Text>
                         </View>
                       </TouchableOpacity>
                     </View>
-                    {[...roomInfo.OtherRenters].map((people, index) => {
-                      return (
-                        <UserInfo
-                          key={`${index}`}
-                          avatar={null}
-                          phone="0123456789"
-                          name="Trương Văn Lam"
-                          styleContainer={styles.peopleContainer}
-                          styleCard={styles.peopleCard}
-                          deletePeople={_deletePeople}
-                        />
-                      );
-                    })}
+                    <View style={{ marginTop: 15 }}>
+                      <UserInfo
+                        name={
+                          roomInfo.renter.renter.FullName
+                            ? roomInfo.renter.renter.FullName
+                            : "Chưa có khách"
+                        }
+                        phone={roomInfo.renter.renter.Phone}
+                        styleCard={styles.peopleCard}
+                        styleContainer={{ marginBottom: 10 }}
+                      />
+                    </View>
+                    {roomInfo?.OtherRenters?.length > 0 &&
+                      [...roomInfo.OtherRenters].map((people, index) => {
+                        return (
+                          <UserInfo
+                            key={`${index}`}
+                            avatar={null}
+                            phone={people?.Phone ?? ""}
+                            name={people?.FullName ?? "Chưa có tên"}
+                            styleContainer={styles.peopleContainer}
+                            styleCard={styles.peopleCard}
+                          />
+                        );
+                      })}
                   </View>
                 )}
                 <View style={styles.menuWrap}>
@@ -620,7 +597,6 @@ const styles = StyleSheet.create({
   },
   peopleCard: {
     backgroundColor: "#fff",
-    paddingHorizontal: 15,
     borderRadius: 8,
     marginTop: 0,
   },
