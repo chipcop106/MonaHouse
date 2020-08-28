@@ -1,13 +1,17 @@
-import React, { useContext, useReducer, useEffect, useState } from "react";
+import React, {
+  useContext,
+  useReducer,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import {
   StyleSheet,
   View,
   Image,
   Dimensions,
   ScrollView,
-  KeyboardAvoidingView,
   Alert,
-  ActivityIndicator,
   RefreshControl,
 } from "react-native";
 import {
@@ -18,7 +22,6 @@ import {
   List,
   Spinner,
   Button,
-  Avatar,
 } from "@ui-kitten/components";
 import UserInfo from "~/components/UserInfo";
 import { color, settings } from "~/config";
@@ -30,8 +33,7 @@ import { currencyFormat as cf } from "~/utils";
 import { Context as RoomContext } from "~/context/RoomContext";
 import Moment from "moment";
 import ProgressiveImage from "~/components/common/ProgressiveImage";
-import { getCity } from "~/api/AccountAPI";
-import { getRelationships } from "~/api/RenterAPI";
+import { useScrollToTop } from "@react-navigation/native";
 const { height } = Dimensions.get("window");
 
 const initialState = {
@@ -104,14 +106,22 @@ const RoomDetailScreen = ({ navigation, route }) => {
     ]);
   };
 
-  useEffect(() => {
-    loadRoomInfo();
-  }, []);
   const _onRefresh = async () => {
     setRefreshing(true);
     await loadRoomInfo();
     setRefreshing(false);
   };
+  useEffect(() => {
+    route.params?.updated === true && _onRefresh();
+    navigation.setParams({
+      ...route.params,
+      updated: false,
+    });
+  }, [route.params?.updated]);
+
+  useEffect(() => {
+    loadRoomInfo();
+  }, []);
   return (
     <>
       {!roomInfo ? (
@@ -389,7 +399,6 @@ const RoomDetailScreen = ({ navigation, route }) => {
                         onPress={() =>
                           navigation.navigate("RenterDetail", {
                             roomInfo,
-                            refreshRoomDetail: () => _onRefresh(),
                           })
                         }
                       >
