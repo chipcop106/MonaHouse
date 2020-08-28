@@ -491,9 +491,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
         Alert.alert("Lỗi cập nhật !!", JSON.stringify(res), [
           {
             text: "OK",
-            onPress: () => {
-              navigation.navigate("RoomDetail", { updated: true });
-            },
+            onPress: () => {},
           },
         ]);
     } catch (e) {
