@@ -272,7 +272,6 @@ const RightAction = (_deletePeople, _editPeople) => {
 const RenterDetailScreen = ({ navigation, route }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { renter, OtherRenters } = route.params?.roomInfo;
-  const { refreshRoomDetail } = route.params;
   const { relationLists, cityLists } = settings;
 
   const refRBSheet = useRef(true);
@@ -484,8 +483,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
           {
             text: "OK",
             onPress: () => {
-              navigation.pop();
-              typeof refreshRoomDetail === "function" && refreshRoomDetail();
+              navigation.navigate("RoomDetail", { updated: true });
             },
           },
         ]);
@@ -493,7 +491,9 @@ const RenterDetailScreen = ({ navigation, route }) => {
         Alert.alert("Lỗi cập nhật !!", JSON.stringify(res), [
           {
             text: "OK",
-            onPress: () => {},
+            onPress: () => {
+              navigation.navigate("RoomDetail", { updated: true });
+            },
           },
         ]);
     } catch (e) {
