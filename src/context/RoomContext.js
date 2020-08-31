@@ -63,14 +63,14 @@ const roomReducer = (prevstate, { type, payload }) => {
     }
 };
 
-const errorHandle = (code, { signOut }) => {
+const errorHandle = (code, { signOut } , res = null) => {
     switch (code) {
         case 2:
             alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
             signOut && signOut();
             break;
         default:
-            alert("Lỗi API !! Code hông tồn tại!!");
+            throw res;
             break;
     }
 };
@@ -199,14 +199,12 @@ const createRoom = (dispatch) => async (
     params,
     callback
 ) => {
-    const { navigation, refreshList } = callback;
 
     try {
         const res = await createRoomAPI(params);
-        res.Code !== 1 && errorHandle(res.Code, callback);
-        
+        return res;
     } catch (error) {
-        alert(JSON.stringify(error.message));
+        return error
     }
 };
 

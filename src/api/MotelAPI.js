@@ -176,7 +176,7 @@ export const createRoomSingle = async (params) => {
     });
     return res.data;
   } catch (error) {
-    return error.message;
+    return error;
   }
 };
 
