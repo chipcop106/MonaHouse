@@ -17,10 +17,7 @@ import {
 } from "@ui-kitten/components";
 import ImagePicker from "react-native-image-crop-picker";
 import { sizes, color, settings } from "~/config";
-import {
-  updateRenterOnRoom,
-  uploadRenterImage,
-} from "~/api/RenterAPI";
+import { updateRenterOnRoom, uploadRenterImage } from "~/api/RenterAPI";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import RBSheet from "react-native-raw-bottom-sheet";
 import ProgressiveImage from "~/components/common/ProgressiveImage";
