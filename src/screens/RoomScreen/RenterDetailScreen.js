@@ -17,9 +17,7 @@ import {
 } from "@ui-kitten/components";
 import ImagePicker from "react-native-image-crop-picker";
 import { sizes, color, settings } from "~/config";
-import { getCity } from "~/api/AccountAPI";
 import {
-  getRelationships,
   updateRenterOnRoom,
   uploadRenterImage,
 } from "~/api/RenterAPI";
@@ -448,18 +446,18 @@ const RenterDetailScreen = ({ navigation, route }) => {
     refCURDRenter.current.close();
   };
 
-  const _onSubmitAll = async () => {
-    const otherRenterArr = state.otherRenters.map((item) => ({
-      id: item.id,
-      name: item.fullName,
-      phone: item.phoneNumber,
-    }));
-    const licenseRenterArr = state.licenseImages.map((image) => ({
-      ID: image.ID,
-      URL: image.UrlIMG,
-    }));
+  const _onSaveInforMation = async () => {
     //Fetch API
     try {
+      const otherRenterArr = state.otherRenters.map((item) => ({
+        id: item.id,
+        name: item.fullName,
+        phone: item.phoneNumber,
+      }));
+      const licenseRenterArr = state.licenseImages.map((image) => ({
+        ID: image.ID,
+        URL: image.UrlIMG,
+      }));
       const res = await updateRenterOnRoom({
         renterid: state.renterID,
         phone: state?.phoneNumber ?? "",
@@ -727,7 +725,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
         </View>
         <Button
           style={{ borderRadius: 0, marginBottom: 30 }}
-          onPress={_onSubmitAll}
+          onPress={_onSaveInforMation}
           accessoryLeft={() => (
             <Icon
               name="save-outline"
