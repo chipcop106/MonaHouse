@@ -1,17 +1,17 @@
-import React, {useState } from 'react';
-import {
-  Text, StyleSheet, View, TouchableOpacity,
-} from 'react-native';
-import {
-  Input, Icon,
-} from '@ui-kitten/components';
-import { color } from '../../config';
+import React, { useState, useMemo } from "react";
+import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
+import { Input, Icon } from "@ui-kitten/components";
+import { color } from "../../config";
+import { currencyFormat as cf } from "~/utils";
 
-
-const Service = ({ initialState: { name, price }, onDelete, onChangeValue }) => {
+const Service = ({
+  initialState: { name, price },
+  onDelete,
+  onChangeValue,
+  onBlur,
+}) => {
   const [nameState, setNameState] = useState(name);
   const [priceState, setPriceState] = useState(price);
-
 
   return (
     <View style={styles.svContainer}>
@@ -19,12 +19,16 @@ const Service = ({ initialState: { name, price }, onDelete, onChangeValue }) => 
         <Input
           status="primary"
           textStyle={styles.textInput}
-          placeholder="Tên dịch vụ"
+          placeholder="Internet/phí giữ xe/tiền nước bình"
           value={nameState}
           onChangeText={(nextValue) => {
             setNameState(nextValue);
-            onChangeValue({ name: nextValue, price: priceState });
+            !!onChangeValue &&
+              onChangeValue({ name: nextValue, price: priceState });
           }}
+          onBlur={() =>
+            onBlur && onBlur({ name: nameState, price: priceState })
+          }
           textContentType="none"
           keyboardType="default"
         />
@@ -33,44 +37,54 @@ const Service = ({ initialState: { name, price }, onDelete, onChangeValue }) => 
         <Input
           textStyle={styles.textInput}
           placeholder="Số tiền"
-          value={priceState}
+          value={cf(priceState)}
           onChangeText={(nextValue) => {
-            setPriceState(nextValue);
-            onChangeValue({ name: nameState, price: nextValue });
+            setPriceState(nextValue.replace(/[^0-9\-]/g, ""));
+            !!onChangeValue &&
+              onChangeValue({
+                name: nameState,
+                price: nextValue.replace(/[^0-9\-]/g, ""),
+              });
           }}
+          onBlur={() =>
+            onBlur && onBlur({ name: nameState, price: priceState })
+          }
           textContentType="none"
           keyboardType="numeric"
         />
       </View>
       <TouchableOpacity style={styles.svDelete} onPress={onDelete}>
-        <Icon name="minus-circle-outline" fill={color.redColor} style={styles.deleteButton} />
+        <Icon
+          name="minus-circle-outline"
+          fill={color.redColor}
+          style={styles.deleteButton}
+        />
       </TouchableOpacity>
     </View>
-
   );
 };
 
 const styles = StyleSheet.create({
   svContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flexGrow: 1,
     marginBottom: 10,
   },
   svName: {
-    marginHorizontal: '2%',
-    width: '46%',
+    marginHorizontal: "2%",
+    width: "46%",
     flexShrink: 0,
   },
   svPrice: {
-    marginHorizontal: '2%',
-    width: '46%',
+    marginHorizontal: "2%",
+    width: "46%",
     flexShrink: 0,
     paddingRight: 40,
   },
   svDelete: {
-    position: 'absolute',
-    right: '0%',
+    position: "absolute",
+    right: "0%",
     top: 0,
     padding: 5,
   },

@@ -16,6 +16,7 @@ const CustomSelect = ({
     selectOptions,
     getSelectedIndex,
     selectedIndex,
+    disabled
 }) => {
     return (
         <View style={styles.selectGroup}>
@@ -28,14 +29,13 @@ const CustomSelect = ({
                             style={styles.iconStyle}
                         />
                     )}
+                    disabled={disabled}
                     size="medium"
                     status="transparent"
                     label=""
                     value={selectOptions[selectedIndex - 1]}
                     selectedIndex={selectedIndex}
-                    onSelect={(index) => {
-                        getSelectedIndex(index);
-                    }}
+                    onSelect={getSelectedIndex}
                 >
                     {selectOptions &&
                         selectOptions.map((option) => (

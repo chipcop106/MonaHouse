@@ -1,26 +1,11 @@
-import React from "react";
+import React, { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import LottieView from "lottie-react-native";
+import { Spinner } from "@ui-kitten/components";
 
 const Loading = () => {
-    return (
-        <View
-            style={{
-                flexGrow: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#fff",
-            }}
-        >
-            <LottieView
-                source={require("./../../../assets/lottie/monahouse-loading.json")}
-                autoPlay
-                loop
-            />
-        </View>
-    );
+    return <Spinner size="giant" />;
 };
 
-export default Loading;
+export default memo(Loading);
 
 const styles = StyleSheet.create({});

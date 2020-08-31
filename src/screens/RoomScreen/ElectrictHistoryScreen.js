@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
 import { Text, IndexPath, List } from "@ui-kitten/components";
-import HistoryRecord from "~/components/HistoryRecord";
+import HistoryRecord from "./ListItems/HistoryEW";
 import FilterHeader from "~/components/FilterHeader";
 import { Context as RoomContext } from "~/context/RoomContext";
 import { Context as MotelContext } from "~/context/MotelContext";
@@ -13,15 +13,16 @@ const ElectrictHistoryScreen = () => {
     const { listElectrictHistory, filterStateDefault } = roomState;
 
     const onFilterChange = (filter) => {
+        console.log('filter', filter);
         const { selectedMonthIndex, selectedMotelIndex } = filter;
         try {
             //console.log(listMotels);
             getElectrictHistory(
                 {
                     motelid:
-                        motelState.listMotels[selectedMotelIndex.row - 1]?.ID ??
+                        motelState.listMotels[selectedMotelIndex - 1]?.ID ??
                         0,
-                    month: selectedMonthIndex.row + 1,
+                    month: selectedMonthIndex + 1,
                 },
                 signOut
             );

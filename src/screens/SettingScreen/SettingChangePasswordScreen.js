@@ -48,6 +48,7 @@ const SettingChangePasswordScreen = ({ navigation, route = {} }) => {
                             textStyle={styles.inputText}
                             value={state.oldPassword}
                             secureTextEntry={true}
+                            autoCapitalize={false}
                             onChangeText={(value) =>
                                 updateState("oldPassword", value)
                             }
@@ -60,6 +61,7 @@ const SettingChangePasswordScreen = ({ navigation, route = {} }) => {
                             style={styles.inputControl}
                             textStyle={styles.inputText}
                             value={state.newPassword}
+                            autoCapitalize={false}
                             secureTextEntry={true}
                             onChangeText={(value) =>
                                 updateState("newPassword", value)
@@ -72,6 +74,7 @@ const SettingChangePasswordScreen = ({ navigation, route = {} }) => {
                             placeholder="Nhập lại mật khẩu mới"
                             style={[styles.inputControl]}
                             textStyle={styles.inputText}
+                            autoCapitalize={false}
                             value={state.renewPassword}
                             secureTextEntry={true}
                             onChangeText={(value) =>

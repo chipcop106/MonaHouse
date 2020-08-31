@@ -1,27 +1,57 @@
-import React, { useState, useContext } from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
+import React, { useState, useContext, useEffect } from "react";
+import { StyleSheet, View, ScrollView, 
+    RefreshControl } from "react-native";
 import { Text, IndexPath, List } from "@ui-kitten/components";
-import HistoryRecord from "~/components/HistoryRecord";
+import HistoryRecord from "./ListItems/HistoryMoney";
 import FilterHeader from "~/components/FilterHeader";
 import { Context as RoomContext } from "~/context/RoomContext";
 import { Context as MotelContext } from "~/context/MotelContext";
 import { Context as AuthContext } from "~/context/AuthContext";
+import Loading from '~/components/common/Loading'
+import {create_UUID} from '~/utils';
+import { getPaymentHistory } from '~/api/CollectMoneyAPI'
 const MoneyHistoryScreen = () => {
-    const { state: roomState, getElectrictHistory } = useContext(RoomContext);
+    const { state: roomState, getElectrictHistory, updateState } = useContext(RoomContext);
     const { state: motelState } = useContext(MotelContext);
     const { signOut } = useContext(AuthContext);
-    const { listElectrictHistory, filterStateDefault } = roomState;
-
+    const { filterStateDefault,  listElectrictRooms} = roomState;
+    const [listData, setlistData] = useState('');
+    const [isLoading, setisLoading] = useState(false);
+    const [isRefesh, setisRefesh] = useState(false);
+    
+    useEffect(() => {
+        ( async () => {
+            setisLoading(true);
+            try {
+                await loadData();
+            } catch (error) {
+                console.log('load init error:', error)
+            }
+            setisLoading(false);
+        } )();
+        return () => {
+            
+        }
+    }, [])
+    const loadData = async () => {
+        try {
+           
+            setlistData(['a', ...listData])
+        } catch (error) {
+            
+        }
+    }
     const onFilterChange = (filter) => {
+        console.log(filter);
         const { selectedMonthIndex, selectedMotelIndex } = filter;
         try {
             //console.log(listMotels);
+            const motelid =  motelState.listMotels[selectedMotelIndex - 1]?.ID ??
+            0, month = selectedMonthIndex + 1;
             getElectrictHistory(
                 {
-                    motelid:
-                        motelState.listMotels[selectedMotelIndex.row - 1]?.ID ??
-                        0,
-                    month: selectedMonthIndex.row + 1,
+                    motelid,
+                    month
                 },
                 signOut
             );
@@ -29,7 +59,21 @@ const MoneyHistoryScreen = () => {
             console.log(error);
         }
     };
+    const _onRefresh = async () => {
+        setisRefesh(true);
+        try {
+            await loadData();
+        } catch (error) {
+            console.log('_onRefresh error:', error)
+        }
+        setisRefesh(false);
+    }
+    const _renderItem = () => {
 
+        return (
+            <HistoryRecord style={styles.card} />
+        )
+    }
     return (
         <>
             <FilterHeader
@@ -37,14 +81,23 @@ const MoneyHistoryScreen = () => {
                 initialState={filterStateDefault}
                 advanceFilter={false}
             />
-            <List
-                contentContainerStyle={styles.contentCard}
+            { !!isLoading && <View style={{padding: 15, alignItems: "center"}}><Loading /></View>}
+            { !!!isLoading &&  <List
+                
+                contentContainerStyle={[{paddingHorizontal: 15, paddingVertical: 10}]}
                 style={styles.listContainer}
-                data={listElectrictHistory}
-                keyExtractor={(item) => item.id}
-                renderItem={() => <HistoryRecord style={styles.card} />}
-                style={styles.container}
-            ></List>
+                data={listData}
+                keyExtractor={(item) => `${create_UUID()}-${item.id}`}
+                renderItem={_renderItem}
+                refreshControl={
+                    <RefreshControl
+                        onRefresh={_onRefresh}
+                        refreshing={isRefesh}
+                    />
+                }
+                ListEmptyComponent={<Text style={{textAlign: "center", fontSize: 18, color: "grey"}}>Bạn chưa có lần thu tiền nào</Text>}
+            />}
+            
         </>
     );
 };
@@ -58,14 +111,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
     },
     card: {
-        marginVertical: 10,
+        marginVertical: 7,
     },
     contentCard: {
-        paddingHorizontal: 8,
-        paddingVertical: 4,
+        
     },
 
     listContainer: {
-        flex: 1,
+        flex: 1
     },
 });

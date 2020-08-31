@@ -3,13 +3,12 @@
 import React, { useState, memo } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { Card } from "@ui-kitten/components";
-import { color } from "~/config";
+import { color, shadowStyle } from "~/config";
 import { useNavigation } from "@react-navigation/native";
 import IncludeElectrictWater from "~/components/IncludeElectrictWater";
 const noImageSrc = require("~/../assets/user.png");
 
 const renderItemHeader = (headerprops, roomInfo, navigation) => {
-    const { item } = roomInfo;
 
     return (
         <View {...headerprops} style={styles.headerWrap}>
@@ -19,7 +18,7 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
                     ellipsizeMode="tail"
                     numberOfLines={1}
                 >
-                    {item.RoomName}
+                    {roomInfo.RoomName}
                 </Text>
             </TouchableOpacity>
         </View>
@@ -29,10 +28,10 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
 const ElectrictCard = ({ roomInfo, handleValueChange }) => {
     const navigation = useNavigation();
     return (
-        <>
+        <View style={styles.item}>
             <Card
                 appearance="filled"
-                style={styles.item}
+                
                 status="basic"
                 disabled
                 header={(headerProps) =>
@@ -54,7 +53,7 @@ const ElectrictCard = ({ roomInfo, handleValueChange }) => {
                     />
                 </View>
             </Card>
-        </>
+        </View>
     );
 };
 
@@ -68,9 +67,11 @@ const styles = StyleSheet.create({
         padding: 15,
         alignItems: "center",
         justifyContent: "space-between",
-        borderTopLeftRadius: 8,
-        borderTopRightRadius: 8,
+        borderTopLeftRadius: 6,
+        borderTopRightRadius: 6,
         position: "relative",
+        marginTop: -1,
+        marginHorizontal: -1
     },
     roomName: {
         fontSize: 20,
@@ -79,8 +80,9 @@ const styles = StyleSheet.create({
         paddingRight: 45,
     },
     item: {
-        marginBottom: 30,
-        borderRadius: 8,
+        borderRadius: 6,
+        ...shadowStyle
+
     },
     iconMenu: {
         width: 30,

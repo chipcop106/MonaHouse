@@ -1,19 +1,20 @@
-import React, { useContext } from "react";
-import {
-    StyleSheet, View,
-} from "react-native";
-import {
-    Input, Datepicker, Text, IndexPath
-} from "@ui-kitten/components";
+import React, { useContext, useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import { Input, Datepicker, Text } from "@ui-kitten/components";
 import IncludeElectrictWater from "../IncludeElectrictWater";
-import { sizes, color, settings } from "../../config";
-import { create_UUID as randomId } from "../../utils";
+import { color, settings } from "~/config";
 import { Context as RoomGoOutContext } from "../../context/RoomGoOutContext";
-
 
 const GoOutInfo = () => {
     const { state, changeStateFormStep } = useContext(RoomGoOutContext);
     const stateGoOutInfo = state.dataForm[state.step];
+    useEffect(() => {
+       console.log(state);
+    }, [])
+    const _handleValueChange = stateValue =>{
+        console.log('IncludeElectrictWater:', stateValue);
+        changeStateFormStep("roomInfo", stateValue);
+    };
     return (
         <>
             <View style={styles.mainWrap}>
@@ -22,45 +23,71 @@ const GoOutInfo = () => {
                         <View style={[styles.formRow, styles.fullWidth]}>
                             <Input
                                 placeholder="dd/mm/yyyy"
-                                value={stateGoOutInfo.constract}
+                                value={`Từ ${stateGoOutInfo.constract}`}
                                 label="Hợp đồng"
-                                accessoryLeft={() => (<View style={styles.leftInput}>
-                                    <Text>12 tháng</Text>
-                                </View>)}
+                                accessoryLeft={() => (
+                                    <View style={styles.leftInput}>
+                                        <Text>12 tháng</Text>
+                                    </View>
+                                )}
                                 disabled
-                                textStyle={{color:color.redColor}}
+                                textStyle={{color: color.redColor}}
                                 onChangeText={(nextValue) => changeStateFormStep('constract', nextValue)}
+                                dataService={settings.formatDateService}
                             />
                         </View>
                         <View style={[styles.formRow, styles.halfCol]}>
                             <Datepicker
                                 label="Ngày dọn vào"
-                                date={stateGoOutInfo.dateGoIn}
+                                placeholder="dd/mm/yyyy"
+                                date={
+                                    !!stateGoOutInfo && stateGoOutInfo.dateGoIn
+                                        ? stateGoOutInfo.dateGoIn
+                                        : new Date()
+                                }
                                 status="basic"
                                 min={settings.minRangeDatePicker}
                                 max={settings.maxRangeDatePicker}
-                                dataService = {settings.formatDateService}
-                                onSelect={(nextDate) => changeStateFormStep("dateGoIn", nextDate)}
+                                dataService={settings.formatDateService}
+                                onSelect={(nextDate) =>
+                                    changeStateFormStep("dateGoIn", nextDate)
+                                }
+                                disabled={true}
                             />
                         </View>
                         <View style={[styles.formRow, styles.halfCol]}>
                             <Datepicker
                                 label="Ngày dọn ra"
-                                date={stateGoOutInfo.dateGoOut}
+                                date={
+                                    stateGoOutInfo.dateGoOut
+                                }
                                 min={stateGoOutInfo.dateGoIn}
                                 max={settings.maxRangeDatePicker}
                                 status="basic"
-                                dataService = {settings.formatDateService}
-                                onSelect={(nextDate) => changeStateFormStep("dateGoOut", nextDate)}
+                                dataService={settings.formatDateService}
+                                onSelect={(nextDate) =>
+                                    changeStateFormStep("dateGoOut", nextDate)
+                                }
                             />
                         </View>
+                        <View style={[styles.formRow, styles.halfCol]}>
+                            <Text style={styles.lb}>Số điện cũ: { `${ stateGoOutInfo.roomInfo.oldElectrictNumber }` }</Text>
+                        </View>
+                        <View style={[styles.formRow, styles.halfCol]}>
+                            <Text style={styles.lb}>Số nước cũ: { `${ stateGoOutInfo.roomInfo.oldWaterNumber }` }</Text>
+                        </View>
                         <IncludeElectrictWater
-                            index={stateGoOutInfo.electrictIndex?.row ?? (new IndexPath(0).row)}
-                            waterTitle="Nước tháng này"
-                            electrictTitle="Điện tháng này"
+                            index={
+                                state.roomInfo?.room.TypeEW
+                                    ? parseInt(state.roomInfo?.room.TypeEW) - 1
+                                    : 0
+                            }
+                            waterTitle="Số nước mới"
+                            electrictTitle="Số Điện mới"
                             priceDisplay={false}
+                            oldNumber={true}
                             initialState={stateGoOutInfo.roomInfo}
-                            handleValueChange={(stateValue) => changeStateFormStep('roomInfo',stateValue)}
+                            handleValueChange={_handleValueChange}
                         />
                     </View>
                 </View>
@@ -89,7 +116,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     formWrap: {
-
         paddingHorizontal: 10,
         marginHorizontal: -10,
         flexDirection: "row",
@@ -108,9 +134,13 @@ const styles = StyleSheet.create({
         flexBasis: "98%",
     },
     leftInput: {
-        borderRightWidth: 1, 
-        borderRightColor: color.darkColor, 
-        paddingRight: 10
+        borderRightWidth: 1,
+        borderRightColor: color.darkColor,
+        paddingRight: 10,
+    },
+    lb: {
+        fontWeight: "bold",
+        fontSize: 12
     }
 });
 
