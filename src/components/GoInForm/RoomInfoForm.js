@@ -10,10 +10,11 @@ import {
 } from "@ui-kitten/components";
 import Service from "./Service";
 import IncludeElectrictWater from "~/components/IncludeElectrictWater";
-import { sizes, color } from "../../config";
+import { sizes, color, settings } from '../../config'
 import { create_UUID as randomId } from "../../utils";
 import { Context as RoomGoInContext } from "../../context/RoomGoInContext";
 import { currencyFormat as cf } from "~/utils";
+import Moment from "moment";
 
 const timeType = ["Ngày", "Tháng", "Năm"];
 
@@ -73,7 +74,8 @@ const RoomInfoForm = () => {
                         <View style={[styles.formRow, styles.halfCol]}>
                             <Datepicker
                                 label="Ngày dọn vào"
-                                date={stateRoomInfo.dateGoIn}
+                                date={stateRoomInfo.dateGoIn || new Date() }
+                                min={ new Date() }
                                 onSelect={(nextDate) =>
                                     changeStateFormStep("dateGoIn", nextDate)
                                 }

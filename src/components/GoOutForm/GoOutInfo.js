@@ -14,7 +14,7 @@ const GoOutInfo = () => {
     const _handleValueChange = stateValue =>{
         console.log('IncludeElectrictWater:', stateValue);
         changeStateFormStep("roomInfo", stateValue);
-    }
+    };
     return (
         <>
             <View style={styles.mainWrap}>
@@ -70,15 +70,22 @@ const GoOutInfo = () => {
                                 }
                             />
                         </View>
+                        <View style={[styles.formRow, styles.halfCol]}>
+                            <Text style={styles.lb}>Số điện cũ: { `${ stateGoOutInfo.roomInfo.oldElectrictNumber }` }</Text>
+                        </View>
+                        <View style={[styles.formRow, styles.halfCol]}>
+                            <Text style={styles.lb}>Số nước cũ: { `${ stateGoOutInfo.roomInfo.oldWaterNumber }` }</Text>
+                        </View>
                         <IncludeElectrictWater
                             index={
                                 state.roomInfo?.room.TypeEW
                                     ? parseInt(state.roomInfo?.room.TypeEW) - 1
                                     : 0
                             }
-                            waterTitle="Nước tháng này"
-                            electrictTitle="Điện tháng này"
+                            waterTitle="Số nước mới"
+                            electrictTitle="Số Điện mới"
                             priceDisplay={false}
+                            oldNumber={true}
                             initialState={stateGoOutInfo.roomInfo}
                             handleValueChange={_handleValueChange}
                         />
@@ -131,6 +138,10 @@ const styles = StyleSheet.create({
         borderRightColor: color.darkColor,
         paddingRight: 10,
     },
+    lb: {
+        fontWeight: "bold",
+        fontSize: 12
+    }
 });
 
 export default GoOutInfo;
