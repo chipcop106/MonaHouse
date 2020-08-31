@@ -5,8 +5,8 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  RefreshControl,
-} from "react-native";
+  RefreshControl, Alert,
+} from 'react-native'
 import { Text, Layout, Button, Icon } from "@ui-kitten/components";
 import { useRoute } from "@react-navigation/native";
 import GoOutInfo from "../../components/GoOutForm/GoOutInfo";
@@ -16,8 +16,8 @@ import { Context as RoomContext } from "../../context/RoomContext";
 import { sizes, color } from "~/config";
 import UserInfo from "~/components/UserInfo";
 import { getRoomById } from "~/api/MotelAPI";
-import Loading from "~/components/common/Loading";
-import Spinner from "react-native-loading-spinner-overlay";
+import Loading from '~/components/common/Loading';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const titleHeader = ["Thông tin phòng, ki ốt", "Thông tin thanh toán"];
 const RenderForm = () => {
@@ -26,22 +26,22 @@ const RenderForm = () => {
   );
   const { step, dataForm } = RoomGoOutState;
 
-  return (
-    <>
-      {step === 0 && (
-        <GoOutInfo
-          onChangeState={changeStateFormStep}
-          initialState={dataForm[step]}
-        />
-      )}
-      {step === 1 && (
-        <GoOutCheckout
-          onChangeState={changeStateFormStep}
-          initialState={dataForm[step]}
-        />
-      )}
-    </>
-  );
+    return (
+        <>
+            {step === 0 && (
+                <GoOutInfo
+                    onChangeState={changeStateFormStep}
+                    initialState={dataForm[step]}
+                />
+            )}
+            {step === 1 && (
+                <GoOutCheckout
+                    onChangeState={changeStateFormStep}
+                    initialState={dataForm[step]}
+                />
+            )}
+        </>
+    );
 };
 
 const RoomGoOutScreen = ({ navigation }) => {
@@ -116,6 +116,27 @@ const RoomGoOutScreen = ({ navigation }) => {
     }
     setRefreshing(false);
   };
+
+  const _onPressGotoPreview = () => {
+    try {
+      const { dataForm } = RoomGoOutState;
+      const { roomInfo } = dataForm[0];
+      // const waterDiff = parseInt(roomInfo.waterNumber) - parseInt(roomInfo.oldWaterNumber);
+      // const electricDiff =  parseInt(roomInfo.electrictNumber) - parseInt(roomInfo.oldElectrictNumber);
+      // electricDiff < 0 && Alert.alert('Oops !!', 'Số điện mới phải lớn hơn hoặc bằng số cũ');
+      // waterDiff < 0 && Alert.alert('Oops !!', 'Số nước mới phải lớn hơn hoặc bằng số cũ');
+      // if(waterDiff >= 0  && electricDiff >= 0) {
+      // }
+        changeStepForm(1, {
+          ...RoomGoOutState.dataForm,
+          roomId: route.params.roomId,
+        });
+
+    } catch (e) {
+      console.log('_onPressGotoPreview error:', e);
+    }
+  }
+
   return (
     <Layout style={styles.container} level="3">
       <ScrollView
@@ -140,12 +161,7 @@ const RoomGoOutScreen = ({ navigation }) => {
             <View style={styles.mainWrap}>
               {RoomGoOutState.step < 1 ? (
                 <Button
-                  onPress={() =>
-                    changeStepForm(1, {
-                      ...RoomGoOutState.dataForm,
-                      roomId: route.params.roomId,
-                    })
-                  }
+                  onPress={_onPressGotoPreview}
                   accessoryRight={
                     RoomGoOutState.isLoading
                       ? null
@@ -196,33 +212,33 @@ const RoomGoOutScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  mainWrap: {
-    paddingHorizontal: 15,
-    marginBottom: 15,
-  },
-  container: {
-    flex: 1,
-  },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  backButtonText: {
-    color: color.primary,
-    marginLeft: 5,
-    fontSize: 16,
-  },
-  section: {
-    paddingHorizontal: 15,
-    marginBottom: 30,
-    backgroundColor: color.whiteColor,
-    borderRadius: 8,
-  },
-  secTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 15,
-  },
+    mainWrap: {
+        paddingHorizontal: 15,
+        marginBottom: 15,
+    },
+    container: {
+        flex: 1,
+    },
+    backButton: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    backButtonText: {
+        color: color.primary,
+        marginLeft: 5,
+        fontSize: 16,
+    },
+    section: {
+        paddingHorizontal: 15,
+        marginBottom: 30,
+        backgroundColor: color.whiteColor,
+        borderRadius: 8,
+    },
+    secTitle: {
+        fontSize: 20,
+        fontWeight: "700",
+        marginBottom: 15,
+    },
 });
 
 export default RoomGoOutScreen;

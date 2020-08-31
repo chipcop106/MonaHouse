@@ -220,18 +220,18 @@ string imgwater
 */
 
 export const updateElectrictWater = async (params) => {
-  try {
-    const token = await getAccessToken();
-    let res = await instance.get(`${path}/writewaterelectrict`, {
-      params: {
-        ...params,
-        token,
-      },
-    });
-    return res.data;
-  } catch (error) {
-    return error.message;
-  }
+    try {
+        const token = await getAccessToken();
+        let res = await instance.get(`${path}/writewaterelectrict`, {
+            params: {
+                ...params,
+                token,
+            },
+        });
+        return res.data;
+    } catch (error) {
+        return error.message;
+    }
 };
 
 export const goOut = async (params) => {

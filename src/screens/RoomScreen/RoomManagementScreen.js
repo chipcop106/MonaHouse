@@ -56,11 +56,11 @@ const RoomManagementScreen = () => {
   const { listRooms, filterStateDefault, isLoading } = roomState;
   const { listMotels, listSortOptions } = motelState;
   const navigation = useNavigation();
-  const route = useRoute();
-  const isFocused = useIsFocused();
+  // const route = useRoute();
+  // const isFocused = useIsFocused();
   //local screen state
-  const [loading, setLoading] = useState(false);
-  const [refreshing, setrefreshing] = useState(false);
+  // const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [filterValue, setFilterValue] = useState("");
   const [modelFeeData, setmodelFeeData] = useState("");
 
@@ -129,18 +129,18 @@ const RoomManagementScreen = () => {
     }
     !refreshing && updateState("isLoading", false);
   };
-  const _onValueChange = (filterFormvalue) => {
-    console.log("_onValueChange", filterFormvalue);
-    setFilterValue(filterFormvalue);
-    loadData(filterFormvalue);
+  const _onValueChange = (filterFormValue) => {
+    console.log("_onValueChange", filterFormValue);
+    setFilterValue(filterFormValue);
+    loadData(filterFormValue);
   };
 
   const _onRefresh = async () => {
-    setrefreshing(true);
+    setRefreshing(true);
     try {
       await loadData(filterValue, true);
     } catch (error) {}
-    setrefreshing(false);
+    setRefreshing(false);
   };
 
   const bsFee = createRef();
@@ -167,95 +167,92 @@ const RoomManagementScreen = () => {
     console.log("_onModalizeAddMotelClose");
     loadData();
   };
-  return (
-    <>
+  return (<>
       <View style={styles.container}>
-        <FilterHeader
-          onValueChange={_onValueChange}
-          initialState={filterStateDefault}
-          advanceFilter={true}
-          loading={isLoading}
-        />
-        {!!isLoading && (
-          <View
-            style={{
-              flexGrow: 1,
-              alignItems: "center",
-              paddingTop: 30,
-              justifyContent: "center",
-            }}
-          >
-            <Loading />
-          </View>
-        )}
-        {!!!isLoading && (
-          <View style={styles.contentContainer}>
-            <List
-              refreshControl={
-                <RefreshControl
-                  onRefresh={_onRefresh}
-                  refreshing={refreshing}
-                />
-              }
-              keyExtractor={(room, index) => `${room.RoomID}-${index}`}
-              style={styles.listContainer}
-              contentContainerStyle={styles.contentCard}
-              data={listRooms}
-              renderItem={(room) => (
-                <RoomCard
-                  roomInfo={room}
-                  onPressaddFee={() => _onPressaddFee(room.item)}
-                />
-              )}
-            />
-            <TouchableOpacity
-              onPress={_pressAddNewRoom}
-              style={styles.addAction}
+          <FilterHeader
+            onValueChange={_onValueChange}
+            initialState={filterStateDefault}
+            advanceFilter={true}
+            loading={isLoading}
+          />
+          {!!isLoading && (
+            <View
+              style={{
+                  flexGrow: 1,
+                  alignItems: "center",
+                  paddingTop: 30,
+                  justifyContent: "center",
+              }}
             >
-              <LinearGradient
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                useAngle={true}
-                angle={45}
-                angleCenter={{ x: 0.5, y: 0.25 }}
-                colors={color.gradients.success}
-                style={{
-                  borderRadius: 50,
-                }}
-              >
-                <View style={styles.btnAdd}>
-                  <Icon
-                    name="plus"
-                    fill={color.whiteColor}
-                    style={styles.btnAddIcon}
-                  />
-                </View>
-              </LinearGradient>
-            </TouchableOpacity>
-            <Portal>
-              <Modalize
-                ref={bsFee}
-                closeOnOverlayTap={false}
-                adjustToContentHeight={true}
-                onOpen={_onModalizeFeeOpen}
-                onClose={_onModalizeFeeClose}
-              >
+                <Loading />
+            </View>
+          )}
+          {!!!isLoading && (
+            <View style={styles.contentContainer}>
+                <List
+                  refreshControl={
+                      <RefreshControl
+                        onRefresh={_onRefresh}
+                        refreshing={refreshing}
+                      />
+                  }
+                  keyExtractor={(room, index) => `${room.RoomID}-${index}`}
+                  style={styles.listContainer}
+                  contentContainerStyle={styles.contentCard}
+                  data={listRooms}
+                  renderItem={(room) => (
+                    <RoomCard
+                      roomInfo={room}
+                      onPressaddFee={() => _onPressaddFee(room.item)}
+                    />
+                  )}
+                />
+                <TouchableOpacity
+                  onPress={_pressAddNewRoom}
+                  style={styles.addAction}
                 >
-                <View style={styles.bottomSheetContent}>
-                  <AddFeeModal data={modelFeeData} onSuccess={_onSuccessFee} />
-                </View>
-              </Modalize>
-              <ModalizeAddMotel
-                modalTopOffset={0}
-                onClose={_onModalizeAddMotelClose}
-                ref={bsAddMotel}
-              />
-            </Portal>
-          </View>
-        )}
+                    <LinearGradient
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      useAngle={true}
+                      angle={45}
+                      angleCenter={{ x: 0.5, y: 0.25 }}
+                      colors={color.gradients.success}
+                      style={{
+                          borderRadius: 50,
+                      }}
+                    >
+                        <View style={styles.btnAdd}>
+                            <Icon
+                              name="plus"
+                              fill={color.whiteColor}
+                              style={styles.btnAddIcon}
+                            />
+                        </View>
+                    </LinearGradient>
+                </TouchableOpacity>
+                <Portal>
+                    <Modalize
+                      ref={bsFee}
+                      closeOnOverlayTap={false}
+                      adjustToContentHeight={true}
+                      onOpen={_onModalizeFeeOpen}
+                      onClose={_onModalizeFeeClose}
+                    >
+                        <View style={styles.bottomSheetContent}>
+                            <AddFeeModal data={modelFeeData} onSuccess={_onSuccessFee} />
+                        </View>
+                    </Modalize>
+                    <ModalizeAddMotel
+                      modalTopOffset={0}
+                      onClose={_onModalizeAddMotelClose}
+                      ref={bsAddMotel}
+                    />
+                </Portal>
+            </View>
+          )}
       </View>
-    </>
-  );
+  </>)
 };
 
 const styles = StyleSheet.create({

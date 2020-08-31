@@ -10,6 +10,7 @@ import IncludeElectrictWater from "~/components/IncludeElectrictWater";
 import { color, sizes } from "~/config";
 import gbStyle from "~/GlobalStyleSheet";
 import { getRoomById, updateWaterElectric } from "~/api/MotelAPI";
+import Moment from 'moment'
 const initialState = {
     electrictNumber: "",
     electrictImage: null,
@@ -72,10 +73,10 @@ const ElectrictCollectScreen = ({ route }, month) => {
             const res = await updateWaterElectric({
                 date: `${ renderZero(nowDate.getDate()) }/${ renderZero(nowDate.getMonth() + 1) }/${ nowDate.getFullYear() }`,
                 data: JSON.stringify([{RoomID: roomId,
-                    WaterNumber: waterNumber,
-                    WaterIMG: waterImage || 0, 
-                    ElectricNumber: electrictNumber,
-                    ElectricIMG: electrictImage || 0}])
+                    WaterNumber: waterNumber || 0,
+                    WaterIMG: waterImage?.ID || 0, 
+                    ElectricNumber: electrictNumber || 0,
+                    ElectricIMG: electrictImage?.ID || 0}])
 
             });
             
@@ -118,7 +119,7 @@ const ElectrictCollectScreen = ({ route }, month) => {
                                     : loading && "Đang tải..."}
                             </Text>
                             <Text style={gbStyle.mBottom15}>
-                                Điện nước tháng 04
+                                Điện nước tháng { Moment().format('MM') }
                             </Text>
                             <View style={styles.formWrap}>
                                 <View style={[styles.formRow, styles.halfCol]}>
@@ -150,6 +151,7 @@ const ElectrictCollectScreen = ({ route }, month) => {
                                     handleValueChange={onChangeValue}
                                     waterTitle="Nước tháng này"
                                     electrictTitle="Điện tháng này"
+                                    priceDisplay={0}
                                 />}
                             </View>
                         </View>

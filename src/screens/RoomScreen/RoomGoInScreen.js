@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   NativeModules,
-  Platform,
+  Alert,
 } from "react-native";
 import { Layout, Button, Icon } from "@ui-kitten/components";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -108,12 +108,18 @@ const RoomGoInScreen = ({ navigation, route }) => {
     const room = dataForm[0];
     const renter = dataForm[1];
     const checkout = dataForm[2];
+    const { actuallyReceived, totalDeposit, totalPrepay } = checkout;
     const serviceArr = [...room.services].map((service) => {
       return {
         Name: service.value.name,
         Price: service.value.price,
       };
     });
+    const pageNum =  parseInt(actuallyReceived || 0);
+    if(pageNum < parseInt(totalDeposit) + parseInt(totalPrepay)){
+      return  Alert.alert('Số thực nhận không được nhỏ hơn tổng thu');
+    }
+
     const imageArr = [
       {
         Name: "dong-ho-nuoc",
@@ -122,7 +128,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
             ? [
                 {
                   ID: room.roomInfo?.waterImage.ID,
-                  URL: room.roomInfo?.waterImage.UrlIMG,
+                  URL: room.roomInfo?.waterImage?.UrlIMG,
                 },
               ]
             : [
@@ -170,60 +176,93 @@ const RoomGoInScreen = ({ navigation, route }) => {
       },
     ];
     console.log("imageArr", imageArr);
-
+    try {
+      let datein = moment(room.dateGoIn).format("DD/MM/yyyy");
+      datein === "Invalid date" && (datein = moment().format("DD/MM/yyyy"));
+      const contractInfo =  ( () => {
+        const keymaps = ["days", "months", "years"];
+        const keymaps_Vi = ["ngày", "tháng", "năm"];
         try {
-            let datein = moment(room.dateGoIn).format("DD/MM/yyyy");
-            datein === "Invalid date" && ( datein = moment().format("DD/MM/yyyy") );
-            await addPeopleToRoom(
-                {
-                    roomid: parseInt(route.params?.roomId || 0),
-                    fullname: renter.fullName || "",
-                    phone: renter.phoneNumber || "",
-                    job: renter.job || "",
-                    cityid: parseInt(renter.cityLists[renter.provinceIndex.row].ID),
-                    objimg: JSON.stringify(imageArr),  // imageArr
-                    datein: datein,
-                    month: parseInt(room.timeRent),
-                    note: renter.note,
-                    totalprice: parseInt(checkout.actuallyReceived) || 0,
-                    notepaid: checkout.paymentNote,
-                    monthpaid: parseInt(checkout.prePaymentTimeIndex.row) + 1 || 1,
-                    priceroom: parseInt(room.roomPrice) || 0,
-                    electric: parseInt(room.roomInfo?.electrictNumber || 0),
-                    electricprice: parseInt(
-                        room.roomInfo?.electrictPrice || 0
-                    ),
-                    water: parseInt(room.roomInfo?.waterNumber || 0),
-                    waterprice: parseInt(room.roomInfo?.waterPrice || 0),
-                    monthdeposit: parseInt(checkout.preDepositTimeIndex.row) + 1,
-                    addonservice: serviceArr.length > 0 ? JSON.stringify(serviceArr.map(item => {
-                        return { ID: 0 , ...item }
-                    })) || '' : '',
-                    email: renter.email || "",
-                    quantity: parseInt(renter.numberPeople) || 1,
-                    relationship: parseInt(
-                        renter.relationLists[renter.relationshipIndex.row].id
-                    ),  
-                    // deposit: parseInt(checkout.totalDeposit),
-                    typeew: 1,
-                },
-                {
-                    navigation,
-                    signOut,
-                    resetState,
-                }
-            );
-            updateState_Room('isReload', true);
-        } catch (error) {
-            console.log('sendFormData error', error)
-            alert(JSON.stringify(error.message));
+          return  {
+            note: `${room.timeRent} ${keymaps_Vi[room.timeTypeIndex?.row ?? 0]}`,
+            date: moment().add(parseInt(room.timeRent), keymaps[room.timeTypeIndex?.row ?? 0]).format("DD/MM/YYYY")
+          }
+        } catch (e) {
+          return {
+            note: `${ 1 } ${keymaps_Vi[room.timeTypeIndex?.row ?? 2]}`,
+            date: moment().add(1, "years").format("DD/MM/YYYY")
+          }
         }
+      } )();
+      await addPeopleToRoom(
+        {
+          roomid: parseInt(route.params?.roomId || 0),
+          fullname: renter.fullName || "",
+          phone: renter.phoneNumber || "",
+          job: renter.job || "",
+          cityid: parseInt(renter.cityLists[renter.provinceIndex.row].ID),
+          objimg: JSON.stringify(imageArr), // imageArr
+          datein: datein,
+          // month: parseInt(room.timeRent),
+          note: renter.note,
+          totalprice: parseInt(checkout.actuallyReceived) || 0,
+          notepaid: checkout.paymentNote,
+          monthpaid: parseInt(checkout.prePaymentTimeIndex.row),
+          priceroom: parseInt(room.roomPrice) || 0,
+          electric: parseInt(room.roomInfo?.electrictNumber || 0),
+          electricprice: parseInt(room.roomInfo?.electrictPrice || 0),
+          water: parseInt(room.roomInfo?.waterNumber || 0),
+          waterprice: parseInt(room.roomInfo?.waterPrice || 0),
+          monthdeposit: parseInt(checkout.preDepositTimeIndex.row) + 1,
+          addonservice:
+            serviceArr.length > 0
+              ? JSON.stringify(
+                  serviceArr.map((item) => {
+                    return { ID: 0, ...item };
+                  })
+                ) || ""
+              : "",
+          email: renter.email || "",
+          quantity: parseInt(renter.numberPeople) || 1,
+          relationship: parseInt(
+            renter.relationLists[renter.relationshipIndex.row].id
+          ),
+          DateOutContract: contractInfo?.date ?? "",
+          contractNote: contractInfo?.note ?? "",
+          typeew: 1,
+        },
+        {
+          navigation,
+          signOut,
+          resetState,
+        }
+      );
+      updateState_Room("isReload", true);
+    } catch (error) {
+      console.log("sendFormData error", error);
+      alert(JSON.stringify(error.message));
+    }
 
     // navigation.pop();
     // resetState();
   };
 
   const changeNextStep = () => {
+    const { dataForm, step } = RoomGoinState;
+    const dataStep = dataForm[step];
+    switch ( step ) {
+      case 0:
+        console.log(dataStep);
+        const { roomPrice } = dataStep;
+        if(parseInt(roomPrice) <= 0)  return Alert.alert('Chưa có tiền thuê')
+        break;
+      case 1:
+        console.log(dataStep);
+        const { fullName,  phoneNumber} = dataStep;
+        if(fullName.trim().length <= 0)  return  Alert.alert('Họ và tên không được chừa trống');
+        if(phoneNumber.trim().length <= 0)  return  Alert.alert('Số điện thoại không được chừa trống');
+        break;
+    }
     changeStepForm(1);
   };
 

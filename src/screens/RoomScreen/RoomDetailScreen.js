@@ -39,8 +39,6 @@ const { height } = Dimensions.get("window");
 const initialState = {
   visible: false,
   lightboxUrl: null,
-  cityLists: [],
-  relationLists: [],
   roomInfo: null,
 };
 

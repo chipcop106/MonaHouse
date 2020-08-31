@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import { settings } from "~/config";
 import { updateWaterElectric } from "~/api/MotelAPI";
 import { goOut } from "~/api/RenterAPI";
+import Moment from "moment";
 const defaultState = {
   step: 0,
   isLoading: false,
@@ -198,11 +199,11 @@ const loadDataForm = (dispatch) => async (data) => {
           )}/${contractDate.getFullYear()}` || "",
         roomInfo: {
           ...room,
-          electrictNumber: electric.number || "",
+          electrictNumber: electric?.number ?? 0,
           electrictPrice: renter?.renter?.ElectrictPrice ?? 0,
           electrictPriceInclude: "",
           electrictImage: electric.image_thumbnails || "",
-          waterNumber: water.number || "",
+          waterNumber: water?.number ?? 0,
           waterPrice: renter?.renter?.WaterPrice ?? 0,
           waterPriceInclude: "",
           waterImage: water.image_thumbnails || "",
@@ -229,6 +230,21 @@ const loadDataForm = (dispatch) => async (data) => {
 const loadDataBill = (dispatch) => async (data) => {
   try {
     console.log("loadDataBill goOutReducer", data);
+    const priceByDate = (()=>{
+      let rs = "";
+      const endOfMonth = Moment().endOf("month").format("DD");
+      try {
+        rs = Math.round(data?.PriceRoom / parseInt(endOfMonth));
+        rs = Math.ceil(rs * 0.001) * 1000;
+        rs = data?.Days * rs;
+
+        return  rs
+      } catch (e) {
+          console.log("priceByDate error:" , e);
+      }
+      return rs
+    })();
+
     const dataBill = [
       {
         electricDiff: data?.ElectricNumber ?? 0,
@@ -238,7 +254,7 @@ const loadDataBill = (dispatch) => async (data) => {
         dateDiff: data?.Days ?? 0,
         priceAddon: data?.PriceAddon ?? 0,
         priceRoomBase: data?.PriceRoom ?? 0,
-        priceRoomByDate: data?.PriceMustCollect ?? 0,
+        priceRoomByDate: priceByDate ?? 0,
         totalDebt: data?.TotalDebt ?? 0,
         incurredFee: data?.FeeIncurred ?? 0,
         deposit: data?.Deposit,

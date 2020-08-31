@@ -49,14 +49,14 @@ const uploadIMG = async file => {
 }
 
 function IncludeElectrictWater({
-                                 index,
-                                 waterTitle,
-                                 electrictTitle,
-                                 priceDisplay,
-                                 handleValueChange,
-                                 initialState,
-                                 roomData,
-                               }) {
+  index,
+  waterTitle,
+  electrictTitle,
+  priceDisplay,
+  handleValueChange,
+  initialState,
+  roomData,
+}) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const onChange = (key, value) => {
@@ -112,7 +112,7 @@ function IncludeElectrictWater({
     }
   }
   const _onPressGetPhotos = async () => {
-    refRBSheet.current.close();
+    refRBSheet.current?.close();
     await new Promise(a => setTimeout(a, 250));
     try {
       const options = {
