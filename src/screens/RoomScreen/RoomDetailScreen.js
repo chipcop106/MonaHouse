@@ -1,50 +1,44 @@
-import React, {
-  useContext,
-  useReducer,
-  useEffect,
-  useState,
-  useRef,
-} from "react";
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import {
+  Alert,
+  Dimensions,
+  Image,
+  RefreshControl,
+  ScrollView,
   StyleSheet,
   View,
-  Image,
-  Dimensions,
-  ScrollView,
-  Alert,
-  RefreshControl,
-} from "react-native";
+} from 'react-native';
 import {
+  Button,
   Card,
   Icon,
   Modal,
-  Text,
-  List,
   Spinner,
-  Button,
-} from "@ui-kitten/components";
-import UserInfo from "~/components/UserInfo";
-import { color, settings } from "~/config";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import gbStyle from "~/GlobalStyleSheet";
-import NavLink from "~/components/common/NavLink";
-import { getRoomById } from "~/api/MotelAPI";
-import { currencyFormat as cf } from "~/utils";
-import { Context as RoomContext } from "~/context/RoomContext";
-import Moment from "moment";
-import ProgressiveImage from "~/components/common/ProgressiveImage";
-import { useScrollToTop } from "@react-navigation/native";
-const { height } = Dimensions.get("window");
+  Text,
+} from '@ui-kitten/components';
+import UserInfo from '~/components/UserInfo';
+import { color } from '~/config';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import gbStyle from '~/GlobalStyleSheet';
+import NavLink from '~/components/common/NavLink';
+import { getRoomById } from '~/api/MotelAPI';
+import { currencyFormat as cf } from '~/utils';
+import { Context as RoomContext } from '~/context/RoomContext';
+import Moment from 'moment';
+import ProgressiveImage from '~/components/common/ProgressiveImage';
+
+const { height } = Dimensions.get('window');
 
 const initialState = {
   visible: false,
   lightboxUrl: null,
   roomInfo: null,
+  isLoading: true,
 };
 
 const reducer = (prevstate, { type, payload }) => {
   switch (type) {
-    case "STATE_CHANGE": {
+    case 'STATE_CHANGE': {
       return {
         ...prevstate,
         [payload.key]: payload.value,
@@ -62,41 +56,43 @@ const RoomDetailScreen = ({ navigation, route }) => {
   const { roomInfo } = state;
   const [refreshing, setRefreshing] = useState(false);
   const updateState = (key, value) => {
-    dispatch({ type: "STATE_CHANGE", payload: { key, value } });
+    dispatch({ type: 'STATE_CHANGE', payload: { key, value } });
   };
 
   const showLightBoxModal = (url) => {
     if (!!url) {
-      updateState("lightboxUrl", url);
-      updateState("visible", true);
+      updateState('lightboxUrl', url);
+      updateState('visible', true);
     }
   };
 
   const loadRoomInfo = async () => {
+    updateState('isLoading', true);
     try {
       const res = await getRoomById({ roomid: roomId });
       navigation.setOptions({
-        headerTitle: res.Data?.room.NameRoom ?? "Chi tiết phòng null",
+        headerTitle: res.Data?.room.NameRoom ?? 'Chi tiết phòng null',
       });
       dispatch({
-        type: "STATE_CHANGE",
-        payload: { key: "roomInfo", value: res.Data },
+        type: 'STATE_CHANGE',
+        payload: { key: 'roomInfo', value: res.Data },
       });
     } catch (err) {
       alert(err.message);
     }
+    updateState('isLoading', false);
   };
 
   const _deleteRoom = () => {
-    Alert.alert("Cảnh báo !!", "Bạn có chắc muốn xóa phòng này ??", [
+    Alert.alert('Cảnh báo !!', 'Bạn có chắc muốn xóa phòng này ??', [
       {
-        text: "Xóa phòng này  ",
+        text: 'Xóa phòng này  ',
         onPress: () => {
           deleteRoom({ roomid: roomId }, { navigation });
         },
       },
       {
-        text: "Hủy bỏ",
+        text: 'Hủy bỏ',
         onPress: () => {
           return;
         },
@@ -120,16 +116,48 @@ const RoomDetailScreen = ({ navigation, route }) => {
   useEffect(() => {
     loadRoomInfo();
   }, []);
+  if (state.isLoading)
+    return (
+      <View
+        style={{
+          flexGrow: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Spinner size="giant" status="primary" />
+      </View>
+    );
+  const { renter, dept, electric, water, room } = roomInfo;
+  let PriceRoom, PriceWater, PriceElectric;
+  if (renter.renter.ID === 0) {
+    PriceRoom = room?.PriceRoom ?? 0;
+    PriceWater = room?.PriceWater ?? 0;
+    PriceElectric = room?.PriceElectric ?? 0;
+  } else {
+    PriceRoom = renter.renter?.PriceRent ?? 0;
+    PriceWater = renter.renter?.WaterPrice ?? 0;
+    PriceElectric = renter.renter?.ElectrictPrice ?? 0;
+  }
+
+  const {
+    number: numberWater,
+    image: imageWater,
+    image_thumbnails: image_thumbnailsWater,
+  } = water;
+  const {
+    number: numberElectric,
+    image: imageElectric,
+    image_thumbnails: image_thumbnailsElectric,
+  } = electric;
   return (
     <>
-      {!roomInfo ? (
+      {state.isLoading ? (
         <View
           style={{
             flexGrow: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
           <Spinner size="giant" status="primary" />
         </View>
       ) : (
@@ -137,34 +165,30 @@ const RoomDetailScreen = ({ navigation, route }) => {
           <ScrollView
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={_onRefresh} />
-            }
-          >
+            }>
             <View style={styles.container}>
               <View style={styles.secWrap}>
                 <View
                   style={{
                     ...styles.flexRow,
-                    alignItems: "center",
+                    alignItems: 'center',
                     marginBottom: 15,
-                    justifyContent: "space-between",
-                  }}
-                >
+                    justifyContent: 'space-between',
+                  }}>
                   <Text
                     style={{
                       ...styles.secTitle,
                       marginBottom: 0,
-                    }}
-                  >
+                    }}>
                     Thông tin phòng
                   </Text>
                   <TouchableOpacity
                     onPress={() =>
-                      navigation.navigate("EditRoom", {
+                      navigation.navigate('EditRoom', {
                         roomInfo,
                         onGoBack: () => loadRoomInfo(),
                       })
-                    }
-                  >
+                    }>
                     <View style={styles.flexRow}>
                       <Icon
                         name="edit-2"
@@ -192,37 +216,32 @@ const RoomDetailScreen = ({ navigation, route }) => {
                         borderBottomColor: color.grayColor,
                         paddingBottom: 15,
                       },
-                    ]}
-                  >
+                    ]}>
                     <View style={styles.info}>
                       <Text style={styles.labelInfo}>Giá phòng</Text>
-                      <Text style={styles.value}>
-                        {cf(roomInfo.room.PriceRoom)}
-                      </Text>
+                      <Text style={styles.value}>{cf(PriceRoom || 0)}</Text>
                     </View>
                     <View style={[styles.info, { flexGrow: 1 }]}>
                       <Text style={styles.labelInfo}>Giá điện / KW</Text>
-                      <Text style={styles.value}>
-                        {cf(roomInfo.room.PriceElectric)}
-                      </Text>
+                      <Text style={styles.value}>{cf(PriceElectric || 0)}</Text>
                     </View>
                     <View style={[styles.info, { borderRightWidth: 0 }]}>
                       <Text style={styles.labelInfo}>Giá nước / m3</Text>
-                      <Text style={styles.value}>
-                        {cf(roomInfo.room.PriceWater)}
-                      </Text>
+                      <Text style={styles.value}>{cf(PriceWater || 0)}</Text>
                     </View>
                   </View>
                   <View style={[gbStyle.px15, gbStyle.mTop15]}>
-                    {!!roomInfo.renter?.renter?.ID && (
+                    {!!renter?.renter?.ID && (
                       <>
                         <View style={styles.rowInfo}>
                           <Text style={styles.label}>Ngày dọn vào</Text>
                           <Text style={styles.value}>
                             {`${
-                              Moment(roomInfo.renter.renter.Datein).format(
-                                "DD/MM/YYYY"
-                              ) || `Chưa có`
+                              renter?.renter?.Datein
+                                ? Moment(renter?.renter?.Datein).format(
+                                    'DD/MM/YYYY'
+                                  )
+                                : `Chưa có`
                             }`}
                           </Text>
                         </View>
@@ -231,128 +250,74 @@ const RoomDetailScreen = ({ navigation, route }) => {
                           <Text
                             style={[
                               styles.value,
-                              roomInfo?.dept > 0
+                              dept > 0
                                 ? {
                                     color: color.redColor,
                                   }
                                 : {
                                     color: color.greenColor,
                                   },
-                            ]}
-                          >
-                            {roomInfo?.dept > 0 && "nợ"}
-                            {roomInfo?.dept < 0 && "dư"} {cf(roomInfo?.dept)}
+                            ]}>
+                            {dept > 0 && 'nợ'}
+                            {dept < 0 && 'dư'} {cf(dept)}
                           </Text>
                         </View>
                       </>
                     )}
 
                     <View style={styles.rowInfo}>
-                      <Text style={styles.label}>Số Điện</Text>
-                      <TouchableOpacity
-                        style={styles.flexRow}
-                        onPress={() =>
-                          showLightBoxModal(roomInfo?.electric.image)
-                        }
-                      >
-                        <Icon
-                          name="image-outline"
-                          fill={color.primary}
-                          style={{
-                            width: 18,
-                            height: 18,
-                            marginRight: 3,
-                          }}
-                        />
-                        <Text
-                          style={[
-                            styles.value,
-                            {
-                              color: color.primary,
-                            },
-                          ]}
-                        >
-                          {cf(roomInfo?.electric.number || 0)}
-                        </Text>
-                      </TouchableOpacity>
+                      <Text style={styles.label}>Số điện</Text>
+                      <Text style={[styles.value]}>
+                        {numberElectric || '0'}
+                      </Text>
                     </View>
-                    <View style={styles.rowInfo}>
-                      <Text style={styles.label}>Số Nước</Text>
-                      <TouchableOpacity
-                        style={styles.flexRow}
-                        onPress={() => showLightBoxModal(roomInfo?.water.image)}
-                      >
-                        <Icon
-                          name="image-outline"
-                          fill={color.primary}
-                          style={{
-                            width: 18,
-                            height: 18,
-                            marginRight: 3,
-                          }}
-                        />
-                        <Text
-                          style={[
-                            styles.value,
-                            {
-                              color: color.primary,
-                            },
-                          ]}
-                        >
-                          {cf(roomInfo?.water.number || 0)}
-                        </Text>
-                      </TouchableOpacity>
+                    <View style={{ ...styles.rowInfo, marginBottom: 0 }}>
+                      <Text style={styles.label}>Số nước</Text>
+                      <Text style={[styles.value]}>{numberWater || '0'}</Text>
                     </View>
                     {!!roomInfo.renter?.renter?.ID && (
                       <View>
-                        <Text style={styles.label}>Ảnh giấy tờ</Text>
-                        <List
-                          data={roomInfo.renter.renterimage}
-                          style={styles.list}
-                          keyExtractor={(item, index) => `${item.ID}`}
-                          horizontal
-                          showsHorizontalScrollIndicator={false}
-                          renderItem={({ item }) => {
-                            const url = item.LinkIMG;
-                            return (
-                              <TouchableOpacity
-                                onPress={() => showLightBoxModal(url)}
-                              >
-                                <ProgressiveImage
-                                  source={{
-                                    uri: url,
-                                  }}
-                                  style={[styles.imagePreview]}
-                                />
-                              </TouchableOpacity>
-                            );
-                          }}
-                          ListEmptyComponent={
-                            <Text
-                              style={{
-                                color: color.redColor,
-                                textAlign: "center",
-                                marginBottom: 0,
-                              }}
-                            >
-                              Không có ảnh giấy tờ
-                            </Text>
-                          }
-                        />
+                        {(!!imageWater || !!imageElectric) && (
+                          <Text style={{ ...styles.label, marginTop: 15 }}>
+                            Ảnh điện nước
+                          </Text>
+                        )}
+                        <View style={styles.list}>
+                          {!!imageElectric && (
+                            <TouchableOpacity
+                              onPress={() => showLightBoxModal(imageElectric)}>
+                              <ProgressiveImage
+                                source={{
+                                  uri: image_thumbnailsElectric,
+                                }}
+                                style={[styles.imagePreview]}
+                              />
+                            </TouchableOpacity>
+                          )}
+                          {!!imageWater && (
+                            <TouchableOpacity
+                              onPress={() => showLightBoxModal(imageWater)}>
+                              <ProgressiveImage
+                                source={{
+                                  uri: image_thumbnailsWater,
+                                }}
+                                style={[styles.imagePreview]}
+                              />
+                            </TouchableOpacity>
+                          )}
+                        </View>
                       </View>
                     )}
                   </View>
                 </View>
                 <Text style={styles.secTitle}>Dịch vụ phòng</Text>
                 <View
-                  style={{ ...styles.sec, paddingBottom: 0, marginBottom: 15 }}
-                >
-                  {roomInfo.addons?.length > 0 ? (
-                    roomInfo.addons?.map((item) => (
+                  style={{ ...styles.sec, paddingBottom: 0, marginBottom: 15 }}>
+                  {roomInfo.addons.length > 0 ? (
+                    roomInfo.addons.map((item) => (
                       <View
                         style={{ ...styles.rowInfo, marginBottom: 15 }}
-                        key={item.ID}
-                      >
+                        key={item.ID}>
                         <Text style={styles.label}>{item.AddOnName}</Text>
                         <Text style={styles.value}>{cf(item.Price)}</Text>
                       </View>
@@ -361,45 +326,40 @@ const RoomDetailScreen = ({ navigation, route }) => {
                     <Text
                       style={{
                         color: color.redColor,
-                        textAlign: "center",
+                        textAlign: 'center',
                         marginBottom: 15,
-                      }}
-                    >
+                      }}>
                       Không có dịch vụ nào
                     </Text>
                   )}
                 </View>
 
-                {!!roomInfo.renter?.renter?.ID && (
+                {!!roomInfo.renter.renter.ID && (
                   <View
                     style={{
                       ...styles.sec,
-                      backgroundColor: "transparent",
+                      backgroundColor: 'transparent',
                       paddingHorizontal: 0,
-                    }}
-                  >
+                    }}>
                     <View
                       style={{
                         ...styles.flexRow,
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
-                    >
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}>
                       <Text
                         style={{
                           ...styles.secTitle,
                           marginBottom: 0,
-                        }}
-                      >
+                        }}>
                         Người thuê
                       </Text>
                       <TouchableOpacity
                         onPress={() =>
-                          navigation.navigate("RenterDetail", {
+                          navigation.navigate('RenterDetail', {
                             roomInfo,
                           })
-                        }
-                      >
+                        }>
                         <View style={styles.flexRow}>
                           <Icon
                             name="edit-2"
@@ -422,7 +382,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                         name={
                           roomInfo.renter.renter.FullName
                             ? roomInfo.renter.renter.FullName
-                            : "Chưa có khách"
+                            : 'Chưa có khách'
                         }
                         phone={roomInfo.renter.renter.Phone}
                         styleCard={styles.peopleCard}
@@ -435,8 +395,8 @@ const RoomDetailScreen = ({ navigation, route }) => {
                           <UserInfo
                             key={`${index}`}
                             avatar={null}
-                            phone={people?.Phone ?? ""}
-                            name={people?.FullName ?? "Chưa có tên"}
+                            phone={people?.Phone ?? ''}
+                            name={people?.FullName ?? 'Chưa có tên'}
                             styleContainer={styles.peopleContainer}
                             styleCard={styles.peopleCard}
                           />
@@ -449,7 +409,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                     containerStyle={styles.navLink}
                     title="Lịch sử thuê phòng"
                     icon={{
-                      name: "people-outline",
+                      name: 'people-outline',
                       color: color.primary,
                     }}
                     routeName="RentHistory"
@@ -458,7 +418,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                     containerStyle={styles.navLink}
                     title="Lịch sử điện nước"
                     icon={{
-                      name: "droplet-outline",
+                      name: 'droplet-outline',
                       color: color.primary,
                     }}
                     routeName="DetailElectrictHistory"
@@ -467,7 +427,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                     containerStyle={styles.navLink}
                     title="Lịch sử thanh toán"
                     icon={{
-                      name: "credit-card-outline",
+                      name: 'credit-card-outline',
                       color: color.primary,
                     }}
                     routeName="DetailMoneyHistory"
@@ -482,9 +442,8 @@ const RoomDetailScreen = ({ navigation, route }) => {
           <Modal
             visible={state.visible}
             backdropStyle={styles.backdrop}
-            onBackdropPress={() => updateState("visible", false)}
-            style={styles.modal}
-          >
+            onBackdropPress={() => updateState('visible', false)}
+            style={styles.modal}>
             <Card disabled={true}>
               <View style={styles.slide}>
                 <Image
@@ -509,16 +468,16 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   wrap: {
-    backgroundColor: "red",
+    backgroundColor: 'red',
   },
   wrapper: {},
   backdrop: {
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   modal: {
     padding: 10,
     height: height / 3,
-    width: "100%",
+    width: '100%',
   },
 
   imageBox: {
@@ -526,28 +485,28 @@ const styles = StyleSheet.create({
     zIndex: -1,
   },
   slide: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   secWrap: {},
   sec: {
     padding: 15,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: color.grayColor,
     borderRadius: 8,
     marginBottom: 30,
   },
   rowInfo: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 15,
-    alignItems: "center",
+    alignItems: 'center',
   },
   secTitle: {
     color: color.darkColor,
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 15,
   },
   label: {
@@ -559,15 +518,15 @@ const styles = StyleSheet.create({
   },
   value: {
     color: color.blackColor,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   flexRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   info: {
     paddingHorizontal: 15,
-    alignItems: "center",
+    alignItems: 'center',
     borderRightWidth: 1,
     borderRightColor: color.grayColor,
   },
@@ -580,11 +539,11 @@ const styles = StyleSheet.create({
   },
   list: {
     marginTop: 10,
-    paddingVertical: 10,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
   },
   navLink: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     paddingLeft: 15,
     borderRadius: 8,
     marginBottom: 15,
@@ -600,10 +559,10 @@ const styles = StyleSheet.create({
   },
   peopleName: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   peopleCard: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 8,
     marginTop: 0,
   },
