@@ -8,7 +8,7 @@ import React, {
   useLayoutEffect,
   createContext,
   memo,
-} from "react";
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -16,12 +16,12 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
-} from "react-native";
+} from 'react-native';
 import {
   useNavigation,
   useRoute,
   useIsFocused,
-} from "@react-navigation/native";
+} from '@react-navigation/native';
 import {
   Icon,
   Input,
@@ -29,23 +29,23 @@ import {
   IndexPath,
   Text,
   Modal,
-} from "@ui-kitten/components";
+} from '@ui-kitten/components';
 
-import RoomCard from "~/components/RoomCard";
-import { settings, color, sizes } from "~/config";
-import { Modalize } from "react-native-modalize";
-import { Portal } from "react-native-portalize";
-import LinearGradient from "react-native-linear-gradient";
+import RoomCard from '~/components/RoomCard';
+import { settings, color, sizes } from '~/config';
+import { Modalize } from 'react-native-modalize';
+import { Portal } from 'react-native-portalize';
+import LinearGradient from 'react-native-linear-gradient';
 
-import AddFeeModal from "~/components/AddFeeModal";
-import FilterHeader from "./FilterHeader";
-import { Context as RoomContext } from "~/context/RoomContext";
-import { Context as MotelContext } from "~/context/MotelContext";
-import { Context as AuthContext } from "~/context/AuthContext";
-import Loading from "~/components/common/Loading";
-import ModalizeAddMotel from "~/components/ModalizeAddMotel";
+import AddFeeModal from '~/components/AddFeeModal';
+import FilterHeader from './FilterHeader';
+import { Context as RoomContext } from '~/context/RoomContext';
+import { Context as MotelContext } from '~/context/MotelContext';
+import { Context as AuthContext } from '~/context/AuthContext';
+import Loading from '~/components/common/Loading';
+import ModalizeAddMotel from '~/components/ModalizeAddMotel';
 
-import { create_UUID } from "~/utils";
+import { create_UUID } from '~/utils';
 
 const RoomManagementScreen = () => {
   const { signOut } = useContext(AuthContext);
@@ -61,33 +61,33 @@ const RoomManagementScreen = () => {
   //local screen state
   // const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [filterValue, setFilterValue] = useState("");
-  const [modelFeeData, setmodelFeeData] = useState("");
+  const [filterValue, setFilterValue] = useState('');
+  const [modelFeeData, setmodelFeeData] = useState('');
 
   useLayoutEffect(() => {
-    console.log("roomState.isReload", roomState.isReload);
+    console.log('roomState.isReload', roomState.isReload);
     if (roomState.isReload) {
       loadData(filterValue);
-      updateState("isReload", false);
+      updateState('isReload', false);
     }
     return () => {};
   }, [roomState.isReload]);
   const _pressAddNewRoom = () => {
     if (Array.isArray(listMotels) && listMotels.length > 0) {
-      navigation.navigate("AddNewRoom", {
+      navigation.navigate('AddNewRoom', {
         onGoBack: () => {
-          console.log("loadData(filterValue)");
+          console.log('loadData(filterValue)');
           loadData(filterValue);
         },
       });
     } else {
-      Alert.alert("Thông báo", "Bạn chưa có nhà trọ", [
+      Alert.alert('Thông báo', 'Bạn chưa có nhà trọ', [
         {
-          text: "Trở lại",
+          text: 'Trở lại',
           onPress: () => {},
         },
         {
-          text: "Tạo nhà Trọ",
+          text: 'Tạo nhà Trọ',
           onPress: () => {
             // navigation.navigate('AddNewMotelMutiple', {});
             // alert('chức năng trong quá trình phát triển')
@@ -98,9 +98,9 @@ const RoomManagementScreen = () => {
     }
   };
   const loadData = async (filterList, refreshing = false) => {
-    console.log("filterList", filterList);
-    console.log("is refreshing", refreshing);
-    !refreshing && updateState("isLoading", true);
+    console.log('filterList', filterList);
+    console.log('is refreshing', refreshing);
+    !refreshing && updateState('isLoading', true);
     const {
       selectedMonthIndex,
       selectedMotelIndex,
@@ -110,7 +110,7 @@ const RoomManagementScreen = () => {
       selectedMonthIndex: 0,
       selectedMotelIndex: 0,
       selectedYearIndex: 0,
-      searchValue: "",
+      searchValue: '',
     };
 
     try {
@@ -127,10 +127,10 @@ const RoomManagementScreen = () => {
     } catch (error) {
       console.log(error);
     }
-    !refreshing && updateState("isLoading", false);
+    !refreshing && updateState('isLoading', false);
   };
   const _onValueChange = (filterFormValue) => {
-    console.log("_onValueChange", filterFormValue);
+    console.log('_onValueChange', filterFormValue);
     setFilterValue(filterFormValue);
     loadData(filterFormValue);
   };
@@ -160,99 +160,99 @@ const RoomManagementScreen = () => {
   const _onModalizeFeeOpen = () => {};
   const _onModalizeFeeClose = () => {
     setTimeout(() => {
-      setmodelFeeData("");
+      setmodelFeeData('');
     }, 10);
   };
   const _onModalizeAddMotelClose = () => {
-    console.log("_onModalizeAddMotelClose");
+    console.log('_onModalizeAddMotelClose');
     loadData();
   };
-  return (<>
+
+  return (
+    <>
       <View style={styles.container}>
-          <FilterHeader
-            onValueChange={_onValueChange}
-            initialState={filterStateDefault}
-            advanceFilter={true}
-            loading={isLoading}
-          />
-          {!!isLoading && (
-            <View
-              style={{
-                  flexGrow: 1,
-                  alignItems: "center",
-                  paddingTop: 30,
-                  justifyContent: "center",
-              }}
-            >
-                <Loading />
-            </View>
-          )}
-          {!!!isLoading && (
-            <View style={styles.contentContainer}>
-                <List
-                  refreshControl={
-                      <RefreshControl
-                        onRefresh={_onRefresh}
-                        refreshing={refreshing}
-                      />
-                  }
-                  keyExtractor={(room, index) => `${room.RoomID}-${index}`}
-                  style={styles.listContainer}
-                  contentContainerStyle={styles.contentCard}
-                  data={listRooms}
-                  renderItem={(room) => (
-                    <RoomCard
-                      roomInfo={room}
-                      onPressaddFee={() => _onPressaddFee(room.item)}
-                    />
-                  )}
+        <FilterHeader
+          onValueChange={_onValueChange}
+          initialState={filterStateDefault}
+          advanceFilter={true}
+          loading={isLoading}
+        />
+        {!!isLoading && (
+          <View
+            style={{
+              flexGrow: 1,
+              alignItems: 'center',
+              paddingTop: 30,
+              justifyContent: 'center',
+            }}>
+            <Loading />
+          </View>
+        )}
+        {!!!isLoading && (
+          <View style={styles.contentContainer}>
+            <List
+              refreshControl={
+                <RefreshControl
+                  onRefresh={_onRefresh}
+                  refreshing={refreshing}
                 />
-                <TouchableOpacity
-                  onPress={_pressAddNewRoom}
-                  style={styles.addAction}
-                >
-                    <LinearGradient
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
-                      useAngle={true}
-                      angle={45}
-                      angleCenter={{ x: 0.5, y: 0.25 }}
-                      colors={color.gradients.success}
-                      style={{
-                          borderRadius: 50,
-                      }}
-                    >
-                        <View style={styles.btnAdd}>
-                            <Icon
-                              name="plus"
-                              fill={color.whiteColor}
-                              style={styles.btnAddIcon}
-                            />
-                        </View>
-                    </LinearGradient>
-                </TouchableOpacity>
-                <Portal>
-                    <Modalize
-                      ref={bsFee}
-                      closeOnOverlayTap={false}
-                      adjustToContentHeight={true}
-                      onOpen={_onModalizeFeeOpen}
-                      onClose={_onModalizeFeeClose}
-                    >
-                        <View style={styles.bottomSheetContent}>
-                            <AddFeeModal data={modelFeeData} onSuccess={_onSuccessFee} />
-                        </View>
-                    </Modalize>
-                    <ModalizeAddMotel
-                      modalTopOffset={0}
-                      onClose={_onModalizeAddMotelClose}
-                      ref={bsAddMotel}
-                    />
-                </Portal>
-            </View>
-          )}
+              }
+              keyExtractor={(room, index) => `${room.RoomID}-${index}`}
+              style={styles.listContainer}
+              contentContainerStyle={styles.contentCard}
+              data={listRooms}
+              extraData={listRooms}
+              renderItem={(room) => (
+                <RoomCard
+                  roomInfo={room}
+                  onPressaddFee={() => _onPressaddFee(room.item)}
+                />
+              )}
+            />
+            <TouchableOpacity
+              onPress={_pressAddNewRoom}
+              style={styles.addAction}>
+              <LinearGradient
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                useAngle={true}
+                angle={45}
+                angleCenter={{ x: 0.5, y: 0.25 }}
+                colors={color.gradients.success}
+                style={{
+                  borderRadius: 50,
+                }}>
+                <View style={styles.btnAdd}>
+                  <Icon
+                    name="plus"
+                    fill={color.whiteColor}
+                    style={styles.btnAddIcon}
+                  />
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+            <Portal>
+              <Modalize
+                ref={bsFee}
+                closeOnOverlayTap={false}
+                adjustToContentHeight={true}
+                onOpen={_onModalizeFeeOpen}
+                onClose={_onModalizeFeeClose}>
+                <View style={styles.bottomSheetContent}>
+                  <AddFeeModal data={modelFeeData} onSuccess={_onSuccessFee} />
+                </View>
+              </Modalize>
+              <ModalizeAddMotel
+                modalTopOffset={0}
+                onClose={_onModalizeAddMotelClose}
+                ref={bsAddMotel}
+              />
+            </Portal>
+          </View>
+        )}
       </View>
-  </>)
+    </>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -280,8 +280,8 @@ const styles = StyleSheet.create({
     paddingBottom: 60,
   },
   addAction: {
-    shadowColor: "#000",
-    position: "absolute",
+    shadowColor: '#000',
+    position: 'absolute',
     right: 15,
     bottom: 15,
     shadowOffset: {
@@ -294,8 +294,8 @@ const styles = StyleSheet.create({
     borderRadius: 60 / 2,
   },
   btnAdd: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     width: 60,
     height: 60,
   },
