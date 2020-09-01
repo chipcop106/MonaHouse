@@ -56,19 +56,21 @@ export const addRenterOnRoom = async (params) => {
   return result;
 };
 
-/*Cập nhật thông tin người thuê
-
-string token, 
-int id, 
-string phone, 
-string fullname, 
-int quantity, 
-int relationship, 
-int cityid, 
-string img, 
-string note
-*/
-
+/**
+ * 
+ * @param string token
+ int renterid
+ string phone
+ string fullname
+ int quantity
+ int relationship
+ int cityid
+ int avatarid
+ string note
+ string job
+ string otherRenter
+ * @returns Object
+ */
 export const updateRenterOnRoom = async (params) => {
   let result;
   try {
@@ -150,8 +152,8 @@ export const uploadRenterImage = async (params) => {
     if (!!params) {
       !Array.isArray(params) && (params = [params]);
       [...params].map((image) => {
-        !!image.filename?.includes('.HEIC') && ( 
-          image.filename = `${image.filename.split(".")[0]}.JPG` )
+        !!image.filename?.includes(".HEIC") &&
+          (image.filename = `${image.filename.split(".")[0]}.JPG`);
         const file = {
           uri: image.path,
           name: image.filename || `${create_UUID()}.jpg`,

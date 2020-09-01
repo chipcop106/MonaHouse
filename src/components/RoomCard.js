@@ -1,17 +1,17 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState, memo } from "react";
-import { StyleSheet, View, Text, TouchableOpacity,  } from "react-native";
+import React, { memo, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import {
-  Card,
-  OverflowMenu,
-  MenuItem,
-  Icon,
   Avatar,
   Button,
+  Card,
+  Icon,
+  MenuItem,
+  OverflowMenu,
 } from "@ui-kitten/components";
 import LinearGradient from "react-native-linear-gradient";
-import { color, shadowStyle } from "../config";
+import { color, shadowStyle } from "~/config";
 import { useNavigation } from "@react-navigation/native";
 import { currencyFormat } from "~/utils";
 
@@ -104,21 +104,20 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
 const renderItemFooter = (footerProps, roomInfo, navigation) => {
   const { item } = roomInfo;
 
+  const { StatusRoomID, RoomID } = item;
   return (
     <View style={styles.footerAction}>
       <Button
-        onPress={() => navigation.navigate("RoomGoIn", { roomId: item.RoomID })}
+        onPress={() => navigation.navigate("RoomGoIn", { roomId: RoomID })}
         style={styles.actionButton}
         appearance="outline"
         status="primary"
         size="small"
-        disabled={item.StatusRoomID !== 1}
+        disabled={StatusRoomID !== 1}
         accessoryLeft={() => (
           <Icon
             name="log-in-outline"
-            fill={
-              item.StatusRoomID !== 1 ? color.disabledTextColor : color.primary
-            }
+            fill={StatusRoomID !== 1 ? color.disabledTextColor : color.primary}
             style={styles.iconButton}
           />
         )}
@@ -127,20 +126,16 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
       </Button>
 
       <Button
-        onPress={() =>
-          navigation.navigate("RoomGoOut", { roomId: item.RoomID })
-        }
+        onPress={() => navigation.navigate("RoomGoOut", { roomId: RoomID })}
         style={styles.actionButton}
         appearance="outline"
         status="danger"
         size="small"
-        disabled={item.StatusRoomID === 1}
+        disabled={StatusRoomID === 1}
         accessoryLeft={() => (
           <Icon
             name="log-out-outline"
-            fill={
-              item.StatusRoomID === 1 ? color.disabledTextColor : color.redColor
-            }
+            fill={StatusRoomID === 1 ? color.disabledTextColor : color.redColor}
             style={styles.iconButton}
           />
         )}
@@ -150,7 +145,7 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
       <Button
         onPress={() =>
           navigation.navigate("MoneyCollect", {
-            roomId: item.RoomID,
+            roomId: RoomID,
             data: JSON.stringify(item),
           })
         }
@@ -158,14 +153,12 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
         appearance="outline"
         status="success"
         size="small"
-        disabled={item.StatusRoomID === 1}
+        disabled={StatusRoomID === 1}
         accessoryLeft={() => (
           <Icon
             name="credit-card-outline"
             fill={
-              item.StatusRoomID === 1
-                ? color.disabledTextColor
-                : color.greenColor
+              StatusRoomID === 1 ? color.disabledTextColor : color.greenColor
             }
             style={styles.iconButton}
           />
@@ -456,10 +449,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
-  },
-  avatarinner: {
-    width: 16,
-    height: 16,
   },
   renterAvatarNoimg: {
     backgroundColor: "rgba(0,0,0,0.2)",

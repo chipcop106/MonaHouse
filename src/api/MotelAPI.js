@@ -81,21 +81,20 @@ export const getMotels = async (params) => {
 };
 
 export const getSortRoom = async (params) => {
-    let result = "";
-    try {
-        // const token = await getAccessToken();
-        let res = await instance.get(`${path}/getoptionsortroom`, {
-            params: {
-                // token,
-            },
-        });
-        result = res.data;
-    } catch (error) {
-        result = error;
-    }
-    return result;
+  let result = "";
+  try {
+    // const token = await getAccessToken();
+    let res = await instance.get(`${path}/getoptionsortroom`, {
+      params: {
+        // token,
+      },
+    });
+    result = res.data;
+  } catch (error) {
+    result = error;
+  }
+  return result;
 };
-
 
 /* 
     int motelid || 0, 
@@ -179,7 +178,17 @@ export const createRoomSingle = async (params) => {
     return error;
   }
 };
-
+/**
+ *
+ * @param string token
+          int roomid
+          string roomname
+          int priceroom
+          int electricprice
+          int waterprice
+          string description
+ * @returns {Object Data}
+ */
 export const updateRoom = async (params) => {
   try {
     const token = await getAccessToken();
@@ -247,13 +256,16 @@ export const getCustomerByMotelId = async (params) => {
     return error.message;
   }
 };
-export const insertRoomFee = async (params = {
-  roomid: Number(), 
-  renterid: Number(),
-  date: String(),
-  note: String(),
-  price: Number(), 
-}) => {
+
+export const insertRoomFee = async (
+  params = {
+    roomid: Number(),
+    renterid: Number(),
+    date: String(),
+    note: String(),
+    price: Number(),
+  }
+) => {
   try {
     const token = await getAccessToken();
     let res = await instance.get(`${path}/insertFee`, {
@@ -266,4 +278,4 @@ export const insertRoomFee = async (params = {
   } catch (error) {
     return error.message;
   }
-}
+};
