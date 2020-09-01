@@ -1,15 +1,15 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Text, StyleSheet, View } from "react-native";
-import { Input, Select, SelectItem, Divider } from "@ui-kitten/components";
+import { Input, Select, SelectItem, Divider, CheckBox } from "@ui-kitten/components";
 import { color } from "../../config";
 import { Context as RoomGoInContext } from "../../context/RoomGoInContext";
 import { pad } from "../../utils";
 import { currencyFormat as cf } from "~/utils";
 import { getPaymentMethod as getPaymentAPI } from "~/api/CollectMoneyAPI";
-
+import moment from "moment";
 const prePaymentTime = [];
 for (let i = 1; i < 13; i += 1) {
-  prePaymentTime.push(`Hết tháng ${i}`);
+  prePaymentTime.push(`${i} tháng`);
 }
 
 const preDepositTime = prePaymentTime.map(
@@ -27,7 +27,39 @@ const CheckoutInfoForm = () => {
   const stateCheckout = RoomGoInState.dataForm[RoomGoInState.step];
   const roomInfo = RoomGoInState.dataForm[0];
   const { paymentType } = stateCheckout;
-
+  const [offsetDays, setOffsetDays] = useState(0);
+  const [hasOffsetPrice, setHasOffsetPrice] = useState(true);
+  
+  const pricePerDay =  roomInfo.roomPrice / parseInt(moment(roomInfo.dateGoIn).endOf('months').format("DD"));
+  useEffect(() => {
+    changeStateFormStep(
+      "totalDeposit",
+      `${roomInfo.roomPrice * parseInt(stateCheckout.preDepositTimeIndex)}`
+    );
+    changeStateFormStep(
+      "totalPrepay",
+      `${roomInfo.roomPrice * parseInt(stateCheckout.prePaymentTimeIndex)}`
+    );
+    getPaymentMethod();
+    console.log({ roomInfo, stateCheckout });
+  }, []);
+  useEffect(() => {
+    console.log('roomInfo.dateGoIn', roomInfo);
+    let diffDate =  parseInt(moment(roomInfo.dateGoIn).endOf('month').format('DD')) - parseInt(moment(roomInfo.dateGoIn).format('DD'));
+    diffDate = diffDate > 0 ? diffDate + 1 : diffDate;
+    setOffsetDays(diffDate);
+    return () => {
+      setOffsetDays(0);
+    }
+  }, [])
+  const renderOffsetPrice = () => {
+    try {
+      return Math.ceil( Math.round(offsetDays * pricePerDay) * 0.001) * 1000;
+    } catch (error) {
+      return 0;
+    }
+   
+  }
   const _onSelectPreDeposit = (nextIndex) => {
     changeStateFormStep("preDepositTimeIndex", nextIndex);
     console.log({ nextIndex });
@@ -57,19 +89,8 @@ const CheckoutInfoForm = () => {
     }
   };
 
-  useEffect(() => {
-    changeStateFormStep(
-      "totalDeposit",
-      `${roomInfo.roomPrice * parseInt(stateCheckout.preDepositTimeIndex)}`
-    );
-    changeStateFormStep(
-      "totalPrepay",
-      `${roomInfo.roomPrice * parseInt(stateCheckout.prePaymentTimeIndex)}`
-    );
-    getPaymentMethod();
-    console.log({ roomInfo, stateCheckout });
-  }, []);
-
+  
+  
   return (
     <>
       <View style={styles.mainWrap}>
@@ -158,7 +179,7 @@ const CheckoutInfoForm = () => {
           </View>
         </View>
         <View style={styles.section}>
-          <Text style={[styles.secTitle]}>Trả trước</Text>
+          <Text style={[styles.secTitle]}>Trả trước tiền nhà</Text>
           <View style={[styles.formWrap]}>
             <View style={[styles.formRow, styles.fullWidth]}>
               <Select
@@ -204,10 +225,38 @@ const CheckoutInfoForm = () => {
             </View>
           </View>
         </View>
-
+        <View style={styles.section}>
+          <Text style={[styles.secTitle]}>Tiền nhà cần bù</Text>
+          <Text style={{fontSize: 12, marginBottom: 5}}>Tiền phát sinh khi ngày dọn vào không phải là ngày đầu tháng/cuối tháng</Text>
+          <View style={[styles.formWrap]}>
+            <View style={[styles.formRow, styles.fullWidth]}>
+                <Input 
+                  disabled
+                  textStyle={styles.dangerValue}
+                  accessoryLeft={() => <View style={styles.leftInput}>
+                    <Text>
+                      {`${ offsetDays } ngày`}
+                    </Text>
+                  </View>}
+                  accessoryRight={ ()=><CheckBox
+                    checked={hasOffsetPrice}
+                    onChange={nextChecked => setHasOffsetPrice(nextChecked)}>
+                      Thu phí
+                    </CheckBox> }
+                  value={ `${ cf(renderOffsetPrice()) }` }
+                />
+            </View>
+          </View>
+        </View>
         <View style={styles.section}>
           <Text style={[styles.secTitle]}>Thanh toán</Text>
           <View style={[styles.formWrap]}>
+            <View style={[styles.formRow, styles.rowInfo]}>
+              <Text style={styles.rowLabel}>Ngày dọn vào</Text>
+              <Text style={[styles.rowValue, styles.fontBold, styles.row]}>
+                { moment(roomInfo.dateGoIn).format("DD/MM/YYYY")}
+              </Text>
+            </View>
             <View style={[styles.formRow, styles.rowInfo]}>
               <Text style={styles.rowLabel}>Tiền cọc</Text>
               <Text style={[styles.rowValue, styles.fontBold, styles.row]}>
@@ -221,6 +270,13 @@ const CheckoutInfoForm = () => {
                 {cf(stateCheckout.totalPrepay) || "0"}
               </Text>
             </View>
+            <View style={[styles.formRow, styles.rowInfo]}>
+              <Text style={styles.rowLabel}>Tiền bù</Text>
+              <Text style={styles.rowValue}>
+                {" "}
+                { hasOffsetPrice ? cf(renderOffsetPrice()) : 0 || "0"}
+              </Text>
+            </View>
           </View>
           <Divider style={styles.divider} />
           <View style={styles.formWrap}>
@@ -230,8 +286,9 @@ const CheckoutInfoForm = () => {
               <Text style={styles.rowValue}>Tổng thu</Text>
               <Text style={[styles.dangerValue, styles.rowValue]}>
                 {cf(
-                  parseInt(stateCheckout.totalPrepay) +
-                    parseInt(stateCheckout.totalDeposit)
+                  parseInt(stateCheckout.totalPrepay)
+                  + parseInt(stateCheckout.totalDeposit)
+                  + (hasOffsetPrice ? renderOffsetPrice() : 0)
                 )}
               </Text>
             </View>

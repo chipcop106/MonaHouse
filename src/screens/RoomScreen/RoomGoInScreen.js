@@ -3,10 +3,7 @@ import {
   Text,
   StyleSheet,
   View,
-  ScrollView,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  NativeModules,
   Alert,
 } from "react-native";
 import { Layout, Button, Icon } from "@ui-kitten/components";
@@ -117,7 +114,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
     });
     const pageNum =  parseInt(actuallyReceived || 0);
     if(pageNum < parseInt(totalDeposit) + parseInt(totalPrepay)){
-      return  Alert.alert('Số thực nhận không được nhỏ hơn tổng thu');
+      return  Alert.alert(`Số thực nhận không được nhỏ hơn ${ parseInt(totalDeposit) + parseInt(totalPrepay) }`);
     }
 
     const imageArr = [

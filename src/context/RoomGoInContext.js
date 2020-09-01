@@ -11,7 +11,7 @@ const initialState = {
     dataForm: [
         {
             roomPrice: "",
-            dateGoIn: "",
+            dateGoIn: new Date(),
             timeRent: "12",
             timeTypeIndex: new IndexPath(1),
             roomInfo: {
@@ -193,7 +193,7 @@ const loadRoomInfo = (dispatch) =>  async (value) => {
             const {room, addonsdefault, water, electric} = res.Data
             dispatch( { type: "SET_STATE_dataForm", payload: {
                 roomPrice: `${ room.PriceRoom }`,
-                dateGoIn: "",
+                dateGoIn: new Date(),
                 timeRent: "12",
                 timeTypeIndex: new IndexPath(1),
                 roomInfo: {
@@ -239,7 +239,7 @@ export const { Context, Provider } = CreateDataContext(
         dataForm: [
         {
             roomPrice: "",
-            dateGoIn: "",
+            dateGoIn: new Date(),
             timeRent: "12",
             timeTypeIndex: new IndexPath(1),
             roomInfo: {

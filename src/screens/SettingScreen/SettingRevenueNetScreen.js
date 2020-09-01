@@ -10,7 +10,6 @@ import { getRevenueByMotelID } from "~api/ReportAPI";
 import Loading from "~components/common/Loading";
 import { currencyFormat } from "~/utils";
 
-console.log(yearOptions);
 
 const { height } = Dimensions.get("window");
 

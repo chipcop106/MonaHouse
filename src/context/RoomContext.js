@@ -1,108 +1,111 @@
-import { Alert } from "react-native";
+import {
+    Alert
+} from 'react-native';
 import CreateDataContext from "~/context/CreateDataContext";
 import {
-  getRoomsByMotelId,
-  createRoomSingle as createRoomAPI,
-  updateRoom as updateRoomAPI,
-  deleteRoom as deleteRoomAPI,
+    getRoomsByMotelId,
+    createRoomSingle as createRoomAPI,
+    updateRoom as updateRoomAPI,
+    deleteRoom as deleteRoomAPI,
 } from "../api/MotelAPI";
 
 import { updateElectrictWater } from "~/api/RenterAPI";
-import { getEWHistory } from "~/api/CollectMoneyAPI";
-
+import { getEWHistory } from '~/api/CollectMoneyAPI'
 const currentTime = new Date();
 const currentMonth = currentTime.getMonth() + 1;
 const currentYear = currentTime.getFullYear();
 
 const roomReducer = (prevstate, { type, payload }) => {
-  switch (type) {
-    case "STATE_CHANGE":
-      return {
-        ...prevstate,
-        [payload.field]: payload.value,
-      };
+    switch (type) {
+        case "STATE_CHANGE":
+            return {
+                ...prevstate,
+                [payload.field]: payload.value,
+            };
 
-    case "GET_ROOM": {
-      return {
-        ...prevstate,
-        listRooms: payload,
-      };
-    }
+        case "GET_ROOM": {
+            return {
+                ...prevstate,
+                listRooms: payload,
+            };
+        }
 
-    case "GET_ELECTRICT": {
-      return {
-        ...prevstate,
-        listElectrictRooms: payload,
-      };
-    }
+        case "GET_ELECTRICT": {
+            return {
+                ...prevstate,
+                listElectrictRooms: payload,
+            };
+        }
 
-    case "GET_ELECTRICT_HISTORY": {
-      return {
-        ...prevstate,
-        listElectrictHistory: payload,
-      };
-    }
+        case "GET_ELECTRICT_HISTORY": {
+            return {
+                ...prevstate,
+                listElectrictHistory: payload,
+            };
+        }
 
-    case "UPDATE_ELECTRICT_STATUS": {
-      return {
-        ...prevstate,
-        listRooms: [...prevstate.listRooms].map((room) =>
-          room.id === payload.roomid ? (room.StatusWEID = 6) : room
-        ),
-      };
+        case "UPDATE_ELECTRICT_STATUS": {
+            return {
+                ...prevstate,
+                listRooms: [...prevstate.listRooms].map((room) =>
+                    room.id === payload.roomid ? (room.StatusWEID = 6) : room
+                ),
+            };
+        }
+        case "SET_RELOAD": {
+            return {
+                ...prevstate,
+                isReload: payload
+            }
+        }
+        default:
+            return prevstate;
     }
-    case "SET_RELOAD": {
-      return {
-        ...prevstate,
-        isReload: payload,
-      };
-    }
-    default:
-      return prevstate;
-  }
 };
 
-const errorHandle = (code, { signOut }) => {
-  switch (code) {
-    case 2:
-      alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
-      signOut && signOut();
-      break;
-    default:
-      alert("Lỗi API !! Code hông tồn tại!!");
-      break;
-  }
+const errorHandle = (code, { signOut } , res = null) => {
+    switch (code) {
+        case 2:
+            alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
+            signOut && signOut();
+            break;
+        default:
+            throw res;
+            break;
+    }
 };
 
 const getListRooms = (dispatch) => async (
-  {
-    motelid = 0,
-    month = currentMonth,
-    year = currentYear,
-    qsearch = "",
-    sortby = 0,
-    status = 0,
-  },
-  signOut
+    {
+        motelid = 0,
+        month = currentMonth,
+        year = currentYear,
+        qsearch = "",
+        sortby = 0,
+        status = 0,
+    },
+    signOut
 ) => {
-  try {
-    const res = await getRoomsByMotelId({
-      motelid,
-      month,
-      year,
-      qsearch,
-      sortby,
-      status,
-    });
-    if (res.Code === 2) {
-      Alert.alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
-      if (signOut) signOut();
+
+    try {
+        const res = await getRoomsByMotelId({
+            motelid,
+            month,
+            year,
+            qsearch,
+            sortby,
+            status,
+        });
+        if (res.Code === 2) {
+            Alert.alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
+            if (signOut) signOut();
+        }
+        res.Code !== 1 && errorHandle(res.Code, { signOut });
+        dispatch({ type: "GET_ROOM", payload: res.Data });
+    } catch (error) {
+        Alert.alert(JSON.stringify(error));
     }
-    res.Code !== 1 && errorHandle(res.Code, { signOut });
-    dispatch({ type: "GET_ROOM", payload: res.Data });
-  } catch (error) {
-    Alert.alert(JSON.stringify(error));
-  }
+
 };
 
 const getListElectrict = (dispatch) => async (
@@ -190,15 +193,17 @@ const updateElectrict = (dispatch) => async (params, actions) => {
   }
 };
 
-const createRoom = (dispatch) => async (params, callback) => {
-  const { navigation, refreshList } = callback;
+const createRoom = (dispatch) => async (
+    params,
+    callback
+) => {
 
-  try {
-    const res = await createRoomAPI(params);
-    res.Code !== 1 && errorHandle(res.Code, callback);
-  } catch (error) {
-    alert(JSON.stringify(error.message));
-  }
+    try {
+        const res = await createRoomAPI(params);
+        return res;
+    } catch (error) {
+        return error
+    }
 };
 
 const updateRoom = (dispatch) => async (

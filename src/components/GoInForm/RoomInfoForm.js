@@ -74,7 +74,7 @@ const RoomInfoForm = () => {
                         <View style={[styles.formRow, styles.halfCol]}>
                             <Datepicker
                                 label="Ngày dọn vào"
-                                date={stateRoomInfo.dateGoIn || new Date() }
+                                date={stateRoomInfo.dateGoIn}
                                 min={ new Date() }
                                 onSelect={(nextDate) =>
                                     changeStateFormStep("dateGoIn", nextDate)

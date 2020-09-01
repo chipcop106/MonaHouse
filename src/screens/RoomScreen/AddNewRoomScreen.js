@@ -107,21 +107,32 @@ const AddNewRoomScreen = () => {
         // electrictPrice: "",
         // description: "",
         // services: [],
+        if(!!!state.roomName) return Alert.alert('Vui lòng nhập tên phòng');
+        if(!!!state.roomPrice) return Alert.alert('Vui lòng nhập giá phòng');
+
         setSpinner(true);
         await new Promise(r => setTimeout(r, 100));
         try {
-            await createRoom(
-                {
-                    motelid: listMotels[state.motelIndex.row]?.ID ?? null,
-                    roomname: state.roomName,
-                    priceroom: state.roomPrice,
-                    quantityroom: 1,
-                    electricprice: state.electrictPrice,
-                    waterprice: state.waterPrice,
-                    description: state.description
-                },
-                { navigation, signOut, refreshList }
-            );
+            const rs = await createRoom({
+                motelid: listMotels[state.motelIndex.row]?.ID ?? null,
+                roomname: state.roomName,
+                priceroom: state.roomPrice,
+                quantityroom: 1,
+                electricprice: state.electrictPrice || 0,
+                waterprice: state.waterPrice || 0,
+                description: state.description
+            });
+            if( rs.Code === 2 ) {
+                signOut();
+                return;
+            } 
+            if( rs.Code === 0 ){
+                throw rs;
+            } 
+            if( !!!rs.Code ){
+                throw rs;
+            } 
+          
             setSpinner(false);
             await new Promise(r => setTimeout(r, 100));
             Alert.alert("Thông báo", "Tạo phòng mới thành công !", [
@@ -135,9 +146,16 @@ const AddNewRoomScreen = () => {
             ]);
             
         } catch (error) {
-            setSpinner(false);
-            await new Promise(r => setTimeout(r, 100));
-            Alert.alert(JSON.stringify(error.message));
+            
+            Alert.alert(JSON.stringify(error.message), '', [
+                {
+                    text: "Ok",
+                    onPress: () => {
+                        setSpinner(false);
+                    },
+                },
+             ]);
+            
         }
         
     };
