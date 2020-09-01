@@ -1,14 +1,14 @@
-import { Alert } from "react-native";
-import CreateDataContext from "~/context/CreateDataContext";
+import { Alert } from 'react-native';
+import CreateDataContext from '~/context/CreateDataContext';
 import {
   getRoomsByMotelId,
   createRoomSingle as createRoomAPI,
   updateRoom as updateRoomAPI,
   deleteRoom as deleteRoomAPI,
-} from "../api/MotelAPI";
+} from '../api/MotelAPI';
 
-import { updateElectrictWater } from "~/api/RenterAPI";
-import { getEWHistory } from "~/api/CollectMoneyAPI";
+import { updateElectrictWater } from '~/api/RenterAPI';
+import { getEWHistory } from '~/api/CollectMoneyAPI';
 
 const currentTime = new Date();
 const currentMonth = currentTime.getMonth() + 1;
@@ -16,34 +16,34 @@ const currentYear = currentTime.getFullYear();
 
 const roomReducer = (prevstate, { type, payload }) => {
   switch (type) {
-    case "STATE_CHANGE":
+    case 'STATE_CHANGE':
       return {
         ...prevstate,
         [payload.field]: payload.value,
       };
 
-    case "GET_ROOM": {
+    case 'GET_ROOM': {
       return {
         ...prevstate,
         listRooms: payload,
       };
     }
 
-    case "GET_ELECTRICT": {
+    case 'GET_ELECTRICT': {
       return {
         ...prevstate,
         listElectrictRooms: payload,
       };
     }
 
-    case "GET_ELECTRICT_HISTORY": {
+    case 'GET_ELECTRICT_HISTORY': {
       return {
         ...prevstate,
         listElectrictHistory: payload,
       };
     }
 
-    case "UPDATE_ELECTRICT_STATUS": {
+    case 'UPDATE_ELECTRICT_STATUS': {
       return {
         ...prevstate,
         listRooms: [...prevstate.listRooms].map((room) =>
@@ -51,10 +51,18 @@ const roomReducer = (prevstate, { type, payload }) => {
         ),
       };
     }
-    case "SET_RELOAD": {
+    case 'SET_RELOAD': {
       return {
         ...prevstate,
         isReload: payload,
+      };
+    }
+    case 'DELETE_ROOM': {
+      return {
+        ...prevstate,
+        listRooms: [...prevstate.listRooms].filter(
+          (room) => room.RoomID !== payload.roomid
+        ),
       };
     }
     default:
@@ -79,7 +87,7 @@ const getListRooms = (dispatch) => async (
     motelid = 0,
     month = currentMonth,
     year = currentYear,
-    qsearch = "",
+    qsearch = '',
     sortby = 0,
     status = 0,
   },
@@ -95,11 +103,11 @@ const getListRooms = (dispatch) => async (
       status,
     });
     if (res.Code === 2) {
-      Alert.alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
+      Alert.alert('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!');
       if (signOut) signOut();
     }
     res.Code !== 1 && errorHandle(res.Code, { signOut });
-    dispatch({ type: "GET_ROOM", payload: res.Data });
+    dispatch({ type: 'GET_ROOM', payload: res.Data });
   } catch (error) {
     Alert.alert(JSON.stringify(error));
   }
@@ -110,7 +118,7 @@ const getListElectrict = (dispatch) => async (
     motelid = 0,
     month = currentMonth,
     year = currentYear,
-    qsearch = "",
+    qsearch = '',
     sortby = 0,
     status = 0,
   },
@@ -126,12 +134,12 @@ const getListElectrict = (dispatch) => async (
       status,
     });
     if (res.Code === 2) {
-      Alert.alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
+      Alert.alert('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!');
       if (signOut) signOut();
     }
     res.Code !== 1 && errorHandle(res.Code, { signOut });
     const hasRenterRooms = Array.from(res.Data).filter((item) => item.RenterID);
-    dispatch({ type: "GET_ELECTRICT", payload: hasRenterRooms });
+    dispatch({ type: 'GET_ELECTRICT', payload: hasRenterRooms });
   } catch (error) {
     alert(JSON.stringify(error.message));
   }
@@ -158,11 +166,11 @@ const getElectrictHistory = (dispatch) => async (
       status,
     });
     if (res.Code === 2) {
-      Alert.alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!");
+      Alert.alert('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!');
       if (signOut) signOut();
     }
     res.Code !== 1 && errorHandle(res.Code, { signOut });
-    dispatch({ type: "GET_ELECTRICT_HISTORY", payload: res.Data });
+    dispatch({ type: 'GET_ELECTRICT_HISTORY', payload: res.Data });
   } catch (error) {
     Alert.alert(JSON.stringify(error));
   }
@@ -173,12 +181,12 @@ const updateElectrict = (dispatch) => async (params, actions) => {
   try {
     const res = await updateElectrictWater(params);
     res.Code !== 1 && errorHandle(actions);
-    Alert.alert("Thông báo !!", "Cập nhật điện nước thành công !", [
+    Alert.alert('Thông báo !!', 'Cập nhật điện nước thành công !', [
       {
-        text: "Ok",
+        text: 'Ok',
         onPress: () => {
           dispatch({
-            type: "UPDATE_ELECTRICT_STATUS",
+            type: 'UPDATE_ELECTRICT_STATUS',
             payload: { roomid: 1 },
           });
           navigation.pop();
@@ -206,28 +214,35 @@ const createRoom = (dispatch) => async (
 const updateRoom = (dispatch) => async (
   {
     roomid = 0,
-    roomname = "",
+    roomname = '',
     priceroom = 0,
     electrictprice = 0,
     waterprice = 0,
-    description = "",
+    description = '',
+    addons = [],
   },
   callback
 ) => {
   const { navigation, refreshRoomInfo } = callback;
+  const roomServices = addons.map((sv) => ({
+    ID: parseInt(sv?.ID) ?? 0,
+    Price: parseInt(sv?.Price) ?? 0,
+    Name: sv.AddOnName + '',
+  }));
   const res = await updateRoomAPI({
     roomid: parseInt(roomid),
     roomname,
     priceroom: parseInt(priceroom),
-    electrictprice: parseInt(electrictprice),
+    electricprice: parseInt(electrictprice),
     waterprice: parseInt(waterprice),
     description,
+    addons: JSON.stringify(roomServices),
   });
   console.log(res);
   res.Code !== 1 && errorHandle(res.Code, callback);
-  Alert.alert("Thông báo", "Cập nhật thành công !", [
+  Alert.alert('Thông báo', 'Cập nhật thành công !', [
     {
-      text: "Ok",
+      text: 'Ok',
       onPress: () => {
         navigation.pop();
         refreshRoomInfo();
@@ -244,18 +259,19 @@ const deleteRoom = (dispatch) => async ({ roomid = 0 }, callback) => {
   });
   console.log(res);
   res.Code !== 1 && errorHandle(res.Code, callback);
-  Alert.alert("Thông báo", "Xóa phòng thành công !", [
+  Alert.alert('Thông báo', 'Xóa phòng thành công !', [
     {
-      text: "Ok",
+      text: 'Ok',
       onPress: () => {
         navigation.popToTop();
+        dispatch({ type: 'DELETE_ROOM', payload: { roomid } });
       },
     },
   ]);
 };
 
 const updateState = (dispatch) => (field, value) => {
-  dispatch({ type: "STATE_CHANGE", payload: { field, value } });
+  dispatch({ type: 'STATE_CHANGE', payload: { field, value } });
 };
 
 export const { Context, Provider } = CreateDataContext(
@@ -278,7 +294,7 @@ export const { Context, Provider } = CreateDataContext(
       selectedMotelIndex: 0,
       selectedYearIndex: 0,
       selectedSortIndex: 0,
-      searchValue: "",
+      searchValue: '',
     },
     listRooms: [],
     listElectrictRooms: [],

@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from "react";
-import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
-import { Input, Icon } from "@ui-kitten/components";
-import { color } from "../../config";
-import { currencyFormat as cf } from "~/utils";
+import React, { useState } from 'react';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Input, Icon } from '@ui-kitten/components';
+import { color } from '~/config';
+import { currencyFormat as cf } from '~/utils';
 
 const Service = ({
   initialState: { name, price },
@@ -23,12 +23,8 @@ const Service = ({
           value={nameState}
           onChangeText={(nextValue) => {
             setNameState(nextValue);
-            !!onChangeValue &&
-              onChangeValue({ name: nextValue, price: priceState });
           }}
-          onBlur={() =>
-            onBlur && onBlur({ name: nameState, price: priceState })
-          }
+          onBlur={() => onChangeValue({ name: nameState, price: priceState })}
           textContentType="none"
           keyboardType="default"
         />
@@ -39,15 +35,13 @@ const Service = ({
           placeholder="Số tiền"
           value={cf(priceState)}
           onChangeText={(nextValue) => {
-            setPriceState(nextValue.replace(/[^0-9\-]/g, ""));
-            !!onChangeValue &&
-              onChangeValue({
-                name: nameState,
-                price: nextValue.replace(/[^0-9\-]/g, ""),
-              });
+            setPriceState(nextValue.replace(/[^0-9\-]/g, ''));
           }}
-          onBlur={() =>
-            onBlur && onBlur({ name: nameState, price: priceState })
+          onBlur={(nextValue) =>
+            onChangeValue({
+              name: nameState,
+              price: priceState.replace(/[^0-9\-]/g, ''),
+            })
           }
           textContentType="none"
           keyboardType="numeric"
@@ -66,25 +60,25 @@ const Service = ({
 
 const styles = StyleSheet.create({
   svContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     flexGrow: 1,
     marginBottom: 10,
   },
   svName: {
-    marginHorizontal: "2%",
-    width: "46%",
+    marginHorizontal: '2%',
+    width: '46%',
     flexShrink: 0,
   },
   svPrice: {
-    marginHorizontal: "2%",
-    width: "46%",
+    marginHorizontal: '2%',
+    width: '46%',
     flexShrink: 0,
     paddingRight: 40,
   },
   svDelete: {
-    position: "absolute",
-    right: "0%",
+    position: 'absolute',
+    right: '0%',
     top: 0,
     padding: 5,
   },

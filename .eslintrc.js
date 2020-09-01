@@ -7,6 +7,7 @@ module.exports = {
     "extends": [
         "plugin:react/recommended",
         "airbnb",
+        "prettier"
     ],
     "globals": {
         "Atomics": "readonly",
@@ -22,9 +23,11 @@ module.exports = {
     "plugins": [
         "react",
         "react-native", // add eslint-plugin-react-native as a plugin for ESLint
+        "prettier"
     ],
     "parser": "babel-eslint",
     "rules": {
+        "prettier/prettier": ["error"],
         "no-console": "off",
         "strict": 0,
         "no-debugger": 2,
