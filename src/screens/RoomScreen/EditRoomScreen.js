@@ -1,19 +1,18 @@
-import React, { useContext, useReducer } from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Button, Icon, Input } from "@ui-kitten/components";
-import { color, sizes } from "~/config";
-import { create_UUID as randomId, currencyFormat as cf } from "~/utils";
-import { Context as RoomContext } from "~/context/RoomContext";
-import { Context as MotelContext } from "~/context/MotelContext";
-import { Context as AuthContext } from "~/context/AuthContext";
-import Service from "~/components/GoInForm/Service";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useHeaderHeight } from "@react-navigation/stack";
+import React, { useContext, useReducer } from 'react';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, Icon, Input } from '@ui-kitten/components';
+import { color, sizes } from '~/config';
+import { create_UUID as randomId, currencyFormat as cf } from '~/utils';
+import { Context as RoomContext } from '~/context/RoomContext';
+import { Context as MotelContext } from '~/context/MotelContext';
+import { Context as AuthContext } from '~/context/AuthContext';
+import Service from '~/components/GoInForm/Service';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useHeaderHeight } from '@react-navigation/stack';
 
 const reducer = (state, { type, payload }) => {
-  console.log(payload);
   switch (type) {
-    case "ROOM_CHANGE":
+    case 'ROOM_CHANGE':
       return {
         ...state,
         room: {
@@ -22,32 +21,33 @@ const reducer = (state, { type, payload }) => {
         },
       };
       break;
-    case "SERVICE_CHANGE":
+    case 'SERVICE_CHANGE':
       return {
         ...state,
         service: payload,
       };
       break;
-    case "DELETE_SERVICE": {
+    case 'DELETE_SERVICE': {
       return {
         ...state,
         service: [...state.service].filter(
-          (serviceItem) => serviceItem.ID !== payload.id
+          (serviceItem) => serviceItem.keyID !== payload.keyID
         ),
       };
       break;
     }
-    case "ADD_SERVICE": {
+    case 'ADD_SERVICE': {
       return {
         ...state,
         service: [
           ...state.service,
           {
-            ID: randomId(),
+            ID: 0,
+            keyID: randomId(),
             RoomID: payload.roomID,
             RenterInfoID: payload.renterID,
-            AddOnName: "",
-            Price: "",
+            AddOnName: '',
+            Price: '',
           },
         ],
       };
@@ -61,7 +61,13 @@ const reducer = (state, { type, payload }) => {
 };
 
 const EditRoomScreen = ({ navigation, route }) => {
-  const [state, dispatch] = useReducer(reducer, route.params.roomInfo);
+  const [state, dispatch] = useReducer(reducer, {
+    ...route.params.roomInfo,
+    service: route.params.roomInfo?.addons.map((sv) => ({
+      ...sv,
+      keyID: randomId(),
+    })),
+  });
   const { signOut } = useContext(AuthContext);
   const { state: motelState } = useContext(MotelContext);
   const { updateRoom } = useContext(RoomContext);
@@ -70,7 +76,7 @@ const EditRoomScreen = ({ navigation, route }) => {
 
   const headerHeight = useHeaderHeight();
   navigation.setOptions({
-    headerTitle: room.NameRoom ?? "Chưa có dữ liệu phòng",
+    headerTitle: room.NameRoom ?? 'Chưa có dữ liệu phòng',
   });
 
   const refreshRoomInfo = () => {
@@ -78,30 +84,33 @@ const EditRoomScreen = ({ navigation, route }) => {
   };
 
   const updateRoomState = (key, value) => {
-    dispatch({ type: "ROOM_CHANGE", payload: { key, value } });
+    dispatch({ type: 'ROOM_CHANGE', payload: { key, value } });
   };
 
   const updateServiceState = (value) => {
-    dispatch({ type: "SERVICE_CHANGE", payload: value });
+    dispatch({ type: 'SERVICE_CHANGE', payload: value });
   };
 
   const addService = () => {
     dispatch({
-      type: "ADD_SERVICE",
-      payload: { roomID: room.ID, renterID: renter.renter?.ID ?? 0 },
+      type: 'ADD_SERVICE',
+      payload: {
+        roomID: room.ID,
+        renterID: renter.renter?.ID ?? 0,
+      },
     });
   };
 
-  const deleteService = (id) => {
+  const deleteService = (keyID) => {
     dispatch({
-      type: "DELETE_SERVICE",
-      payload: { id },
+      type: 'DELETE_SERVICE',
+      payload: { keyID },
     });
   };
 
-  const updateService = (id, { nextState }) => {
-    const newServices = [...state.service].map((service) => {
-      return service.id === id
+  const updateService = (id, { name, price }) => {
+    const newServices = [...service].map((service) => {
+      return service.keyID === id
         ? {
             ...service,
             AddOnName: name,
@@ -130,6 +139,7 @@ const EditRoomScreen = ({ navigation, route }) => {
           electrictprice: PriceElectric,
           waterprice: PriceWater,
           description: Description,
+          addons: service,
         },
         { navigation, signOut, refreshRoomInfo }
       );
@@ -144,8 +154,7 @@ const EditRoomScreen = ({ navigation, route }) => {
         style={{ padding: 15 }}
         extraScrollHeight={headerHeight}
         viewIsInsideTabBar={true}
-        keyboardOpeningTime={150}
-      >
+        keyboardOpeningTime={150}>
         <View style={styles.section}>
           <View style={styles.formGroup}>
             <Input
@@ -154,7 +163,7 @@ const EditRoomScreen = ({ navigation, route }) => {
               value={room.NameRoom}
               style={styles.input}
               textStyle={styles.textInput}
-              onChangeText={(newValue) => updateRoomState("NameRoom", newValue)}
+              onChangeText={(newValue) => updateRoomState('NameRoom', newValue)}
             />
           </View>
           <View style={[styles.formGroup, styles.half]}>
@@ -163,7 +172,7 @@ const EditRoomScreen = ({ navigation, route }) => {
               placeholder="3.000.000"
               value={cf(room.PriceRoom)}
               onChangeText={(newValue) =>
-                updateRoomState("PriceRoom", newValue)
+                updateRoomState('PriceRoom', newValue.replace(/[^0-9\-]/g, ''))
               }
               style={styles.input}
               textStyle={styles.textInput}
@@ -178,7 +187,10 @@ const EditRoomScreen = ({ navigation, route }) => {
                 placeholder="3.500"
                 value={cf(room.PriceElectric)}
                 onChangeText={(newValue) =>
-                  updateRoomState("PriceElectric", newValue)
+                  updateRoomState(
+                    'PriceElectric',
+                    newValue.replace(/[^0-9\-]/g, '')
+                  )
                 }
                 style={styles.input}
                 textStyle={styles.textInput}
@@ -191,7 +203,7 @@ const EditRoomScreen = ({ navigation, route }) => {
                 placeholder="5.000"
                 value={cf(room.PriceWater)}
                 onChangeText={(newValue) =>
-                  updateRoomState("PriceWater", newValue)
+                  updateRoomState('PriceWater', newValue)
                 }
                 style={styles.input}
                 textStyle={styles.textInput}
@@ -206,7 +218,7 @@ const EditRoomScreen = ({ navigation, route }) => {
               placeholder="VD: Phòng có điều hòa"
               value={room.Description}
               onChangeText={(newValue) =>
-                updateRoomState("Description", newValue)
+                updateRoomState('Description', newValue)
               }
               style={styles.input}
               textStyle={styles.textInput}
@@ -231,16 +243,18 @@ const EditRoomScreen = ({ navigation, route }) => {
 
         <View style={styles.section}>
           <View style={[styles.serviceWrap]}>
-            {state.service && state.service.length > 0 ? (
-              state.service.map((sv) => (
+            {!!service && !!service.length > 0 ? (
+              service.map((sv) => (
                 <Service
-                  key={`${sv.ID}`}
+                  key={`${sv.keyID}`}
                   initialState={{
-                    name: sv?.AddOnName ?? "",
-                    price: sv?.Price ?? "",
+                    name: sv?.AddOnName ?? '',
+                    price: sv?.Price ?? '',
                   }}
-                  onDelete={() => deleteService(sv.ID)}
-                  onChangeValue={(nextState) => updateService(sv.ID, nextState)}
+                  onDelete={() => deleteService(sv.keyID)}
+                  onChangeValue={(nextState) =>
+                    updateService(sv.keyID, nextState)
+                  }
                 />
               ))
             ) : (
@@ -261,7 +275,7 @@ export default EditRoomScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
   },
   section: {
     padding: 15,
@@ -273,7 +287,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   formRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginHorizontal: -10,
   },
   col: {
@@ -282,24 +296,24 @@ const styles = StyleSheet.create({
   },
   secTitle: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     color: color.darkColor,
   },
   serviceTitle: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 15,
   },
   addServiceBtn: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   addServiceBtnText: {
     marginLeft: 5,
     color: color.primary,
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   serviceWrap: {
     paddingBottom: 0,
@@ -307,8 +321,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   emptyText: {
-    textAlign: "center",
+    textAlign: 'center',
     color: color.redColor,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });
