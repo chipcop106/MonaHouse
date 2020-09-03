@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useCallback,
   useState,
-} from "react";
+} from 'react';
 
 import {
   StyleSheet,
@@ -12,19 +12,21 @@ import {
   Alert,
   RefreshControl,
   KeyboardAvoidingView,
-} from "react-native";
-import { List, Button, Icon, IndexPath } from "@ui-kitten/components";
-import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
-import { useHeaderHeight } from "@react-navigation/stack";
-import { color, settings, sizes } from "~/config";
-import { Context as RoomContext } from "~/context/RoomContext";
-import { Context as MotelContext } from "~/context/MotelContext";
-import { Context as AuthContext } from "~/context/AuthContext";
-import FilterHeader from "~/components/FilterHeader";
-import ElectrictCard from "~/components/ElectrictCard";
-import NavLink from "~/components/common/NavLink";
-import Loading from "~/components/common/Loading";
-
+} from 'react-native';
+import { List, Button, Icon, IndexPath } from '@ui-kitten/components';
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
+import { useHeaderHeight } from '@react-navigation/stack';
+import { color, settings, sizes } from '~/config';
+import { Context as RoomContext } from '~/context/RoomContext';
+import { Context as MotelContext } from '~/context/MotelContext';
+import { Context as AuthContext } from '~/context/AuthContext';
+import FilterHeader from '~/components/FilterHeader';
+import ElectrictCard from '~/components/ElectrictCard';
+import NavLink from '~/components/common/NavLink';
+import Loading from '~/components/common/Loading';
+import Spinner from 'react-native-loading-spinner-overlay';
+import moment from 'moment';
+import { isPromise } from 'formik'
 const initialState = {
   isLoading: true,
   refreshing: false,
@@ -32,13 +34,13 @@ const initialState = {
     selectedMonthIndex: 0,
     selectedMotelIndex: 0,
     selectedYearIndex: 0,
-    searchValue: "",
+    searchValue: '',
   },
 };
 
 const reducer = (prevState, { type, payload }) => {
   switch (type) {
-    case "STATE_CHANGE":
+    case 'STATE_CHANGE':
       return {
         ...prevState,
         [payload.key]: payload.value,
@@ -48,23 +50,25 @@ const reducer = (prevState, { type, payload }) => {
   }
 };
 
-const RoomElectrictCollectAllScreen = () => {
+const RoomElectricCollectAllScreen = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { signOut } = useContext(AuthContext);
-  const { state: roomState, getListElectrict, updateElectrict } = useContext(
+  const { state: roomState, getListElectrict, updateElectrict, updateState: updateRoomState } = useContext(
     RoomContext
   );
   const { listElectrictRooms } = roomState;
   const { state: modelState } = useContext(MotelContext);
   const { listMotels } = modelState;
   const [loading, setLoading] = useState(false);
+  const [spinner, setSpiner] = useState(false);
   const headerHeight = useHeaderHeight();
   const updateState = (key, value) => {
-    dispatch({ type: "STATE_CHANGE", payload: { key, value } });
+    dispatch({ type: 'STATE_CHANGE', payload: { key, value } });
   };
 
   const onFilterChange = async (filter) => {
-    !!!filter ? updateState("isLoading", true) : setLoading(true);
+    console.log('filter', filter);
+    !!!filter ? updateState('isLoading', true) : setLoading(true);
     const {
       selectedMonthIndex,
       selectedMotelIndex,
@@ -74,7 +78,7 @@ const RoomElectrictCollectAllScreen = () => {
       selectedMonthIndex: 0,
       selectedMotelIndex: 0,
       selectedYearIndex: 0,
-      searchValue: "",
+      searchValue: '',
     };
     try {
       //console.log(listMotels);
@@ -88,13 +92,13 @@ const RoomElectrictCollectAllScreen = () => {
         signOut
       );
       setLoading(false);
-      updateState("isLoading", false);
+      updateState('isLoading', false);
     } catch (error) {
       setLoading(false);
-      updateState("isLoading", false);
+      updateState('isLoading', false);
       console.log(error);
     }
-    !!!filter ? updateState("isLoading", false) : setLoading(false);
+    !!!filter ? updateState('isLoading', false) : setLoading(false);
   };
   const _onRefresh = () => {
     onFilterChange(state.filterState);
@@ -105,30 +109,91 @@ const RoomElectrictCollectAllScreen = () => {
   // };
 
   const onChangeRoomInfo = (state, index) => {
-    console.log("onChangeRoomInfo", index, state);
+    console.log('onChangeRoomInfo', index, state);
+    const newArray = [...listElectrictRooms];
+    newArray[index] = {
+      ...listElectrictRooms[index],
+      electricNumber: state?.electrictNumber ?? '0',
+      electricImg: state?.electrictImage?.ID ?? '0',
+      waterNumber: state?.waterNumber ?? '0',
+      waterImg: state?.waterImage?.ID ?? '0',
+    }
+    updateRoomState('listElectrictRooms', newArray)
+
   };
 
   const _onValueChange = (filterFormvalue) => {
+    updateState('filterState', filterFormvalue);
     onFilterChange(filterFormvalue);
   };
+
   const _onPressSubmit = () => {
     Alert.alert(
-      "Cảnh báo",
+      'Cảnh báo',
       `Bạn có chắc chắn muốn ghi điện tất cả phòng trong tháng đã chọn ??`,
       [
         {
-          text: "Hủy thao tác",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
+          text: 'Hủy thao tác',
+          style: 'cancel',
+          onPress: () => console.log('Cancel Pressed'),
         },
         {
-          text: "Tôi chắc chắn",
-          onPress: () => updateElectrict(),
+          text: 'Tôi chắc chắn',
+          onPress: () => {
+            doActionUpdateElectric()
+          },
         },
       ],
       { cancelable: false }
     );
   };
+  const doActionUpdateElectric = async () => {
+    setSpiner(true);
+    try {
+      console.log(roomState.listElectrictRooms);
+      const res = await updateElectrict({
+        date: moment().format('DD/MM/YYYY'),
+        data: JSON.stringify(
+          roomState.listElectrictRooms.map(item => {
+              return {
+                RoomID: item.RoomID,
+                WaterNumber: parseInt(item.waterNumber) || 0,
+                WaterIMG: item.waterImg?.ID ?? 0,
+                ElectricNumber: parseInt(item.electricNumber) || 0,
+                ElectricIMG: item.electricImg?.ID ?? 0
+              }
+          })
+        )
+      });
+      // [{"RoomID":2384,"WaterNumber":1000,"WaterIMG":2704,"ElectricNumber":1200,"ElectricIMG":2704}]
+      setSpiner(false);
+      await  new Promise( a => setTimeout( a, 300 ) );
+      switch (res.Code) {
+        case 0:
+          Alert.alert('Lỗi', JSON.stringify(res));
+          break;
+        case 1:
+          Alert.alert('Thông báo !!', 'Cập nhật điện nước thành công !', [
+            {
+              text: 'Ok',
+              onPress: () => {
+                onFilterChange(state.filterState);
+              },
+            },
+          ]);
+          break;
+        case 2:
+          signOut();
+          break;
+        default:
+          break
+      }
+
+    } catch (e) {
+      setSpiner(false);
+      console.log( '_onPressUpdateElectric error', e);
+    }
+  }
   const _renderItem = ({ item, index }) => {
     // console.log(item);
     return (
@@ -143,7 +208,7 @@ const RoomElectrictCollectAllScreen = () => {
       <NavLink
         title="Lịch sử ghi điện nước"
         icon={{
-          name: "file-text-outline",
+          name: 'file-text-outline',
           color: color.primary,
         }}
         routeName="ElectrictHistory"
@@ -163,11 +228,10 @@ const RoomElectrictCollectAllScreen = () => {
         <View
           style={{
             flexGrow: 1,
-            alignItems: "center",
+            alignItems: 'center',
             paddingTop: 30,
-            justifyContent: "center",
-          }}
-        >
+            justifyContent: 'center',
+          }}>
           <Loading />
         </View>
       )}
@@ -188,10 +252,10 @@ const RoomElectrictCollectAllScreen = () => {
             }
             data={listElectrictRooms}
             ListHeaderComponent={_renderListHeader}
-            keyExtractor={(room, index) => `${room.RoomID} - ${index}`}
+            keyExtractor={(room, index) => `${room.RoomID}-${index}`}
             renderItem={_renderItem}
             ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-            ListFooterComponent={ null }
+            ListFooterComponent={null}
           />
           <Button
             style={{ borderRadius: 0 }}
@@ -204,17 +268,20 @@ const RoomElectrictCollectAllScreen = () => {
               />
             )}
             size="large"
-            status="danger"
-          >
+            status="danger">
             Ghi điện tất cả phòng
           </Button>
         </>
       )}
+      <Spinner
+        visible={spinner}
+        textContent={'Vui lòng chờ giây lát...'}
+        textStyle={{ color: '#fff' }} />
     </View>
   );
 };
 
-export default RoomElectrictCollectAllScreen;
+export default RoomElectricCollectAllScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -226,11 +293,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContainer: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
   },
   linkCustom: {
-    backgroundColor: "#fff",
-    shadowColor: "#000",
+    backgroundColor: '#fff',
+    shadowColor: '#000',
     marginBottom: 10,
     shadowOffset: {
       width: 0,

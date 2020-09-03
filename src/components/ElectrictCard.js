@@ -11,7 +11,12 @@ const noImageSrc = require('~/../assets/user.png');
 const renderItemHeader = (headerprops, roomInfo, navigation) => {
   return (
     <View {...headerprops} style={styles.headerWrap}>
-      <TouchableOpacity onPress={() => navigation.navigate('RoomDetail')}>
+      <TouchableOpacity onPress={ () => navigation.navigate('RoomDetailStack', {
+        screen: 'RoomDetail',
+        params: {
+          roomId: roomInfo.RoomID,
+        },
+      }) } >
         <Text style={styles.roomName} ellipsizeMode="tail" numberOfLines={1}>
           {roomInfo.RoomName}
         </Text>
@@ -20,7 +25,7 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
   );
 };
 
-const ElectrictCard = ({ roomInfo, handleValueChange }) => {
+const ElectricCard = ({ roomInfo, handleValueChange }) => {
   const navigation = useNavigation();
   // console.log(roomInfo);
   return (
@@ -39,10 +44,10 @@ const ElectrictCard = ({ roomInfo, handleValueChange }) => {
             priceDisplay={false}
             handleValueChange={handleValueChange}
             initialState={{
-              electrictNumber: '',
-              electrictImage: null,
-              waterNumber: '',
-              waterImage: null,
+              electrictNumber: roomInfo?.electricNumber ?? 0,
+              electrictImage: roomInfo.electricImg || '' ,
+              waterNumber: roomInfo?.waterNumber ?? 0,
+              waterImage: roomInfo.waterImg || '',
             }}
           />
         </View>
@@ -172,4 +177,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(ElectrictCard);
+export default ElectricCard;

@@ -151,7 +151,7 @@ function IncludeElectrictWater({
               textStyle={styles.textInput}
               label={electrictTitle}
               placeholder="0"
-              value={String(state.electrictNumber)}
+              value={`${ state.electrictNumber }`}
               onChangeText={(nextValue) =>
                 onChange('electrictNumber', nextValue.replace(/[^0-9\-]/g, ''))
               }
@@ -164,7 +164,7 @@ function IncludeElectrictWater({
               textStyle={styles.textInput}
               label={waterTitle}
               placeholder="0"
-              value={String(state.waterNumber)}
+              value={`${ state.waterNumber }`}
               onChangeText={(nextValue) => onChange('waterNumber', nextValue)}
               textContentType="none"
               keyboardType="numeric"

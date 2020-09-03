@@ -7,7 +7,7 @@ import {
   deleteRoom as deleteRoomAPI,
 } from '../api/MotelAPI';
 
-import { updateElectrictWater } from '~/api/RenterAPI';
+import { updateWaterElectric } from '~/api/MotelAPI';
 import { getEWHistory } from '~/api/CollectMoneyAPI';
 
 const currentTime = new Date();
@@ -177,25 +177,17 @@ const getElectrictHistory = (dispatch) => async (
 };
 
 const updateElectrict = (dispatch) => async (params, actions) => {
-  const { navigation } = actions;
+
+  // dispatch({ type: 'STATE_CHANGE', payload: { isLoading: true } });
   try {
-    const res = await updateElectrictWater(params);
-    res.Code !== 1 && errorHandle(actions);
-    Alert.alert('Thông báo !!', 'Cập nhật điện nước thành công !', [
-      {
-        text: 'Ok',
-        onPress: () => {
-          dispatch({
-            type: 'UPDATE_ELECTRICT_STATUS',
-            payload: { roomid: 1 },
-          });
-          navigation.pop();
-        },
-      },
-    ]);
+    const res = await updateWaterElectric(params);
+    if(res.Code !== 1) throw res
+    else return res
+
   } catch (err) {
-    alert(JSON.stringify(err.message));
+    throw  err;
   }
+  // dispatch({ type: 'STATE_CHANGE', payload: { isLoading: true } });
 };
 
 const createRoom = (dispatch) => async (
