@@ -48,7 +48,7 @@ const RoomInfoForm = () => {
         console.log('_handleValueChangeIncludeElectrictWater', value)
         changeStateFormStep("roomInfo", value)
     }
-    
+
     return (
         <>
             <View style={styles.mainWrap}>
@@ -75,7 +75,7 @@ const RoomInfoForm = () => {
                             <Datepicker
                                 label="Ngày dọn vào"
                                 date={stateRoomInfo.dateGoIn}
-                                min={ new Date() }
+                                min={stateRoomInfo.dateGoIn}
                                 onSelect={(nextDate) =>
                                     changeStateFormStep("dateGoIn", nextDate)
                                 }

@@ -44,7 +44,7 @@ const ElectrictCollectScreen = ({ route }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const roomId = route.params?.roomId ?? null;
   // const { renter, room, electric, water } = state;
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const onChangeValue = (newState) => {
     dispatch({ type: 'STATE_CHANGE', payload: { newState } });
@@ -52,6 +52,7 @@ const ElectrictCollectScreen = ({ route }) => {
 
   useEffect(() => {
     (async () => {
+      setLoading(true);
       try {
         const res = await getRoomById({ roomid: roomId });
         console.log('getRoomById RES', res.Data);
@@ -60,6 +61,7 @@ const ElectrictCollectScreen = ({ route }) => {
           payload: { newState: res.Data },
         });
       } catch (err) {}
+      setLoading(false);
     })();
   }, []);
   useEffect(() => {

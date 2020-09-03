@@ -173,27 +173,26 @@ const RoomElectrictCollectAllScreen = () => {
       )}
       {!!!state.isLoading && (
         <>
-          <View style={styles.contentContainer}>
-            <KeyboardAwareFlatList
-              // extraScrollHeight={headerHeight}
-              // viewIsInsideTabBar={true}
-              keyboardShouldPersistTaps="never"
-              keyboardOpeningTime={150}
-              style={{ flex: 1 }}
-              contentContainerStyle={{
-                paddingHorizontal: 15,
-                paddingVertical: 30,
-              }}
-              refreshControl={
-                <RefreshControl onRefresh={_onRefresh} refreshing={loading} />
-              }
-              data={listElectrictRooms}
-              ListHeaderComponent={_renderListHeader}
-              keyExtractor={(room, index) => `${room.RoomID} - ${index}`}
-              renderItem={_renderItem}
-              ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-            />
-          </View>
+          <KeyboardAwareFlatList
+            // extraScrollHeight={120}
+            extraHeight={headerHeight + 140}
+            // viewIsInsideTabBar={true}
+            keyboardShouldPersistTaps="never"
+            style={{ flex: 1 }}
+            contentContainerStyle={{
+              paddingHorizontal: 15,
+              paddingVertical: 30,
+            }}
+            refreshControl={
+              <RefreshControl onRefresh={_onRefresh} refreshing={loading} />
+            }
+            data={listElectrictRooms}
+            ListHeaderComponent={_renderListHeader}
+            keyExtractor={(room, index) => `${room.RoomID} - ${index}`}
+            renderItem={_renderItem}
+            ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+            ListFooterComponent={ null }
+          />
           <Button
             style={{ borderRadius: 0 }}
             onPress={_onPressSubmit}

@@ -31,8 +31,8 @@ const { height } = Dimensions.get('window');
 
 const initialState = {
   visible: false,
-  lightboxUrl: null,
-  roomInfo: null,
+  lightboxUrl: '',
+  roomInfo: '',
   isLoading: true,
 };
 
@@ -86,15 +86,17 @@ const RoomDetailScreen = ({ navigation, route }) => {
   const _deleteRoom = () => {
     Alert.alert('Cảnh báo !!', 'Bạn có chắc muốn xóa phòng này ??', [
       {
-        text: 'Xóa phòng này  ',
+        text: 'Xóa phòng này ',
+        style: 'destructive',
         onPress: () => {
           deleteRoom({ roomid: roomId }, { navigation });
         },
       },
       {
         text: 'Hủy bỏ',
+        style: 'cancel',
         onPress: () => {
-          return;
+          return '';
         },
       },
     ]);
@@ -252,14 +254,14 @@ const RoomDetailScreen = ({ navigation, route }) => {
                               styles.value,
                               dept > 0
                                 ? {
-                                    color: color.redColor,
+                                    color: color.greenColor,
                                   }
                                 : {
-                                    color: color.greenColor,
+                                    color: color.redColor,
                                   },
                             ]}>
-                            {dept > 0 && 'nợ'}
-                            {dept < 0 && 'dư'} {cf(dept)}
+                            {dept > 0 && 'Dư'}
+                            {dept < 0 && 'Nợ'} {cf(Math.abs(dept))}
                           </Text>
                         </View>
                       </>

@@ -16,7 +16,7 @@ export const color = {
   redColor: "#ff3d71",
   transparent: "transparent",
   labelColor: "#707070",
-  disabledTextColor: "rgba(131, 131, 131, 0.24)",
+  disabledTextColor: "#8A8A8E",
   lightWeight: "#e0e0fc",
   iconSettingColor: "#8A8A8E",
   darkShadowColor: "rgba(65,63,98,1)",

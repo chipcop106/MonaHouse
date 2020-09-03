@@ -240,7 +240,10 @@ const CheckoutInfoForm = () => {
                   </View>}
                   accessoryRight={ ()=><CheckBox
                     checked={hasOffsetPrice}
-                    onChange={nextChecked => setHasOffsetPrice(nextChecked)}>
+                    onChange={nextChecked => {
+                      changeStateFormStep('isCollect', nextChecked);
+                      setHasOffsetPrice(nextChecked);
+                    }}>
                       Thu phí
                     </CheckBox> }
                   value={ `${ cf(renderOffsetPrice()) }` }

@@ -1,28 +1,22 @@
-import React, { useLayoutEffect, useContext, useEffect } from "react";
-import {
-  Text,
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
-import { Layout, Button, Icon } from "@ui-kitten/components";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import moment from "moment";
-import { useHeaderHeight } from "@react-navigation/stack";
-import { sizes, color } from "../../config";
-import RoomInfoForm from "../../components/GoInForm/RoomInfoForm";
-import RenterInfoForm from "../../components/GoInForm/RenterInfoForm";
-import CheckoutInfoForm from "../../components/GoInForm/CheckoutInfoForm";
-import { Context as RoomGoInContext } from "../../context/RoomGoInContext";
-import { Context as AuthContext } from "../../context/AuthContext";
-import { Context as RoomContext } from "~/context/RoomContext";
-import Loading from "~/components/common/Loading";
+import React, { useLayoutEffect, useContext, useEffect } from 'react';
+import { Text, StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
+import { Layout, Button, Icon } from '@ui-kitten/components';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import moment from 'moment';
+import { useHeaderHeight } from '@react-navigation/stack';
+import { sizes, color } from '~/config';
+import RoomInfoForm from '../../components/GoInForm/RoomInfoForm';
+import RenterInfoForm from '../../components/GoInForm/RenterInfoForm';
+import CheckoutInfoForm from '../../components/GoInForm/CheckoutInfoForm';
+import { Context as RoomGoInContext } from '../../context/RoomGoInContext';
+import { Context as AuthContext } from '../../context/AuthContext';
+import { Context as RoomContext } from '~/context/RoomContext';
+import Loading from '~/components/common/Loading';
 
 const titleHeader = [
-  "Thông tin phòng, ki ốt",
-  "Thông tin người thuê",
-  "Thanh toán",
+  'Thông tin phòng, ki ốt',
+  'Thông tin người thuê',
+  'Thanh toán',
 ];
 
 const RenderForm = (props) => {
@@ -32,7 +26,7 @@ const RenderForm = (props) => {
     stepStateChange,
   } = useContext(RoomGoInContext);
   const { step, dataForm } = RoomGoinState;
-  console.log("RenderForm step:", step);
+  console.log('RenderForm step:', step);
   return (
     <>
       {step === 0 && (
@@ -71,7 +65,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
   const { step, dataForm } = RoomGoinState;
   const { updateState: updateState_Room } = useContext(RoomContext);
   useEffect(() => {
-    console.log("RoomGoinState", RoomGoinState);
+    console.log('RoomGoinState', RoomGoinState);
     loadRoomInfo(route.params?.roomId);
     return () => {
       resetState();
@@ -87,8 +81,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
         headerLeft: () => (
           <TouchableOpacity
             style={styles.backButton}
-            onPress={onPress_headerLeft}
-          >
+            onPress={onPress_headerLeft}>
             <Icon
               name="arrow-back-outline"
               fill={color.primary}
@@ -112,14 +105,23 @@ const RoomGoInScreen = ({ navigation, route }) => {
         Price: service.value.price,
       };
     });
-    const pageNum =  parseInt(actuallyReceived || 0);
-    if(pageNum < parseInt(totalDeposit) + parseInt(totalPrepay)){
-      return  Alert.alert(`Số thực nhận không được nhỏ hơn ${ parseInt(totalDeposit) + parseInt(totalPrepay) }`);
+    const pageNum = parseInt(actuallyReceived || 0);
+    if(route.params?.isDeposit){
+      // dat coc choi cho vui
+    } else {
+      if (pageNum < parseInt(totalDeposit) + parseInt(totalPrepay)) {
+        return Alert.alert(
+          `Số thực nhận không được nhỏ hơn ${
+            parseInt(totalDeposit) + parseInt(totalPrepay)
+          }`
+        );
+      }
     }
+
 
     const imageArr = [
       {
-        Name: "dong-ho-nuoc",
+        Name: 'dong-ho-nuoc',
         DataIMG: !!room.roomInfo?.waterImage
           ? !!room.roomInfo?.waterImage?.ID
             ? [
@@ -137,7 +139,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
           : [],
       },
       {
-        Name: "dong-ho-dien",
+        Name: 'dong-ho-dien',
         DataIMG: !!room.roomInfo?.electrictImage
           ? !!room.roomInfo?.electrictImage?.ID
             ? [
@@ -155,7 +157,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
           : [],
       },
       {
-        Name: "giay-to",
+        Name: 'giay-to',
         DataIMG: (() => {
           let rs = [];
           try {
@@ -165,38 +167,47 @@ const RoomGoInScreen = ({ navigation, route }) => {
                 rs.push({ ID: it.ID, URL: it.UrlIMG })
               );
           } catch (error) {
-            console.log("giay-to DataIMG error", error);
+            console.log('giay-to DataIMG error', error);
           }
 
           return rs;
         })(),
       },
     ];
-    console.log("imageArr", imageArr);
+    console.log('imageArr', imageArr);
     try {
-      let datein = moment(room.dateGoIn).format("DD/MM/yyyy");
-      datein === "Invalid date" && (datein = moment().format("DD/MM/yyyy"));
-      const contractInfo =  ( () => {
-        const keymaps = ["days", "months", "years"];
-        const keymaps_Vi = ["ngày", "tháng", "năm"];
+      let datein = moment(room.dateGoIn).format('DD/MM/yyyy');
+      datein === 'Invalid date' && (datein = moment().format('DD/MM/yyyy'));
+      const contractInfo = (() => {
+        const keymaps = ['days', 'months', 'years'];
+        const keymaps_Vi = ['ngày', 'tháng', 'năm'];
         try {
-          return  {
-            note: `${room.timeRent} ${keymaps_Vi[room.timeTypeIndex?.row ?? 0]}`,
-            date: moment().add(parseInt(room.timeRent), keymaps[room.timeTypeIndex?.row ?? 0]).format("DD/MM/YYYY")
-          }
-        } catch (e) {
           return {
-            note: `${ 1 } ${keymaps_Vi[room.timeTypeIndex?.row ?? 2]}`,
-            date: moment().add(1, "years").format("DD/MM/YYYY")
-          }
+            note: `${room.timeRent} ${
+              keymaps_Vi[room.timeTypeIndex?.row ?? 0]
+            }`,
+            date: moment(room.dateGoIn)
+              .add(
+                parseInt(room.timeRent),
+                keymaps[room.timeTypeIndex?.row ?? 0]
+              )
+              .format('DD/MM/YYYY'),
+          };
+        } catch (e) {
+          console.log('contractInfo error', e);
+          return {
+            note: `${1} ${keymaps_Vi[room.timeTypeIndex?.row ?? 2]}`,
+            date: moment().add(1, 'years').format('DD/MM/YYYY'),
+          };
         }
-      } )();
+      })();
+      console.log(dataForm, route.params.isDeposit);
       await addPeopleToRoom(
         {
           roomid: parseInt(route.params?.roomId || 0),
-          fullname: renter.fullName || "",
-          phone: renter.phoneNumber || "",
-          job: renter.job || "",
+          fullname: renter.fullName || '',
+          phone: renter.phoneNumber || '',
+          job: renter.job || '',
           cityid: parseInt(renter.cityLists[renter.provinceIndex.row].ID),
           objimg: JSON.stringify(imageArr), // imageArr
           datein: datein,
@@ -217,16 +228,17 @@ const RoomGoInScreen = ({ navigation, route }) => {
                   serviceArr.map((item) => {
                     return { ID: 0, ...item };
                   })
-                ) || ""
-              : "",
-          email: renter.email || "",
+                ) || ''
+              : '',
+          email: renter.email || '',
           quantity: parseInt(renter.numberPeople) || 1,
           relationship: parseInt(
             renter.relationLists[renter.relationshipIndex.row].id
           ),
-          DateOutContract: contractInfo?.date ?? "",
-          contractNote: contractInfo?.note ?? "",
+          DateOutContract: contractInfo?.date ?? '',
+          contractNote: contractInfo?.note ?? '',
           typeew: 1,
+          isCollect: checkout?.isCollect ?? true
         },
         {
           navigation,
@@ -234,9 +246,9 @@ const RoomGoInScreen = ({ navigation, route }) => {
           resetState,
         }
       );
-      updateState_Room("isReload", true);
+      updateState_Room('isReload', true);
     } catch (error) {
-      console.log("sendFormData error", error);
+      console.log('sendFormData error', error);
       alert(JSON.stringify(error.message));
     }
 
@@ -247,17 +259,19 @@ const RoomGoInScreen = ({ navigation, route }) => {
   const changeNextStep = () => {
     const { dataForm, step } = RoomGoinState;
     const dataStep = dataForm[step];
-    switch ( step ) {
+    switch (step) {
       case 0:
         console.log(dataStep);
         const { roomPrice } = dataStep;
-        if(parseInt(roomPrice) <= 0)  return Alert.alert('Chưa có tiền thuê')
+        if (parseInt(roomPrice) <= 0) return Alert.alert('Chưa có tiền thuê');
         break;
       case 1:
         console.log(dataStep);
-        const { fullName,  phoneNumber} = dataStep;
-        if(fullName.trim().length <= 0)  return  Alert.alert('Họ và tên không được chừa trống');
-        if(phoneNumber.trim().length <= 0)  return  Alert.alert('Số điện thoại không được chừa trống');
+        const { fullName, phoneNumber } = dataStep;
+        if (fullName.trim().length <= 0)
+          return Alert.alert('Họ và tên không được chừa trống');
+        if (phoneNumber.trim().length <= 0)
+          return Alert.alert('Số điện thoại không được chừa trống');
         break;
     }
     changeStepForm(1);
@@ -266,7 +280,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
   return (
     <Layout style={styles.container} level="3">
       {!!RoomGoinState.isLoading ? (
-        <View style={{ alignItems: "center", padding: 15 }}>
+        <View style={{ alignItems: 'center', padding: 15 }}>
           <Loading />
         </View>
       ) : (
@@ -275,8 +289,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
           contentContainerStyle={{ paddingVertical: 15 }}
           extraScrollHeight={headerHeight}
           // viewIsInsideTabBar={true}
-          keyboardOpeningTime={150}
-        >
+          keyboardOpeningTime={150}>
           <RenderForm />
           <View style={styles.mainWrap}>
             {RoomGoinState.step < 2 ? (
@@ -291,11 +304,10 @@ const RoomGoInScreen = ({ navigation, route }) => {
                   />
                 )}
                 size="large"
-                status="danger"
-              >
+                status="danger">
                 {RoomGoinState.step === 0
-                  ? "Cấu hình người thuê"
-                  : "Thông tin thanh toán"}
+                  ? 'Cấu hình người thuê'
+                  : 'Thông tin thanh toán'}
               </Button>
             ) : (
               <Button
@@ -309,8 +321,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
                   />
                 )}
                 size="large"
-                status="success"
-              >
+                status="success">
                 Lưu thông tin phòng
               </Button>
             )}
@@ -330,8 +341,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   backButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   backButtonText: {
     color: color.primary,
