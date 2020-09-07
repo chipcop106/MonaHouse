@@ -20,13 +20,13 @@ import { color, settings, sizes } from '~/config';
 import { Context as RoomContext } from '~/context/RoomContext';
 import { Context as MotelContext } from '~/context/MotelContext';
 import { Context as AuthContext } from '~/context/AuthContext';
-import FilterHeader from '~/components/FilterHeader';
 import ElectrictCard from '~/components/ElectrictCard';
 import NavLink from '~/components/common/NavLink';
 import Loading from '~/components/common/Loading';
 import Spinner from 'react-native-loading-spinner-overlay';
 import moment from 'moment';
 import { isPromise } from 'formik'
+import ModalizeSelect from '~/components/common/ModalizeSelect'
 const initialState = {
   isLoading: true,
   refreshing: false,
@@ -57,37 +57,39 @@ const RoomElectricCollectAllScreen = () => {
     RoomContext
   );
   const { listElectrictRooms } = roomState;
-  const { state: modelState } = useContext(MotelContext);
-  const { listMotels } = modelState;
+  const { state: motelState } = useContext(MotelContext);
+  const { listMotels } = motelState;
   const [loading, setLoading] = useState(false);
   const [spinner, setSpiner] = useState(false);
   const headerHeight = useHeaderHeight();
+  const [pickerData, setPickerData] = useState([]);
+
+
+  useEffect(()=>{
+    //load motel data
+    console.log('RoomElectricAllScreen motelState', motelState);
+    !!motelState?.listMotels
+    && motelState?.listMotels.length > 0
+    && setPickerData(motelState.listMotels.map(item => item.MotelName));
+  },[motelState]);
+  useEffect(()=>{
+    //load init data
+    onFilterChange(state.filterState);
+  },[])
   const updateState = (key, value) => {
     dispatch({ type: 'STATE_CHANGE', payload: { key, value } });
   };
+  const onFilterChange = async (filterIndex) => {
+    console.log('filterIndex', filterIndex);
+    !!!filterIndex ? updateState('isLoading', true) : setLoading(true);
 
-  const onFilterChange = async (filter) => {
-    console.log('filter', filter);
-    !!!filter ? updateState('isLoading', true) : setLoading(true);
-    const {
-      selectedMonthIndex,
-      selectedMotelIndex,
-      selectedYearIndex,
-      searchValue,
-    } = filter || {
-      selectedMonthIndex: 0,
-      selectedMotelIndex: 0,
-      selectedYearIndex: 0,
-      searchValue: '',
-    };
     try {
-      //console.log(listMotels);
       await getListElectrict(
         {
-          motelid: listMotels[selectedMotelIndex - 1]?.ID ?? 0,
-          month: selectedMonthIndex + 1,
-          year: settings.yearLists[selectedYearIndex],
-          qsearch: `${searchValue}`,
+          motelid: listMotels[filterIndex - 1]?.ID ?? 0,
+          // month: selectedMonthIndex + 1,
+          // year: settings.yearLists[selectedYearIndex],
+          // qsearch: `${searchValue || ''}`,
         },
         signOut
       );
@@ -98,7 +100,7 @@ const RoomElectricCollectAllScreen = () => {
       updateState('isLoading', false);
       console.log(error);
     }
-    !!!filter ? updateState('isLoading', false) : setLoading(false);
+    !!!filterIndex ? updateState('isLoading', false) : setLoading(false);
   };
   const _onRefresh = () => {
     onFilterChange(state.filterState);
@@ -218,12 +220,22 @@ const RoomElectricCollectAllScreen = () => {
   );
   return (
     <View style={styles.container}>
-      <FilterHeader
-        onValueChange={_onValueChange}
-        initialState={state.filterState}
-        advanceFilter={false}
-        yearFilter={true}
-      />
+      {/*<FilterHeader*/}
+      {/*  onValueChange={_onValueChange}*/}
+      {/*  initialState={state.filterState}*/}
+      {/*  advanceFilter={false}*/}
+      {/*  yearFilter={true}*/}
+      {/*/>*/}
+      <View style={styles.filterWrap}>
+        <ModalizeSelect
+          onChange={_onValueChange}
+          pickerData={['Tất cả',...pickerData]}
+          selectedValue={'Chọn nhà trọ...'}
+          leftIcon="home"
+          disabled={loading}
+        />
+      </View>
+
       {!!state.isLoading && (
         <View
           style={{
@@ -308,5 +320,9 @@ const styles = StyleSheet.create({
     elevation: 4,
     paddingLeft: 10,
     borderRadius: 4,
+  },
+  filterWrap: {
+    padding: 10,
+    backgroundColor: color.darkColor,
   },
 });

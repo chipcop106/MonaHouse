@@ -258,14 +258,14 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
               )}
             </View>
             <View style={styles.status}>
-              {item.StatusRoomID === 2 && item.StatusCollectID === 5 && (
+              {item.StatusRoomID !== 1 && item.StatusCollectID === 5 && (
                 <LinearGradient
                   colors={color.gradients.danger}
                   style={styles.badge}>
                   <Text style={styles.badgeText}>Chưa thu tiền</Text>
                 </LinearGradient>
               )}
-              {item.StatusRoomID === 2 && item.StatusCollectID === 6 && (
+              {item.StatusRoomID !== 1 && item.StatusCollectID === 6 && (
                 <LinearGradient
                   colors={color.gradients.success}
                   style={styles.badge}>

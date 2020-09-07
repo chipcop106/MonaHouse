@@ -8,9 +8,9 @@ import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handl
 import { Context as AuthContext } from './../../context/AuthContext';
 import { color } from '~/config';
 import { Formik, useFormikContext } from 'formik';
-import { SignInData, SignInSchema } from './data/signinModal'
-import { InputValidate } from '~/components/common/InputValidate'
-import {getPhoneHelp} from '~/api/AccountAPI'
+import { SignInData, SignInSchema } from './data/signinModal';
+import { InputValidate } from '~/components/common/InputValidate';
+import { settings } from "~/config";
 
 
 const LoadingIndicator  = () => <ActivityIndicator color="#fff" />
@@ -24,19 +24,7 @@ const SignInScreen = ({route}) => {
         headerShown: false,
     })
     useEffect(()=>{
-        (async ()=>{
-            try {
-                const res = await getPhoneHelp();
-                if(res.Code === 1){
-                    setphoneNumber(res.Data.phone)
-                } else {
-                    Alert.alert('Thông báo', JSON.stringify(res));
-                }
-              
-            } catch (error) {
-                Alert.alert('Thông báo', error)
-            }
-        })()
+        setphoneNumber(settings.phoneHelp)
     },[])
     useEffect(() =>{
        

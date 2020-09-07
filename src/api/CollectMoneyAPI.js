@@ -105,3 +105,67 @@ export const getEWHistory = async (params) => {
     }
     return result;
 };
+
+// token người dùng
+// motelid=0 lấy hết nhà trọ
+// sort:1 Tiền phòng tăng,2 Tiền phòng giảm, 3 tiền nợ tăng, 4 tiền nợ giảm
+export const getListBillByMotel = async (params) => {
+    let result;
+    try {
+        const token = await getAccessToken();
+        let res = await instance.get(`${path}/BeforeCollectMoneyAll`, {
+            params: {
+                ...params,
+                token,
+            },
+        });
+        result = res.data;
+    } catch (error) {
+        result = error;
+    }
+    return result;
+};
+
+// token người dùng
+// data: [{"roomId":2398,"renterId":1155,"paid":2500000,"note":"Không có note gì hết trơn á"}]
+export const submitMonthlyPayment = async (params) => {
+    let result;
+    try {
+        const token = await getAccessToken();
+        let res = await instance.get(`${path}/CollectMoneyAll`, {
+            params: {
+                ...params,
+                token,
+            },
+        });
+        result = res.data;
+    } catch (error) {
+        result = error;
+    }
+    return result;
+};
+
+// token:token người dùng
+// motelid:0
+// roomid:0
+// month:8
+// year:2020
+// sort:0
+export const historyCollectMoney = async (params) => {
+    let result;
+    try {
+        const token = await getAccessToken();
+        let res = await instance.get(`${path}/HistoryCollectMoney`, {
+            params: {
+                ...params,
+                token,
+            },
+        });
+        result = res.data;
+    } catch (error) {
+        result = error;
+    }
+    return result;
+};
+
+

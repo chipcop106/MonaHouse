@@ -8,7 +8,7 @@ import {
 } from '../api/MotelAPI';
 
 import { updateWaterElectric } from '~/api/MotelAPI';
-import { getEWHistory } from '~/api/CollectMoneyAPI';
+import { getEWHistory, getListBillByMotel, submitMonthlyPayment } from '~/api/CollectMoneyAPI';
 
 const currentTime = new Date();
 const currentMonth = currentTime.getMonth() + 1;
@@ -141,6 +141,7 @@ const getListElectrict = (dispatch) => async (
     const hasRenterRooms = Array.from(res.Data).filter((item) => item.RenterID);
     dispatch({ type: 'GET_ELECTRICT', payload: hasRenterRooms });
   } catch (error) {
+    console.log('getListElectrict error', error)
     alert(JSON.stringify(error.message));
   }
 };
@@ -261,7 +262,31 @@ const deleteRoom = (dispatch) => async ({ roomid = 0 }, callback) => {
     },
   ]);
 };
+const getListMonthlyBill = (dispatch) => async ({ motelid = 0, sort = 1 }) => {
+  try {
+    const res = await getListBillByMotel({motelid, sort});
+    console.log('action getListBillByMotel rs' ,res);
+    if(res.Code === 1){
+      dispatch({ type: 'STATE_CHANGE', payload: { field: 'listMonthlyBill', value: res.Data } });
+      return true;
+    } else {
+      throw res;
+    }
 
+  } catch (e) {
+    console.log('action getListBillByMotel error', e);
+    return { error: e }
+  }
+}
+const submitMonthlyPaymentAction = (dispatch) => async (data) => {
+  try {
+    const res = submitMonthlyPayment( {data: JSON.stringify(data) } );
+    return res;
+  } catch (e) {
+    console.log('action getListBillByMotel error', e);
+    return { error: e }
+  }
+}
 const updateState = (dispatch) => (field, value) => {
   dispatch({ type: 'STATE_CHANGE', payload: { field, value } });
 };
@@ -273,6 +298,8 @@ export const { Context, Provider } = CreateDataContext(
     getListElectrict,
     getElectrictHistory,
     updateElectrict,
+    getListMonthlyBill,
+    submitMonthlyPaymentAction,
     updateState,
     createRoom,
     updateRoom,
@@ -291,5 +318,7 @@ export const { Context, Provider } = CreateDataContext(
     listRooms: [],
     listElectrictRooms: [],
     listElectrictHistory: [],
+    listMonthlyBill: [],
+    listPaymentHistory: []
   }
 );

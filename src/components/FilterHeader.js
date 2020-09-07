@@ -111,8 +111,8 @@ const FilterHeader = ({
                         <ModalizeSelect 
                             disabled={loading}
                             onChange={_getSelectedIndex("selectedMonthIndex")}
-                            pickerData={settings.monthLists}
-                            selectedValue={settings.monthLists[selectedMonthIndex || 0]}
+                            pickerData={['Mới nhất',...settings.monthLists]}
+                            selectedValue={['Mới nhất',...settings.monthLists][selectedMonthIndex || 0]}
                             leftIcon="calendar"
                             disabled={loading}
                         />

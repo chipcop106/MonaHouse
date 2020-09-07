@@ -1,29 +1,76 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from 'react'
 import { StyleSheet, View, TouchableOpacity } from "react-native";
-import { Card, Button, Text, Icon } from "@ui-kitten/components";
+import { Card, Button, Text, Icon, Input } from '@ui-kitten/components'
 import { color, sizes, shadowStyle } from "~/config";
 import { useNavigation } from "@react-navigation/native";
+import { currencyFormat } from '~/utils'
 
+const renderNumberByArray = (arr, key = '') =>{
+  let rs = 0;
+  try {
+    if( Array.isArray(arr) && arr.length > 1 ){
+      if (!!key) {
+        rs = arr.map(i => i[key]).reduce( (x, y) => parseInt(x) + parseInt(y));
+      } else {
+        rs = arr.reduce((x, y) => parseInt(x) + parseInt(y));
+      }
+    } else if(arr.length === 1){
+      if (!!key) {
+        rs = arr[0][key];
+      } else {
+        rs = arr[0];
+      }
+    }
+  } catch (e) {
+    console.log(renderNumberByArray, e, arr);
+  }
+  return rs
+}
 const renderItemHeader = (headerprops, roomInfo, navigation) => {
   const { item } = roomInfo;
 
   return (
     <View {...headerprops} style={styles.headerWrap}>
       <TouchableOpacity
-        onPress={() => navigation.navigate("MoneyCollectDetail")}
+        onPress={() => navigation.navigate("MoneyCollectDetail", { roomId:  item.roomId})}
       >
         <Text style={styles.roomName} ellipsizeMode="tail" numberOfLines={1}>
-          {item.RoomName}
+          {item.roomName}
         </Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-const MoneyCard = ({ roomInfo }) => {
+const MoneyCard = ({ roomInfo, handleValueChange }) => {
   const navigation = useNavigation();
+  const { item } = roomInfo;
+
+  const total = item.priceRoom
+    + item.electricPrice * item.electricUsed
+    + item.waterPrice * item.waterUsed
+    + renderNumberByArray(item.Services, 'servicePrice')
+    + renderNumberByArray(item.FeeIncurred, 'feePrice');
+
+  const [inputTotal, setInputTotal] = useState();
+  useEffect(() => {
+    setInputTotal(currencyFormat(total + item.totalDebt*-1));
+    handleValueChange(`${ total + item.totalDebt*-1 }`);
+  },[]);
+  const _onPressService = () => {
+    console.log(item.Services);
+  }
+  const  _onPressFee = () => {
+    console.log(item.FeeIncurred);
+  }
+  const _onChangeTextTotal = text => {
+    setInputTotal(text.replace(/[^0-9\-]/g, ""))
+  }
+  const _onEndEditingTotal = ({ nativeEvent: { text } }) => {
+    handleValueChange(text.replace(/[^0-9\-]/g, ""));
+  }
   return (
     <View style={styles.item}>
       <Card
@@ -44,58 +91,81 @@ const MoneyCard = ({ roomInfo }) => {
                     status="basic"
                     style={[styles.rowValue, { fontWeight: "600" }]}
                   >
-                    3.000.000
+                    { currencyFormat(item.priceRoom) }
                   </Text>
                 </View>
                 <View style={[styles.formRow, styles.rowInfo]}>
-                  <Text style={styles.rowLabel}>Điện tháng này:</Text>
+                  <Text style={styles.rowLabel}>Điện tháng này: { `${ item.electricUsed } ký` }</Text>
                   <Text
                     status="basic"
                     style={[styles.rowValue, { fontWeight: "600" }]}
                   >
-                    3.000.000
+                    { currencyFormat(`${ item.electricPrice * item.electricUsed }`) }
                   </Text>
                 </View>
                 <View style={[styles.formRow, styles.rowInfo]}>
-                  <Text style={styles.rowLabel}>Nước tháng này:</Text>
+                  <Text style={styles.rowLabel}>Nước tháng này: { `${ item.waterUsed } m3` }</Text>
                   <Text
                     status="basic"
                     style={[styles.rowValue, { fontWeight: "600" }]}
                   >
-                    3.000.000
+                    { currencyFormat(`${ item.waterPrice * item.waterUsed }`) }
                   </Text>
                 </View>
-                <View style={[styles.formRow, styles.rowInfo]}>
+                <TouchableOpacity style={[styles.formRow, styles.rowInfo]} onPress={_onPressService}>
                   <Text style={styles.rowLabel}>Phí dịch vụ:</Text>
                   <Text
                     status="basic"
                     style={[styles.rowValue, { fontWeight: "600" }]}
                   >
-                    3.000.000
+                    { `${ currencyFormat(renderNumberByArray(item.Services, 'servicePrice')) }` }
                   </Text>
-                </View>
-                <View style={[styles.formRow, styles.rowInfo]}>
-                  <Text style={styles.rowLabel}>Tiền dư:</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.formRow, styles.rowInfo]} onPress={_onPressFee}>
+                  <Text style={styles.rowLabel}>Phụ thu:</Text>
                   <Text
                     status="basic"
                     style={[styles.rowValue, { fontWeight: "600" }]}
                   >
-                    3.000.000
+                    { `${ currencyFormat(renderNumberByArray(item.FeeIncurred, 'feePrice')) }` }
                   </Text>
-                </View>
+                </TouchableOpacity>
+                <View style={styles.divider} />
                 <View style={[styles.formRow, styles.rowInfo]}>
                   <Text style={{ fontWeight: "600" }}>Tổng thu:</Text>
                   <Text
                     status="basic"
                     style={[styles.rowValue, styles.dangerValue]}
                   >
-                    3.000.000
+                    { currencyFormat( total ) }
                   </Text>
+                </View>
+                <View style={[styles.formRow, styles.rowInfo]}>
+                  <Text style={{ fontWeight: "600" }}>Tháng rồi { item.totalDebt < 0 ? `thiếu` :  item.totalDebt === 0 ? `đủ` : `dư`}:</Text>
+                  <Text
+                    status="basic"
+                    style={[styles.rowValue, item.totalDebt < 0 ? styles.dangerValue : styles.successValue]}
+                  >
+                    { currencyFormat( Math.abs(item.totalDebt) ) }
+                  </Text>
+                </View>
+                <View style={[styles.formRow, styles.rowInfo]}>
+                  <Text style={{ fontWeight: "600" }}>Thực nhận:</Text>
+                  <Input
+                    style={[styles.rowValue, styles.dangerValue]}
+                    textAlign={'right'}
+                    placeholder="000.000.000"
+                    textContentType="none"
+                    keyboardType="numeric"
+                    value={`${ currencyFormat(inputTotal) }`}
+                    onChangeText={_onChangeTextTotal}
+                    onEndEditing={_onEndEditingTotal}
+                  />
                 </View>
               </View>
             </View>
             <Button
-              onPress={() => navigation.navigate("MoneyCollectDetail")}
+              onPress={() => navigation.navigate("MoneyCollectDetail", {roomId: item.roomId})}
               accessoryLeft={() => (
                 <Icon
                   name="credit-card-outline"
@@ -171,9 +241,15 @@ const styles = StyleSheet.create({
     color: color.redColor,
     fontWeight: "600",
   },
-
+  successValue: {
+    color: color.success,
+    fontWeight: "600",
+  },
   divider: {
     marginBottom: 15,
+    height: 1,
+    width: '100%',
+    backgroundColor: "#e1e1e1e1"
   },
   rowLabel: {
     color: color.labelColor,
@@ -190,4 +266,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(MoneyCard);
+export default MoneyCard;

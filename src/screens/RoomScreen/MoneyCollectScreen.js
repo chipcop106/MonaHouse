@@ -32,7 +32,7 @@ const MoneyCollectScreen = () => {
   const loadRoomInfo = async () => {
     try {
       const res = await getRoomById({ roomId });
-      res.Code === 1 && setRoomInfo(res.Data);
+      res.Code === 1 && setRoomInfo(res.Data), setUserInfo(res.Data.renter.renter);
       res.Code === 0 && Alert.alert("Lỗi !!", `${JSON.stringify(res)}`);
       res.Code === 2 &&
         (() => {
@@ -46,39 +46,31 @@ const MoneyCollectScreen = () => {
     }
   };
   useEffect(() => {
-    (async () => {
-      try {
-        const userData = await AsyncStorage.getItem("userInfo");
-        setUserInfo(JSON.parse(userData));
-      } catch (err) {
-        alert(JSON.stringify(err));
-      }
-    })();
+    // (async () => {
+    //   try {
+    //     const userData = await AsyncStorage.getItem("userInfo");
+    //     setUserInfo(JSON.parse(userData));
+    //   } catch (err) {
+    //     alert(JSON.stringify(err));
+    //   }
+    // })();
     loadRoomInfo();
   }, []);
 
   return (
     <>
-      <ScrollView>
-        {userInfo ? (
-          <UserInfo
-            avatar={userInfo.Avatar}
-            name={userInfo.FullName}
-            phone={userInfo.Phone}
-          />
-        ) : (
-          <View
-            style={{
-              padding: 15,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Loading />
-          </View>
+      <ScrollView style={{padding: 15}}>
+        {userInfo && (
+
+            <UserInfo
+              avatar={userInfo.Avatar}
+              name={userInfo.FullName}
+              phone={userInfo.Phone}
+            />
+
         )}
         {!!roomInfo ? (
-          <View style={styles.mainWrap}>
+          <>
             <View style={styles.section}>
               <Text category="h6" status="primary" style={{ marginBottom: 20 }}>
                 {roomInfo.room.NameRoom}
@@ -202,7 +194,7 @@ const MoneyCollectScreen = () => {
             >
               Thu tiền phòng này
             </Button>
-          </View>
+          </>
         ) : (
           <View
             style={{

@@ -28,7 +28,7 @@ const AddFeeModal = props => {
             })
             if(res?.Code === 1){
                 setSpinner(false);
-
+                await new Promise(a => setTimeout(a, 300));
                 Alert.alert('Chúc Mừng!!', 'thêm phí thành công', [{
                     text: "Ok",
                     onPress: () => {

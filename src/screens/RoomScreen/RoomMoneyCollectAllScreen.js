@@ -1,29 +1,34 @@
-import React, { useContext, useReducer, useCallback, useEffect } from "react";
-import { StyleSheet, View, Alert, RefreshControl } from "react-native";
-import { Icon, List, Button, IndexPath } from "@ui-kitten/components";
-import { color, sizes, settings } from "~/config";
-import { Context as RoomContext } from "~/context/RoomContext";
-import { Context as MotelContext } from "~/context/MotelContext";
-import { Context as AuthContext } from "~/context/AuthContext";
-import FilterHeader from "~/components/FilterHeader";
-import MoneyCard from "~/components/MoneyCard";
-import NavLink from "~/components/common/NavLink";
-import Loading from "~/components/common/Loading";
+import React, {
+  useContext,
+  useReducer,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+import { StyleSheet, View, Alert, RefreshControl } from 'react-native';
+import { useHeaderHeight } from '@react-navigation/stack';
+import { Icon, Button, IndexPath } from '@ui-kitten/components';
+import { color, sizes, settings } from '~/config';
+import { Context as RoomContext } from '~/context/RoomContext';
+import { Context as MotelContext } from '~/context/MotelContext';
+import { Context as AuthContext } from '~/context/AuthContext';
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
+import MoneyCard from '~/components/MoneyCard';
+import NavLink from '~/components/common/NavLink';
+import Loading from '~/components/common/Loading';
+import ModalizeSelect from '~/components/common/ModalizeSelect';
+import moment from 'moment';
+import { submitMonthlyPayment } from '~/api/CollectMoneyAPI'
 
 const initialState = {
   isLoading: true,
   refreshing: false,
-  filterState: {
-    selectedMonthIndex: 0,
-    selectedMotelIndex: 0,
-    selectedYearIndex: 0,
-    searchValue: "",
-  },
+  filterState: 0,
 };
 
 const reducer = (prevState, { type, payload }) => {
   switch (type) {
-    case "STATE_CHANGE":
+    case 'STATE_CHANGE':
       return {
         ...prevState,
         [payload.key]: payload.value,
@@ -38,106 +43,153 @@ const reducer = (prevState, { type, payload }) => {
 const RoomMoneyCollectAllScreen = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { signOut } = useContext(AuthContext);
-  const { state: roomState, getListElectrict } = useContext(RoomContext);
-  const { listElectrictRooms } = roomState;
-  const { state: modelState } = useContext(MotelContext);
-  const { listMotels } = modelState;
+  const { state: roomState, getListMonthlyBill, submitMonthlyPaymentAction } = useContext(RoomContext);
+  const { listMonthlyBill } = roomState;
+  const { state: motelState } = useContext(MotelContext);
+  const headerHeight = useHeaderHeight();
+  const { listMotels } = motelState;
+  const [pickerData, setPickerData] = useState([]);
+  const [paymentData, setPaymentData] = useState([]);
 
+  useEffect( () => {
+    if(listMonthlyBill.length > 0){
+      const paymentMeta = listMonthlyBill.map(( { roomId, renterId } ) => {  return { roomId, renterId } });
+      setPaymentData(paymentMeta);
+    }
+  }, [listMonthlyBill]);
+  useEffect(() => {
+    //load motel data
+    console.log('RoomElectricAllScreen motelState', motelState);
+    !!motelState?.listMotels &&
+      motelState?.listMotels.length > 0 &&
+      setPickerData(motelState.listMotels.map((item) => item.MotelName));
+  }, [motelState]);
+  useEffect(() => {
+    //load init data
+    loadRoomApi(state, state.filterState);
+  }, []);
   const updateState = (key, value) => {
-    dispatch({ type: "STATE_CHANGE", payload: { key, value } });
+    dispatch({ type: 'STATE_CHANGE', payload: { key, value } });
   };
 
   const refreshApi = async () => {
-    updateState("refreshing", true);
-    await loadRoomApi({ loadingControl: false });
-    updateState("refreshing", false);
+    updateState('refreshing', true);
+    await loadRoomApi({ loadingControl: false }, state.filterState);
+    updateState('refreshing', false);
   };
 
   const onRefresh = useCallback(() => {
     refreshApi();
-  }, [state.refreshing, state.filterState]);
+  }, [state.refreshing]);
 
   const loadRoomApi = async ({ loadingControl = true }, filter) => {
-    loadingControl && updateState("isLoading", true);
-    const {
-      selectedMonthIndex,
-      selectedMotelIndex,
-      selectedYearIndex,
-      searchValue,
-    } = filter ? filter : state.filterState;
+    console.log('loadRoomApi', filter);
+    loadingControl && updateState('isLoading', true);
     try {
-      await getListElectrict(
-        {
-          motelid: listMotels[selectedMotelIndex - 1]?.ID ?? 0,
-          month: selectedMonthIndex + 1,
-          year: settings.yearLists[selectedYearIndex],
-          qsearch: `${searchValue}`,
-        },
-        signOut
-      );
-      updateState("isLoading", false);
+      const rs = await getListMonthlyBill({
+        motelid: listMotels[filter - 1]?.ID ?? 0,
+        // month: selectedMonthIndex + 1,
+        // year: settings.yearLists[selectedYearIndex],
+        // qsearch: `${searchValue}`,
+      });
+
+      updateState('isLoading', false);
+      if (!!rs.error) {
+        rs.error.Code === 2 && signOut();
+        rs.error.Code === 0 &&
+          Alert.alert('Oops!!', JSON.stringify(rs.error.message));
+      }
     } catch (error) {
-      updateState("isLoading", false);
+      updateState('isLoading', false);
       console.log(error);
+      Alert.alert('Oops!!', JSON.stringify(error.message));
     }
   };
 
   const onFilterChange = (filter) => {
-    updateState("filterState", filter);
+    if (filter !== state.filterState) {
+      updateState('filterState', filter);
+      loadRoomApi({ loadingControl: true }, filter);
+    }
   };
-
-  useEffect(() => {
-    loadRoomApi({ loadingControl: true });
-  }, [state.filterState]);
 
   const submitAllConfirm = () => {
     Alert.alert(
-      "Cảnh báo",
-      `Bạn có chắc chắn muốn thu tiền tất cả phòng trong tháng đã chọn ??`,
+      `Cảnh báo`,
+      `Bạn có chắc chắn muốn thu tiền tất cả phòng trong nhà đã chọn ??`,
       [
         {
-          text: "Hủy thao tác",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
+          text: 'Hủy thao tác',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
         },
         {
-          text: "Tôi chắc chắn",
-          onPress: () => alert("Đã thu thành công"),
+          text: 'Tôi chắc chắn',
+          onPress: async () => {
+            console.log(paymentData);
+
+            const rs = await submitMonthlyPaymentAction(paymentData);
+
+
+            if (!!rs.error) {
+              rs.error.Code === 2 && signOut();
+              rs.error.Code === 0 &&
+              Alert.alert('Oops!!', JSON.stringify(rs.error.message));
+            } else {
+               await loadRoomApi({ loadingControl: true }, state.filterState);
+            }
+
+          },
         },
       ],
       { cancelable: false }
     );
   };
-
-  const onChangeRoomInfo = (state) => {};
-
-  useEffect(() => {
-    loadRoomApi({ loadingControl: true });
-  }, [state.filterState]);
+  function updateItemByindex(index, item, array) {
+    array[index] = item;
+    return array;
+  }
+  const onChangeRoomInfo = (value, index) => {
+    console.log(value, index);
+    setPaymentData(updateItemByindex(index, {
+      ...paymentData[index],
+      paid: value,
+      note: `Thu tiền nhà ngày ${ moment().format('DD/MM/YYYY') }`,
+    }, paymentData));
+  };
 
   return (
     <View style={styles.container}>
-      <FilterHeader
-        onValueChange={onFilterChange}
-        initialState={state.filterState}
-        advanceFilter={false}
-        yearFilter={true}
-      />
+      {/*<FilterHeader*/}
+      {/*  onValueChange={onFilterChange}*/}
+      {/*  initialState={state.filterState}*/}
+      {/*  advanceFilter={false}*/}
+      {/*  yearFilter={true}*/}
+      {/*/>*/}
+      <View style={styles.filterWrap}>
+        <ModalizeSelect
+          onChange={onFilterChange}
+          pickerData={['Tất cả', ...pickerData]}
+          selectedValue={'Chọn nhà trọ...'}
+          leftIcon="home"
+          disabled={state.isLoading}
+        />
+      </View>
       {state.isLoading ? (
         <View
           style={{
             flexGrow: 1,
-            alignItems: "center",
+            alignItems: 'center',
             paddingTop: 30,
-            justifyContent: "center",
-          }}
-        >
+            justifyContent: 'center',
+          }}>
           <Loading />
         </View>
       ) : (
         <View style={styles.contentContainer}>
           <>
-            <List
+            <KeyboardAwareFlatList
+              extraHeight={headerHeight + 140}
               refreshControl={
                 <RefreshControl
                   refreshing={state.refreshing}
@@ -149,7 +201,7 @@ const RoomMoneyCollectAllScreen = () => {
                   <NavLink
                     title="Lịch sử thu tiền"
                     icon={{
-                      name: "file-text-outline",
+                      name: 'file-text-outline',
                       color: color.primary,
                     }}
                     routeName="MoneyHistory"
@@ -160,18 +212,21 @@ const RoomMoneyCollectAllScreen = () => {
               keyExtractor={(room, index) => `${room.RoomID}-${index}`}
               style={styles.listContainer}
               contentContainerStyle={styles.contentCard}
-              data={listElectrictRooms}
+              data={listMonthlyBill}
               initialNumToRender={5}
               removeClippedSubviews={false}
-              extraData={listElectrictRooms}
+              // extraData={listElectrictRooms}
               renderItem={(room) => (
                 <MoneyCard
                   roomInfo={room}
-                  handleValueChange={onChangeRoomInfo}
+                  handleValueChange={(value) =>
+                    onChangeRoomInfo(value, room.index)
+                  }
                 />
               )}
             />
             <Button
+              style={{ borderRadius: 0 }}
               onPress={submitAllConfirm}
               accessoryLeft={() => (
                 <Icon
@@ -181,8 +236,7 @@ const RoomMoneyCollectAllScreen = () => {
                 />
               )}
               size="large"
-              status="danger"
-            >
+              status="danger">
               Thu tiền tất cả phòng
             </Button>
           </>
@@ -219,8 +273,8 @@ const styles = StyleSheet.create({
     paddingBottom: 60,
   },
   linkCustom: {
-    backgroundColor: "#fff",
-    shadowColor: "#000",
+    backgroundColor: '#fff',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -233,6 +287,10 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   backdrop: {
-    backgroundColor: "rgba(0,0,0,.35)",
+    backgroundColor: 'rgba(0,0,0,.35)',
+  },
+  filterWrap: {
+    padding: 10,
+    backgroundColor: color.darkColor,
   },
 });
