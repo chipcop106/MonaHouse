@@ -25,7 +25,6 @@ import NavLink from '~/components/common/NavLink';
 import Loading from '~/components/common/Loading';
 import Spinner from 'react-native-loading-spinner-overlay';
 import moment from 'moment';
-import { isPromise } from 'formik'
 import ModalizeSelect from '~/components/common/ModalizeSelect'
 const initialState = {
   isLoading: true,
@@ -257,7 +256,7 @@ const RoomElectricCollectAllScreen = () => {
             style={{ flex: 1 }}
             contentContainerStyle={{
               paddingHorizontal: 15,
-              paddingVertical: 30,
+              paddingVertical: 15,
             }}
             refreshControl={
               <RefreshControl onRefresh={_onRefresh} refreshing={loading} />

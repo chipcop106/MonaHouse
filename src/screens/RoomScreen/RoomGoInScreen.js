@@ -1,10 +1,10 @@
-import React, { useLayoutEffect, useContext, useEffect } from 'react';
-import { Text, StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
+import React, { useLayoutEffect, useContext, useEffect, useState } from 'react'
+import { Text, StyleSheet, View, TouchableOpacity, Alert, RefreshControl } from 'react-native'
 import { Layout, Button, Icon } from '@ui-kitten/components';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
 import { useHeaderHeight } from '@react-navigation/stack';
-import { sizes, color } from '~/config';
+import { sizes, color, settings } from '~/config'
 import RoomInfoForm from '../../components/GoInForm/RoomInfoForm';
 import RenterInfoForm from '../../components/GoInForm/RenterInfoForm';
 import CheckoutInfoForm from '../../components/GoInForm/CheckoutInfoForm';
@@ -27,6 +27,11 @@ const RenderForm = (props) => {
   } = useContext(RoomGoInContext);
   const { step, dataForm } = RoomGoinState;
   console.log('RenderForm step:', step);
+  console.log('RenderForm State:', RoomGoinState);
+  // if(step === 1){
+  //   changeStateFormStep("cityLists", settings.cityLists);
+  //   changeStateFormStep("relationLists", settings.relationLists);
+  // }
   return (
     <>
       {step === 0 && (
@@ -66,12 +71,16 @@ const RoomGoInScreen = ({ navigation, route }) => {
   const { updateState: updateState_Room } = useContext(RoomContext);
   useEffect(() => {
     console.log('RoomGoinState', RoomGoinState);
-    loadRoomInfo(route.params?.roomId);
+    (async () => {
+      await loadRoomInfo(route.params?.roomId);
+    })();
     return () => {
       resetState();
     };
   }, []);
   const headerHeight = useHeaderHeight();
+  const [refreshing, setRefreshing] = useState(false);
+
   const onPress_headerLeft = () => {
     step === 0 ? navigation.pop() : changeStepForm(-1);
   };
@@ -108,6 +117,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
     const pageNum = parseInt(actuallyReceived || 0);
     if(route.params?.isDeposit){
       // dat coc choi cho vui
+
     } else {
       if (pageNum < parseInt(totalDeposit) + parseInt(totalPrepay)) {
         return Alert.alert(
@@ -276,7 +286,11 @@ const RoomGoInScreen = ({ navigation, route }) => {
     }
     changeStepForm(1);
   };
-
+  const _onRefresh = async () => {
+    setRefreshing(true);
+    await loadRoomInfo(route.params?.roomId);
+    setRefreshing(false);
+  };
   return (
     <Layout style={styles.container} level="3">
       {!!RoomGoinState.isLoading ? (
@@ -285,6 +299,12 @@ const RoomGoInScreen = ({ navigation, route }) => {
         </View>
       ) : (
         <KeyboardAwareScrollView
+          refreshControl={
+            <RefreshControl
+              onRefresh={_onRefresh}
+              refreshing={refreshing}
+            />
+          }
           style={{ flex: 1 }}
           contentContainerStyle={{ paddingVertical: 15 }}
           extraScrollHeight={headerHeight}

@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from 'react'
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -55,6 +55,7 @@ import SettingExpectedProfitScreen from "~/screens/SettingScreen/SettingExpected
 import SettingCollateralDamageScreen from "~/screens/SettingScreen/SettingCollateralDamageScreen";
 import { Provider as CustomerProvider } from "~/context/CustomerContext";
 import RenterDetailScreen from "~/screens/RoomScreen/RenterDetailScreen";
+import { Context as MotelContext } from '~/context/MotelContext'
 export const isMountedRef = React.createRef();
 
 export const navigationRef = React.createRef();

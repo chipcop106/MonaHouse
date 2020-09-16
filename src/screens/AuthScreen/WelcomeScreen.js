@@ -4,16 +4,19 @@ import { Context as AuthContext } from "../../context/AuthContext";
 import { settings } from "~/config";
 import { getCity, getPhoneHelp } from "~/api/AccountAPI";
 import { getRelationships } from "~/api/RenterAPI";
+import { Context as MotelContext } from '~/context/MotelContext'
 
 const WelcomeScreen = ({ navigation }) => {
   const { state, signInLocalToken } = useContext(AuthContext);
+  const { getListMotels, getSortOptions } = useContext(MotelContext);
   console.log("AuthContext", state);
 
   const loadOptions = async () => {
     const [resProvinces, resRelationships, resPhoneHelp] = await Promise.all([
       getCity(),
       getRelationships(),
-      getPhoneHelp()
+      getPhoneHelp(),
+      getSortOptions(),
     ]);
     settings.cityLists = resProvinces?.Data ?? [];
     settings.relationLists = resRelationships?.Data ?? [];
@@ -21,8 +24,11 @@ const WelcomeScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    signInLocalToken();
-    loadOptions();
+    (async ()=> {
+      await loadOptions();
+      signInLocalToken();
+    })()
+
   }, []);
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

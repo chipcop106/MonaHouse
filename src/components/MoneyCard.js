@@ -5,32 +5,10 @@ import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { Card, Button, Text, Icon, Input } from '@ui-kitten/components'
 import { color, sizes, shadowStyle } from "~/config";
 import { useNavigation } from "@react-navigation/native";
-import { currencyFormat } from '~/utils'
+import { currencyFormat, renderNumberByArray } from '~/utils'
 
-const renderNumberByArray = (arr, key = '') =>{
-  let rs = 0;
-  try {
-    if( Array.isArray(arr) && arr.length > 1 ){
-      if (!!key) {
-        rs = arr.map(i => i[key]).reduce( (x, y) => parseInt(x) + parseInt(y));
-      } else {
-        rs = arr.reduce((x, y) => parseInt(x) + parseInt(y));
-      }
-    } else if(arr.length === 1){
-      if (!!key) {
-        rs = arr[0][key];
-      } else {
-        rs = arr[0];
-      }
-    }
-  } catch (e) {
-    console.log(renderNumberByArray, e, arr);
-  }
-  return rs
-}
 const renderItemHeader = (headerprops, roomInfo, navigation) => {
   const { item } = roomInfo;
-
   return (
     <View {...headerprops} style={styles.headerWrap}>
       <TouchableOpacity

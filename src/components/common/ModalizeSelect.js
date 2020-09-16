@@ -19,6 +19,7 @@ import { Picker } from "@react-native-community/picker";
 import { Icon, styled } from "@ui-kitten/components";
 
 import { color } from "~/config";
+import { Context as MotelContext } from '~/context/MotelContext'
 
 const ModalizeSelect = (props) => {
   const {
@@ -29,9 +30,13 @@ const ModalizeSelect = (props) => {
     leftIcon,
     disabled,
   } = props;
+  const { state: motelState , getListMotels} = useContext(MotelContext);
   const [selected, setSelected] = useState(selectedValue || pickerData[0]);
   const modalPickerRef = useRef();
 
+  useEffect(() => {
+    if(!!!motelState.motelLists) getListMotels();
+  }, []);
   const _onValueSelectChange = (itemValue, itemIndex) => {
     if (selected !== itemValue) {
       setSelected(itemValue);

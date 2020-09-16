@@ -66,7 +66,9 @@ const RoomMoneyCollectAllScreen = () => {
   }, [motelState]);
   useEffect(() => {
     //load init data
+
     loadRoomApi(state, state.filterState);
+
   }, []);
   const updateState = (key, value) => {
     dispatch({ type: 'STATE_CHANGE', payload: { key, value } });
@@ -92,7 +94,6 @@ const RoomMoneyCollectAllScreen = () => {
         // year: settings.yearLists[selectedYearIndex],
         // qsearch: `${searchValue}`,
       });
-
       updateState('isLoading', false);
       if (!!rs.error) {
         rs.error.Code === 2 && signOut();
@@ -150,7 +151,7 @@ const RoomMoneyCollectAllScreen = () => {
     return array;
   }
   const onChangeRoomInfo = (value, index) => {
-    console.log(value, index);
+
     setPaymentData(updateItemByindex(index, {
       ...paymentData[index],
       paid: value,

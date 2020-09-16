@@ -203,7 +203,7 @@ const EditRoomScreen = ({ navigation, route }) => {
                 placeholder="5.000"
                 value={cf(room.PriceWater)}
                 onChangeText={(newValue) =>
-                  updateRoomState('PriceWater', newValue)
+                  updateRoomState('PriceWater', newValue.replace(/[^0-9\-]/g, ''))
                 }
                 style={styles.input}
                 textStyle={styles.textInput}

@@ -219,7 +219,7 @@ string imgwater
 
 */
 
-export const updateElectrictWater = async (params) => {
+export const updateElectricWater = async (params) => {
     try {
         const token = await getAccessToken();
         let res = await instance.get(`${path}/writewaterelectrict`, {

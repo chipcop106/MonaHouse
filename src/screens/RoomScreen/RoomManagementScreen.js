@@ -115,12 +115,12 @@ const RoomManagementScreen = () => {
 
     try {
       // console.log(listMotels);
-
       await getListRooms(
         {
           motelid: listMotels[selectedMotelIndex - 1]?.ID || 0,
           // sortby: listSortOptions[selectedSortIndex]?.id || 0,
           status: listSortOptions[selectedSortIndex]?.id || 0,
+          qsearch: filterList?.searchValue ?? ''
         },
         signOut
       );

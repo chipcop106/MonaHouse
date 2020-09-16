@@ -103,17 +103,21 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
   const { StatusRoomID, RoomID, RenterID } = item;
 
   const checkIsGoIn = () => {
-
-    if (StatusRoomID !== 1){
+    if (StatusRoomID !== 1) {
       return !(!!item.RenterDateOut && item.RenterDepositID === 0);
     } else {
-      return  false;
+      return false;
     }
-  }
+  };
   return (
     <View style={styles.footerAction}>
       <Button
-        onPress={() => navigation.navigate('RoomGoIn', { roomId: RoomID, isDeposit: !!RenterID })}
+        onPress={() =>
+          navigation.navigate('RoomGoIn', {
+            roomId: RoomID,
+            isDeposit: !!RenterID,
+          })
+        }
         style={[
           styles.actionButton,
           checkIsGoIn() && { borderColor: color.disabledTextColor },
@@ -129,7 +133,7 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
             style={styles.iconButton}
           />
         )}>
-        <Text style={checkIsGoIn()&& { color: color.disabledTextColor }}>
+        <Text style={checkIsGoIn() && { color: color.disabledTextColor }}>
           Dọn vào
         </Text>
       </Button>
@@ -190,6 +194,46 @@ const renderItemFooter = (footerProps, roomInfo, navigation) => {
 const RoomCard = ({ roomInfo, onPressaddFee }) => {
   const navigation = useNavigation();
   const { item } = roomInfo;
+  const renderStatusRoom = (caseIndex = item.StatusRoomID) => {
+    switch (caseIndex) {
+      case 1:
+        return (
+          <LinearGradient colors={color.gradients.danger} style={styles.badge}>
+            <Text style={styles.badgeText}>
+              {`Trống`}
+              {item.StatusRoomID === 3 && 'Sắp hết hợp đồng'}
+              {item.StatusRoomID === 4 && 'Sắp dọn vào'}
+            </Text>
+          </LinearGradient>
+        );
+      case 2:
+        return (
+          <LinearGradient colors={color.gradients.success} style={styles.badge}>
+            <Text style={styles.badgeText}>{'Đang thuê'}</Text>
+          </LinearGradient>
+        );
+      case 3:
+        return (
+          <LinearGradient colors={color.gradients.danger} style={styles.badge}>
+            <Text style={styles.badgeText}>{`Sắp hết hợp đồng`}</Text>
+          </LinearGradient>
+        );
+      case 4:
+        return (
+          <LinearGradient colors={color.gradients.danger} style={styles.badge}>
+            <Text style={styles.badgeText}>{`Sắp dọn vào`}</Text>
+          </LinearGradient>
+        );
+      case 14:
+        return (
+          <LinearGradient colors={color.gradients.danger} style={styles.badge}>
+            <Text style={styles.badgeText}>{`Sắp dọn ra`}</Text>
+          </LinearGradient>
+        );
+      default:
+        return null;
+    }
+  };
   return (
     <View style={styles.item}>
       <Card
@@ -236,27 +280,7 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
             </View>
           </View>
           <View style={[item.Renter && styles.space, styles.statusWrap]}>
-            <View style={styles.status}>
-              {item.StatusRoomID === 2 ? (
-                <LinearGradient
-                  colors={color.gradients.success}
-                  style={styles.badge}>
-                  <Text style={styles.badgeText}>
-                    {item.StatusRoomID === 2 && 'Đang thuê'}
-                  </Text>
-                </LinearGradient>
-              ) : (
-                <LinearGradient
-                  colors={color.gradients.danger}
-                  style={styles.badge}>
-                  <Text style={styles.badgeText}>
-                    {item.StatusRoomID === 1 && 'Trống'}
-                    {item.StatusRoomID === 3 && 'Sắp hết hợp đồng'}
-                    {item.StatusRoomID === 4 && 'Sắp dọn vào'}
-                  </Text>
-                </LinearGradient>
-              )}
-            </View>
+            <View style={styles.status}>{renderStatusRoom()}</View>
             <View style={styles.status}>
               {item.StatusRoomID !== 1 && item.StatusCollectID === 5 && (
                 <LinearGradient
@@ -324,41 +348,43 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
                 </LinearGradient>
               )}
             </View>
-            {!!item.RenterDateOut && (<>
-              <View style={[styles.status, {}]}>
-                <LinearGradient
-                  colors={color.gradients.danger}
-                  style={styles.badge}>
-                  <Text
-                    style={
-                      styles.badgeText
-                    }>{`Dọn ra ngày ${item.RenterDateOut}`}</Text>
-                </LinearGradient>
-              </View>
-              {!!!item.RenterDepositID ? (
+            {!!item.RenterDateOut && (
+              <>
                 <View style={[styles.status, {}]}>
                   <LinearGradient
                     colors={color.gradients.danger}
                     style={styles.badge}>
                     <Text
-                      style={styles.badgeText}>{`Chưa có ngưởi đặt cọc`}</Text>
-                  </LinearGradient>
-                </View>
-              ) : (
-                <View style={[styles.status, {}]}>
-                  <LinearGradient
-                    colors={color.gradients.success}
-                    style={styles.badge}>
-                    <Text
                       style={
                         styles.badgeText
-                      }>{`Đặt cọc ngày ${item.RenterDepositDateIn}`}</Text>
+                      }>{`Dọn ra ngày ${item.RenterDateOut}`}</Text>
                   </LinearGradient>
                 </View>
-              )}
-            </>)}
-
-
+                {!!!item.RenterDepositID ? (
+                  <View style={[styles.status, {}]}>
+                    <LinearGradient
+                      colors={color.gradients.danger}
+                      style={styles.badge}>
+                      <Text
+                        style={
+                          styles.badgeText
+                        }>{`Chưa có ngưởi đặt cọc`}</Text>
+                    </LinearGradient>
+                  </View>
+                ) : (
+                  <View style={[styles.status, {}]}>
+                    <LinearGradient
+                      colors={color.gradients.success}
+                      style={styles.badge}>
+                      <Text
+                        style={
+                          styles.badgeText
+                        }>{`Đặt cọc ngày ${item.RenterDepositDateIn}`}</Text>
+                    </LinearGradient>
+                  </View>
+                )}
+              </>
+            )}
           </View>
           {!!item.Renter && (
             <View style={[styles.balanceInfo]}>

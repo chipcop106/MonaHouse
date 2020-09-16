@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     },
 });
 
-const HistoryRecord = ({ style = {}, renterInfo = false, title = "Phòng 01" }) => {
+const HistoryRW = ({ style = {}, renterInfo = false, title = "Phòng 01" }) => {
     const [visible, setVisible] = React.useState(false);
     return (
         <>
@@ -286,4 +286,4 @@ const HistoryRecord = ({ style = {}, renterInfo = false, title = "Phòng 01" }) 
     );
 };
 
-export default HistoryRecord;
+export default HistoryRW;

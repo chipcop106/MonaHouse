@@ -3,6 +3,7 @@ import CreateDataContext from './CreateDataContext';
 import { addRenterOnRoom } from '~/api/RenterAPI';
 import { getRoomById } from '~/api/MotelAPI';
 import { Alert } from 'react-native';
+import { settings } from '~/config'
 
 const initialState = {
 	step: 0,
@@ -84,6 +85,16 @@ const goInReducer = (prevstate, action) => {
 				...prevstate,
 				dataForm: updateItemByindex({
 					index: prevstate.step,
+					item: action.payload,
+					array: prevstate.dataForm,
+				}),
+			};
+		}
+		case 'SET_STATE_dataMeta': {
+			return {
+				...prevstate,
+				dataForm: updateItemByindex({
+					index: 1,
 					item: action.payload,
 					array: prevstate.dataForm,
 				}),
@@ -186,7 +197,7 @@ const loadRoomInfo = (dispatch) => async (value) => {
 		const res = await getRoomById({ roomid });
 		console.log(res);
 		if (res.Code === 1) {
-			const { room, addonsdefault, water, electric, renter } = res.Data;
+			const { room, addonsdefault, water, electric, renter, renterDeposit } = res.Data;
 			const dateGoIn = (()=>{
 				const hasRenter =  !!renter?.renter?.ID ?? false;
 				if(hasRenter) return new Date(renter?.renter?.Dateout);
@@ -214,8 +225,26 @@ const loadRoomInfo = (dispatch) => async (value) => {
 							: null,
 					},
 					renter: renter?.renter ?? '',
+					renterDeposit: renterDeposit?.renter ?? '',
+					renterDepositImages: renterDeposit?.renterimage ?? [],
 					electrictIndex: new IndexPath(0),
 					services: !!room.addonsdefault ? room.addonsdefault : [], // [{"ID":1,"Name":"Wifi","Price":100000}]
+				},
+			});
+			dispatch({
+				type: 'SET_STATE_dataMeta',
+				payload: {
+					fullName: '',
+					phoneNumber: '',
+					email: '',
+					job: '',
+					provinceIndex: new IndexPath(0),
+					numberPeople: '1',
+					relationshipIndex: new IndexPath(0),
+					note: '',
+					licenseImages: null,
+					cityLists: settings.cityLists,
+					relationLists: settings.relationLists,
 				},
 			});
 		} else if (res.Code === 0) {

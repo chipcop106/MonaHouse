@@ -56,7 +56,7 @@ const getListMotels = (dispatch) => async (callback) => {
         return false;
     }
 };
-const getSortOpsions = dispatch => async () =>{
+const getSortOptions = dispatch => async () =>{
     dispatch({ type: 'SET_LOADING'});
     try {
         const res = await getOptionsSortRoom();
@@ -65,13 +65,13 @@ const getSortOpsions = dispatch => async () =>{
         res?.Code === 1 && dispatch({type: "GET_SORT_OPT", payload: res.Data})
         
     } catch (error) {
-        console.log( 'getSortOpsions error: ', error);
+        console.log( 'getSortOptions error: ', error);
     }
 }
 
 export const { Context, Provider } = CreateDataContext(
     motelReducer,
-    { getListMotels, getSortOpsions },
+    { getListMotels, getSortOptions },
     {
         listMotels: [],
         listSortOptions: [],

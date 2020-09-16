@@ -5,6 +5,7 @@ import { settings } from "~/config";
 import { updateWaterElectric } from "~/api/MotelAPI";
 import { goOut } from "~/api/RenterAPI";
 import Moment from "moment";
+import { renderNumberByArray } from '~/utils';
 const defaultState = {
   step: 0,
   isLoading: false,
@@ -32,13 +33,12 @@ const defaultState = {
       depositMoney: "",
       depositType: "",
       checkoutDeposit: "",
-      actuallyReceived: "",
+      actuallyReceived: 0,
       paymentTypeIndex: new IndexPath(0),
       billInfo: {},
     },
   ],
 };
-
 const goOutReducer = (prevstate, action) => {
   switch (action.type) {
     case "STEP_STATE_CHANGE": {
@@ -209,6 +209,9 @@ const loadDataForm = (dispatch) => async (data) => {
           waterImage: water.image_thumbnails || "",
           oldElectrictNumber: electric?.number ?? 0,
           oldWaterNumber: water?.number ?? 0,
+          StatusRoomID: data?.StatusRoomID ?? 0,
+          StatusCollectID: data?.StatusCollectID ?? 0,
+          StatusWEID: data?.StatusCollectID ?? 0,
         },
       },
       // {
@@ -234,9 +237,8 @@ const loadDataBill = (dispatch) => async (data) => {
       let rs = "";
       const endOfMonth = Moment().endOf("month").format("DD");
       try {
-        rs = Math.round(data?.PriceRoom / parseInt(endOfMonth));
-        rs = Math.ceil(rs * 0.001) * 1000;
-        rs = data?.Days * rs;
+        rs = data?.priceRoom / parseInt(endOfMonth);
+        rs = Math.ceil(data?.soNgayO * rs * 0.001) * 1000;
 
         return  rs
       } catch (e) {
@@ -244,21 +246,25 @@ const loadDataBill = (dispatch) => async (data) => {
       }
       return rs
     })();
+    const priceAddon  = renderNumberByArray(data?.dichVu ?? [], 'servicePrice')
+    const incurredFee = renderNumberByArray(data?.phiPhatSinh ?? [], 'feePrice');
 
     const dataBill = [
       {
-        electricDiff: data?.ElectricNumber ?? 0,
-        waterDiff: data?.WaterNumber ?? 0,
-        electricDiffPrice: data?.ElectricPrice ?? 0,
-        waterDiffPrice: data?.WaterPrice ?? 0,
-        dateDiff: data?.Days ?? 0,
-        priceAddon: data?.PriceAddon ?? 0,
-        priceRoomBase: data?.PriceRoom ?? 0,
-        priceRoomByDate: priceByDate ?? 0,
+        electricDiff: data?.soDienDaDung ?? 0,
+        waterDiff: data?.soNuocDaDung ?? 0,
+        electricDiffPrice: parseInt(data?.giaDien) * parseInt(data?.soDienDaDung) ?? 0,
+        waterDiffPrice: parseInt(data?.giaNuoc) * parseInt(data?.soNuocDaDung) ?? 0,
+        dateDiff: data?.soNgayO ?? 0,
+        priceAddon: priceAddon || 0,
+        priceRoomBase: data?.priceRoom ?? 0,
+        priceRoomByDate: ( data?.tongTienO ?? priceByDate ) || 0,
         totalDebt: data?.TotalDebt ?? 0,
-        incurredFee: data?.FeeIncurred ?? 0,
-        deposit: data?.Deposit,
-        totalCollect: data?.TotalCollect ?? 0,
+        incurredFee: incurredFee || 0,
+        deposit: data?.tienCoc,
+        dept: data?.tienNo ?? 0,
+        changeMoney: data?.tienDu ?? 0,
+        totalCollect: data?.tongTienCanThu ?? 0,
       },
     ];
     await dispatch({ type: "SET_BILL", payload: dataBill });
@@ -314,23 +320,18 @@ const moveOut = (dispatch) => async (data) => {
     // renterid:1065
     // roomid:2378
     // paid:0
-    // payment:1
+    // payment:1,
+    // dateout
     //}
-    console.log({
-      renterid: parseInt(dataForm[0].renterID, 10),
-      roomid: parseInt(dataForm[0].roomID, 10),
-      paid: parseInt(dataForm[1].actuallyReceived, 10),
-      payment: dataForm[1].paymentTypeIndex.row + 1 || 1,
-    });
-
     const res = await goOut({
       renterid: parseInt(dataForm[0].renterID, 10),
       roomid: parseInt(dataForm[0].roomID, 10),
       paid: parseInt(dataForm[1].actuallyReceived, 10),
+      dateout: Moment(dataForm[0].dateGoOut).format('DD/MM/YYYY'),
       payment: dataForm[1].paymentTypeIndex.row + 1 || 1,
     });
-
     dispatch({ type: "SET_LOADING", payload: false });
+    return  res;
   } catch (error) {
     console.log("goOut error:", error);
     dispatch({ type: "SET_LOADING", payload: false });

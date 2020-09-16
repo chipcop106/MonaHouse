@@ -227,3 +227,24 @@ export const roundNumberThounsand = (number) => {
   number *= 1;
   return number >= 1000 ? Math.ceil(number * 0.001) * 1000 : number;
 };
+export const renderNumberByArray = (arr, key = '') =>{
+  let rs = 0;
+  try {
+    if( Array.isArray(arr) && arr.length > 1 ){
+      if (!!key) {
+        rs = arr.map(i => i[key]).reduce( (x, y) => parseInt(x) + parseInt(y));
+      } else {
+        rs = arr.reduce((x, y) => parseInt(x) + parseInt(y));
+      }
+    } else if(arr.length === 1){
+      if (!!key) {
+        rs = arr[0][key];
+      } else {
+        rs = arr[0];
+      }
+    }
+  } catch (e) {
+    console.log('renderNumberByArray err', e, arr);
+  }
+  return rs
+}

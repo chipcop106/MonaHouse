@@ -39,7 +39,7 @@ const roomReducer = (prevstate, { type, payload }) => {
     case 'GET_ELECTRICT_HISTORY': {
       return {
         ...prevstate,
-        listElectrictHistory: payload,
+        listElectricHistory: payload,
       };
     }
 
@@ -146,7 +146,7 @@ const getListElectrict = (dispatch) => async (
   }
 };
 
-const getElectrictHistory = (dispatch) => async (
+const getElectricHistory = (dispatch) => async (
   {
     motelid = 0,
     roomid = 0,
@@ -166,14 +166,13 @@ const getElectrictHistory = (dispatch) => async (
       sort,
       status,
     });
-    if (res.Code === 2) {
-      Alert.alert('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!');
-      if (signOut) signOut();
-    }
-    res.Code !== 1 && errorHandle(res.Code, { signOut });
-    dispatch({ type: 'GET_ELECTRICT_HISTORY', payload: res.Data });
+    // return res.Code
+
+    dispatch({ type: 'GET_ELECTRICT_HISTORY', payload: res?.Data ?? []});
+    return  res;
   } catch (error) {
-    Alert.alert(JSON.stringify(error));
+    // Alert.alert(JSON.stringify(error));
+    return { error: error };
   }
 };
 
@@ -296,7 +295,7 @@ export const { Context, Provider } = CreateDataContext(
   {
     getListRooms,
     getListElectrict,
-    getElectrictHistory,
+    getElectricHistory,
     updateElectrict,
     getListMonthlyBill,
     submitMonthlyPaymentAction,
@@ -316,8 +315,8 @@ export const { Context, Provider } = CreateDataContext(
       searchValue: '',
     },
     listRooms: [],
-    listElectrictRooms: [],
-    listElectrictHistory: [],
+    listElectricRooms: [],
+    listElectricHistory: [],
     listMonthlyBill: [],
     listPaymentHistory: []
   }

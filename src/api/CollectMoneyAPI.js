@@ -168,4 +168,21 @@ export const historyCollectMoney = async (params) => {
     return result;
 };
 
-
+// token:token người dùng
+// roomid:
+export const getBillOneRoom = async (params = { roomid: 0 }) => {
+    let result;
+    try {
+        const token = await getAccessToken();
+        let res = await instance.get(`${path}/BeforeCollectMoneyOne`, {
+            params: {
+                ...params,
+                token,
+            },
+        });
+        result = res.data;
+    } catch (error) {
+        result = error;
+    }
+    return result;
+};

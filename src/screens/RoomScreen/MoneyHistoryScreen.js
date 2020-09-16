@@ -18,7 +18,7 @@ import { historyCollectMoney } from '~/api/CollectMoneyAPI';
 import moment from 'moment';
 const MoneyHistoryScreen = () => {
   const { signOut } = useContext(AuthContext);
-  const { state: roomState, getElectrictHistory, updateState } = useContext(
+  const { state: roomState, updateState: updateRoomState } = useContext(
     RoomContext
   );
   const { state: motelState } = useContext(MotelContext);

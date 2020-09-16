@@ -91,10 +91,10 @@ const history = StyleSheet.create({
 });
 
 const RoomDetailMoneyHistoryScreen = () => {
-    const { state: roomState, getElectrictHistory } = useContext(RoomContext);
+    const { state: roomState, getElectricHistory } = useContext(RoomContext);
     const { state: motelState } = useContext(MotelContext);
     const { signOut } = useContext(AuthContext);
-    const { listElectrictHistory, filterStateDefault } = roomState;
+    const { listElectricHistory, filterStateDefault } = roomState;
 
     const onFilterChange = (filter) => {
         const { selectedMonthIndex, selectedMotelIndex } = filter;
@@ -124,7 +124,7 @@ const RoomDetailMoneyHistoryScreen = () => {
             <List
                 contentContainerStyle={styles.contentCard}
                 style={styles.container}
-                data={listElectrictHistory}
+                data={listElectricHistory}
                 keyExtractor={(item) => item.id}
                 renderItem={(item) => (
                     <View style={history.container}>

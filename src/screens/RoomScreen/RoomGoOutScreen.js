@@ -18,6 +18,7 @@ import UserInfo from "~/components/UserInfo";
 import { getRoomById } from "~/api/MotelAPI";
 import Loading from '~/components/common/Loading';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { Context as AuthContext } from '~/context/AuthContext'
 
 const titleHeader = ["Thông tin phòng, ki ốt", "Thông tin thanh toán"];
 const RenderForm = () => {
@@ -45,6 +46,7 @@ const RenderForm = () => {
 };
 
 const RoomGoOutScreen = ({ navigation }) => {
+  const { signOut } = useContext(AuthContext);
   const {
     state: RoomGoOutState,
     changeStepForm,
@@ -101,11 +103,25 @@ const RoomGoOutScreen = ({ navigation }) => {
 
   const sendFormData = async () => {
     setSpinner(true);
-    await moveOut(RoomGoOutState);
+    const res =  await moveOut(RoomGoOutState);
     setSpinner(false);
-    clearState();
-    navigation.pop();
-    updateState_Room("isReload", true);
+    await new Promise(a => setTimeout(a,200));
+    if( res.Code === 1 ){
+      clearState();
+      navigation.pop();
+      updateState_Room("isReload", true);
+    } else if( res.Code === 0 ){
+      console.log(res);
+      Alert.alert('Oops!!', JSON.stringify(res));
+    }  else if( res.Code === 2 ){
+      console.log(res);
+      signOut();
+      Alert.alert('Oops!!', 'Phiên đăng nhập của bạn đã hết');
+    } else {
+      console.log(res);
+      Alert.alert('Oops!!', JSON.stringify(res));
+    }
+
   };
   const _onRefresh = async () => {
     setRefreshing(true);

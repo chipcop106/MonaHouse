@@ -1,11 +1,9 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
 import { Text, StyleSheet, View, Image, FlatList } from "react-native";
-import { Input, Select, SelectItem, Button, Icon } from "@ui-kitten/components";
+import { Input, Select, SelectItem, Button, Icon, IndexPath } from '@ui-kitten/components'
 import ImagePicker from "react-native-image-crop-picker";
-import { sizes, color } from "../../config";
+import { sizes, color, settings } from '~/config';
 import { Context as RoomGoInContext } from "../../context/RoomGoInContext";
-import { getCity } from "../../api/AccountAPI";
-import { getRelationships, uploadRenterImage } from "~/api/RenterAPI";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import RBSheet from "react-native-raw-bottom-sheet";
 const RenterInfoForm = () => {
@@ -14,18 +12,13 @@ const RenterInfoForm = () => {
   );
   const stateRenterInfo = RoomGoInState.dataForm[RoomGoInState.step];
   const { cityLists, relationLists } = stateRenterInfo;
+  const roomInfo = RoomGoInState.dataForm[0];
+  const { renterDeposit } = roomInfo;
 
-  const loadData = async () => {
-    const resProvinces = await getCity();
-    if (resProvinces.Code === 1) {
-      changeStateFormStep("cityLists", resProvinces.Data);
-    }
-
-    const resRelationships = await getRelationships();
-    if (resRelationships.Code === 1) {
-      changeStateFormStep("relationLists", resRelationships.Data);
-    }
-  };
+  // const loadData = () => {
+  //   changeStateFormStep("cityLists", settings.cityLists);
+  //   changeStateFormStep("relationLists", settings.relationLists);
+  // };
 
   // const handleChoosePhoto = async (key) => {
   //     // const options = {
@@ -58,10 +51,34 @@ const RenterInfoForm = () => {
   //     }
   // };
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  // useEffect(() => {
+  //   loadData();
+  // }, []);
+  const _onPressUseDepositInfo = () => {
+    console.log('_onPressUseDepositInfo', renterDeposit);
+    changeStateFormStep('fullName', renterDeposit.FullName);
+    changeStateFormStep('phoneNumber', renterDeposit.Phone);
+    changeStateFormStep('job', renterDeposit.Job);
+    changeStateFormStep(
+      'provinceIndex',
+      new IndexPath(
+        stateRenterInfo.cityLists.findIndex((item) => {
+          return item.ID === renterDeposit.CityID;
+        })
+      )
+    );
+    changeStateFormStep('numberPeople', `${ renterDeposit.Quantity }`);
+    changeStateFormStep(
+      'relationshipIndex',
+      new IndexPath(
+        stateRenterInfo.relationLists.findIndex((item) => {
+          return item.id === renterDeposit.RelationshipID;
+        })
+      )
+    );
+    changeStateFormStep('note', renterDeposit.Note)
 
+  }
 
   const refRBSheet = useRef();
   let RBSheetKey = '';
@@ -128,7 +145,7 @@ const RenterInfoForm = () => {
   }
   const handleChoosePhoto = (key) => {
     RBSheetKey = key;
-    refRBSheet.current.open();
+    refRBSheet.current?.open();
   };
   return (
     <>
@@ -143,7 +160,7 @@ const RenterInfoForm = () => {
                 placeholder=""
                 value={stateRenterInfo.fullName}
                 onChangeText={(nextValue) =>
-                  changeStateFormStep("fullName", nextValue)
+                  changeStateFormStep('fullName', nextValue)
                 }
                 textContentType="none"
                 keyboardType="default"
@@ -156,28 +173,25 @@ const RenterInfoForm = () => {
                 placeholder="09xxxxxx"
                 value={stateRenterInfo.phoneNumber}
                 onChangeText={(nextValue) =>
-                  changeStateFormStep(
-                    "phoneNumber",
-                    nextValue
-                  )
+                  changeStateFormStep('phoneNumber', nextValue)
                 }
                 textContentType="none"
                 keyboardType="numeric"
               />
             </View>
             {/* <View style={[styles.formRow]}>
-                            <Input
-                                textStyle={styles.textInput}
-                                label="Địa chỉ email"
-                                placeholder=""
-                                value={stateRenterInfo.email}
-                                onChangeText={(nextValue) =>
-                                    changeStateFormStep("email", nextValue)
-                                }
-                                textContentType="none"
-                                keyboardType="email-address"
-                            />
-                        </View> */}
+                <Input
+                    textStyle={styles.textInput}
+                    label="Địa chỉ email"
+                    placeholder=""
+                    value={stateRenterInfo.email}
+                    onChangeText={(nextValue) =>
+                        changeStateFormStep("email", nextValue)
+                    }
+                    textContentType="none"
+                    keyboardType="email-address"
+                />
+            </View> */}
             <View style={[styles.formRow]}>
               <Input
                 textStyle={styles.textInput}
@@ -185,7 +199,7 @@ const RenterInfoForm = () => {
                 placeholder="Văn phòng, sinh viên, phổ thông, khác"
                 value={stateRenterInfo.job}
                 onChangeText={(nextValue) =>
-                  changeStateFormStep("job", nextValue)
+                  changeStateFormStep('job', nextValue)
                 }
                 textContentType="none"
                 keyboardType="default"
@@ -195,21 +209,17 @@ const RenterInfoForm = () => {
               <Select
                 label="Quê quán"
                 value={
-                  cityLists[stateRenterInfo.provinceIndex.row]
-                    ?.CityName ?? "Chọn tỉnh thành"
+                  cityLists[stateRenterInfo?.provinceIndex?.row ?? 0]
+                    ?.CityName ?? 'Chọn tỉnh thành'
                 }
                 selectedIndex={stateRenterInfo.provinceIndex}
                 onSelect={(index) =>
-                  changeStateFormStep("provinceIndex", index)
-                }
-              >
+                  changeStateFormStep('provinceIndex', index)
+                }>
                 {!!cityLists
                   ? cityLists.map((option) => (
-                    <SelectItem
-                      key={option.ID}
-                      title={option.CityName}
-                    />
-                  ))
+                      <SelectItem key={option.ID} title={option.CityName} />
+                    ))
                   : null}
               </Select>
             </View>
@@ -220,10 +230,7 @@ const RenterInfoForm = () => {
                 placeholder="0"
                 value={stateRenterInfo.numberPeople}
                 onChangeText={(nextValue) =>
-                  changeStateFormStep(
-                    "numberPeople",
-                    nextValue
-                  )
+                  changeStateFormStep('numberPeople', nextValue)
                 }
                 textContentType="none"
                 keyboardType="numeric"
@@ -233,27 +240,17 @@ const RenterInfoForm = () => {
               <Select
                 label="Quan hệ"
                 value={
-                  relationLists[
-                    stateRenterInfo.relationshipIndex.row
-                  ]?.text ?? "Chọn quan hệ"
+                  relationLists[stateRenterInfo?.relationshipIndex?.row ?? 0]
+                    ?.text ?? 'Chọn quan hệ'
                 }
-                selectedIndex={
-                  stateRenterInfo.relationshipIndex
-                }
+                selectedIndex={stateRenterInfo.relationshipIndex}
                 onSelect={(index) =>
-                  changeStateFormStep(
-                    "relationshipIndex",
-                    index
-                  )
-                }
-              >
+                  changeStateFormStep('relationshipIndex', index)
+                }>
                 {relationLists
                   ? relationLists.map((option) => (
-                    <SelectItem
-                      key={option.id}
-                      title={option.text}
-                    />
-                  ))
+                      <SelectItem key={option.id} title={option.text} />
+                    ))
                   : null}
               </Select>
             </View>
@@ -264,7 +261,7 @@ const RenterInfoForm = () => {
                 placeholder=""
                 value={stateRenterInfo.note}
                 onChangeText={(nextValue) =>
-                  changeStateFormStep("note", nextValue)
+                  changeStateFormStep('note', nextValue)
                 }
                 textContentType="none"
                 keyboardType="default"
@@ -274,28 +271,23 @@ const RenterInfoForm = () => {
             <View style={[styles.formRow]}>
               <View style={{ marginBottom: 20 }}>
                 <Button
-                  onPress={() =>
-                    handleChoosePhoto("licenseImages")
-                  }
+                  onPress={() => handleChoosePhoto('licenseImages')}
                   accessoryLeft={() => (
                     <Icon
                       name="camera-outline"
                       fill={color.whiteColor}
                       style={sizes.iconButtonSize}
                     />
-                  )}
-                >
+                  )}>
                   Ảnh giấy tờ
-                                </Button>
+                </Button>
               </View>
 
               {stateRenterInfo.licenseImages &&
                 stateRenterInfo.licenseImages.length > 0 && (
                   <FlatList
                     data={stateRenterInfo.licenseImages}
-                    keyExtractor={(item, index) =>
-                      `${index}`
-                    }
+                    keyExtractor={(item, index) => `${index}`}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     renderItem={({ item }) => (
@@ -304,13 +296,9 @@ const RenterInfoForm = () => {
                           source={{
                             uri: item.UrlIMG,
                           }}
-                          style={[
-                            styles.imagePreview,
-                          ]}
+                          style={[styles.imagePreview]}
                         />
-                        <View
-                          style={styles.deleteImage}
-                        >
+                        <View style={styles.deleteImage}>
                           <TouchableOpacity>
                             <Icon
                               name="minus"
@@ -318,9 +306,7 @@ const RenterInfoForm = () => {
                                 width: 25,
                                 height: 30,
                               }}
-                              fill={
-                                color.redColor
-                              }
+                              fill={color.redColor}
                             />
                           </TouchableOpacity>
                         </View>
@@ -331,6 +317,22 @@ const RenterInfoForm = () => {
             </View>
           </View>
         </View>
+        {/* end renter info form  */}
+        { !!renterDeposit?.ID && <Button
+          style={{backgroundColor: 'transparent'}}
+          status={'success'}
+          appearance={'outline'}
+          onPress={_onPressUseDepositInfo}
+          accessoryLeft={() => (
+            <Icon
+              name="person-done-outline"
+              fill={color.primary}
+              style={sizes.iconButtonSize}
+            />
+          )}>
+          Lấy thông tin đặt cọc
+        </Button>
+        }
       </View>
       <RBSheet
         ref={refRBSheet}
@@ -340,51 +342,56 @@ const RenterInfoForm = () => {
         height={260}
         customStyles={{
           wrapper: {
-            backgroundColor: "rgba(0,0,0,0.8)"
+            backgroundColor: 'rgba(0,0,0,0.8)',
           },
           container: {
-            backgroundColor: "transparent",
+            backgroundColor: 'transparent',
             padding: 15,
           },
           draggableIcon: {
-            backgroundColor: "transparent"
-          }
-        }}
-      >
-        <View onLayout={({ nativeEvent: { layout: { x, y, width, height } } }) => {
-          // alert(height);
+            backgroundColor: 'transparent',
+          },
         }}>
+        <View>
           <View style={styles.listButtonWrap}>
             <TouchableOpacity
               style={styles.listButton}
-              onPress={_onPressTakePhotos}
-            >
-
+              onPress={_onPressTakePhotos}>
               <Text style={[styles.listButton_txt]}>Chụp ảnh</Text>
               <View style={styles.listButton_icon}>
-                <Icon name="camera-outline" fill={color.primary} style={{ width: 24, height: 24 }} />
+                <Icon
+                  name="camera-outline"
+                  fill={color.primary}
+                  style={{ width: 24, height: 24 }}
+                />
               </View>
             </TouchableOpacity>
-            <View style={{ height: 1, backgroundColor: "#e1e1e1" }} />
+            <View style={{ height: 1, backgroundColor: '#e1e1e1' }} />
             <TouchableOpacity
               style={styles.listButton}
-              onPress={_onPressGetPhotos}
-            >
-
+              onPress={_onPressGetPhotos}>
               <Text style={[styles.listButton_txt]}>Thư viện ảnh</Text>
               <View style={styles.listButton_icon}>
-                <Icon name="image-outline" fill={color.primary} style={{ width: 24, height: 24, }} />
+                <Icon
+                  name="image-outline"
+                  fill={color.primary}
+                  style={{ width: 24, height: 24 }}
+                />
               </View>
             </TouchableOpacity>
           </View>
           <TouchableOpacity
             style={[styles.listButton, styles.btnClose]}
-            onPress={() => refRBSheet.current.close()}
-          >
-            <Text style={[styles.listButton_txt, { color: '#147AFC', textAlign: "center" }]}>Trở lại</Text>
+            onPress={() => refRBSheet.current.close()}>
+            <Text
+              style={[
+                styles.listButton_txt,
+                { color: '#147AFC', textAlign: 'center' },
+              ]}>
+              Trở lại
+            </Text>
           </TouchableOpacity>
         </View>
-
       </RBSheet>
     </>
   );

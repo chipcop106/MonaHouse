@@ -7,7 +7,7 @@ import {
 import { Icon, Text } from '@ui-kitten/components';
 import { color, shadowStyle } from '~/config';
 import { currencyFormat } from '~/utils';
-
+import moment from 'moment';
 const { height } = Dimensions.get('window');
 
 const history = StyleSheet.create({
@@ -96,7 +96,7 @@ const HistoryRecord = ({
           <Text style={history.title}>{data.Note}</Text>
           <View style={history.meta}>
             <Text style={history.money}>{currencyFormat(data.Paid)}</Text>
-            <Text style={history.date}>{`${data.Month}/${data.Year}`}</Text>
+            <Text style={history.date}>{`${ moment(data.CreatedDate).format('DD/MM/YY hh:mm') }`}</Text>
           </View>
         </View>
       </View>
