@@ -40,7 +40,7 @@ import SettingPremiumPackageScreen from "~/screens/SettingScreen/SettingPremiumP
 import SettingElectrictScreen from "~/screens/SettingScreen/SettingElectrictScreen";
 import SettingSMSScreen from "~/screens/SettingScreen/SettingSMSScreen";
 import SettingRoomScreen from "~/screens/SettingScreen/SettingRoomScreen";
-import SettingServiceScreen from "~/screens/SettingScreen/SettingServiceScreen";
+// import SettingServiceScreen from "~/screens/SettingScreen/SettingServiceScreen";
 import SettingChangePasswordScreen from "~/screens/SettingScreen/SettingChangePasswordScreen";
 import SettingHouseScreen from "~/screens/SettingScreen/SettingHouseScreen";
 import SettingHouseDetailScreen from "~/screens/SettingScreen/SettingHouseDetailScreen";
@@ -461,13 +461,13 @@ const SettingStack = () => {
           title: "Cấu hình điện nước",
         }}
       />
-      <Stack.Screen
-        name="SettingService"
-        component={SettingServiceScreen}
-        options={{
-          title: "Dịch vụ kèm theo",
-        }}
-      />
+      {/*<Stack.Screen*/}
+      {/*  name="SettingService"*/}
+      {/*  component={SettingServiceScreen}*/}
+      {/*  options={{*/}
+      {/*    title: "Dịch vụ kèm theo",*/}
+      {/*  }}*/}
+      {/*/>*/}
       <Stack.Screen
         name="SettingNotification"
         component={SettingNotificationScreen}

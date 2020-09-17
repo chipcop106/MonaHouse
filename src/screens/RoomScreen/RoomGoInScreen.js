@@ -12,6 +12,7 @@ import { Context as RoomGoInContext } from '../../context/RoomGoInContext';
 import { Context as AuthContext } from '../../context/AuthContext';
 import { Context as RoomContext } from '~/context/RoomContext';
 import Loading from '~/components/common/Loading';
+import { currencyFormat } from '~/utils'
 
 const titleHeader = [
   'Thông tin phòng, ki ốt',
@@ -119,10 +120,10 @@ const RoomGoInScreen = ({ navigation, route }) => {
       // dat coc choi cho vui
 
     } else {
-      if (pageNum < parseInt(totalDeposit) + parseInt(totalPrepay)) {
+      if (pageNum < parseInt(totalDeposit) + parseInt(0)) {
         return Alert.alert(
-          `Số thực nhận không được nhỏ hơn ${
-            parseInt(totalDeposit) + parseInt(totalPrepay)
+          `Số thực nhận không được nhỏ hơn tiền cọc ${
+            currencyFormat(parseInt(totalDeposit)) + parseInt(0)
           }`
         );
       }
@@ -294,7 +295,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
   return (
     <Layout style={styles.container} level="3">
       {!!RoomGoinState.isLoading ? (
-        <View style={{ alignItems: 'center', padding: 15 }}>
+        <View style={{ alignItems: 'center', padding: 15, flex: 1, justifyContent: 'center' }}>
           <Loading />
         </View>
       ) : (

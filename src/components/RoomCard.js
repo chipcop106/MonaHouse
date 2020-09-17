@@ -64,7 +64,7 @@ const renderItemHeader = (headerprops, roomInfo, navigation) => {
           })
         }>
         <Text style={styles.roomName} ellipsizeMode="tail" numberOfLines={1}>
-          {item.RoomName}
+          {`${item.RoomName}${!!item.Renter ? ` - ${item.Renter}` : ``}`}
         </Text>
       </TouchableOpacity>
       <OverflowMenu
@@ -491,7 +491,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   status: {
-    margin: 5,
+    margin: 2,
   },
   badge: {
     padding: 10,

@@ -48,6 +48,7 @@ const SettingElectrictScreen = ({ navigation }) => {
                 <View style={styles.secWrap}>
                     <View style={styles.formGroup}>
                         <Input
+                          returnKeyType={"done"}
                             label="Giá phòng mặc định"
                             placeholder="0"
                             style={styles.inputControl}
@@ -60,6 +61,7 @@ const SettingElectrictScreen = ({ navigation }) => {
                     </View>
                     <View style={styles.formGroup}>
                         <Input
+                          returnKeyType={"done"}
                             label="Giá nước / m3"
                             placeholder="0"
                             style={styles.inputControl}
@@ -72,6 +74,7 @@ const SettingElectrictScreen = ({ navigation }) => {
                     </View>
                     <View style={[styles.formGroup, { paddingBottom: 15 }]}>
                         <Input
+                          returnKeyType={"done"}
                             label="Giá điện / kW"
                             placeholder="0"
                             style={styles.inputControl}

@@ -264,6 +264,7 @@ const loadDataBill = (dispatch) => async (data) => {
         deposit: data?.tienCoc,
         dept: data?.tienNo ?? 0,
         changeMoney: data?.tienDu ?? 0,
+        collectedMoneyInMonth: data?.tienNhaDaDong ?? 0,
         totalCollect: data?.tongTienCanThu ?? 0,
       },
     ];

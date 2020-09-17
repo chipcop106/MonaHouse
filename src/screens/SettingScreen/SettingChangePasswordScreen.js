@@ -42,6 +42,7 @@ const SettingChangePasswordScreen = ({ navigation, route = {} }) => {
                 <View style={styles.secWrap}>
                     <View style={styles.formGroup}>
                         <Input
+                          returnKeyType={"done"}
                             label="Mật khẩu cũ"
                             placeholder="Nhập mật khẩu cũ"
                             style={styles.inputControl}
@@ -56,6 +57,7 @@ const SettingChangePasswordScreen = ({ navigation, route = {} }) => {
                     </View>
                     <View style={styles.formGroup}>
                         <Input
+                          returnKeyType={"done"}
                             label="Mật khẩu mới"
                             placeholder="Nhập mật khẩu mới"
                             style={styles.inputControl}
@@ -70,6 +72,7 @@ const SettingChangePasswordScreen = ({ navigation, route = {} }) => {
                     </View>
                     <View style={[styles.formGroup, { paddingBottom: 15 }]}>
                         <Input
+                          returnKeyType={"done"}
                             label="Nhập lại khẩu mới"
                             placeholder="Nhập lại mật khẩu mới"
                             style={[styles.inputControl]}

@@ -37,7 +37,7 @@ const initialState = {
 			numberPeople: '1',
 			relationshipIndex: new IndexPath(0),
 			note: '',
-			licenseImages: null,
+			licenseImages: [],
 			cityLists: [],
 			relationLists: [],
 		},
@@ -191,9 +191,28 @@ const addPeopleToRoom = (dispatch) => async (params, actions) => {
 	}
 };
 const loadRoomInfo = (dispatch) => async (value) => {
+
 	const roomid = value || '';
 	dispatch({ type: 'SET_LOADING', payload: true });
 	try {
+		dispatch({
+			type: 'SET_STATE_dataMeta',
+			payload: {
+				fullName: '',
+				phoneNumber: '',
+				email: '',
+				job: '',
+				provinceIndex: new IndexPath(0),
+				numberPeople: '1',
+				relationshipIndex: new IndexPath(0),
+				note: '',
+				licenseImages: [],
+				cityLists: settings.cityLists,
+				relationLists: settings.relationLists,
+			},
+		});
+
+
 		const res = await getRoomById({ roomid });
 		console.log(res);
 		if (res.Code === 1) {
@@ -231,22 +250,7 @@ const loadRoomInfo = (dispatch) => async (value) => {
 					services: !!room.addonsdefault ? room.addonsdefault : [], // [{"ID":1,"Name":"Wifi","Price":100000}]
 				},
 			});
-			dispatch({
-				type: 'SET_STATE_dataMeta',
-				payload: {
-					fullName: '',
-					phoneNumber: '',
-					email: '',
-					job: '',
-					provinceIndex: new IndexPath(0),
-					numberPeople: '1',
-					relationshipIndex: new IndexPath(0),
-					note: '',
-					licenseImages: null,
-					cityLists: settings.cityLists,
-					relationLists: settings.relationLists,
-				},
-			});
+
 		} else if (res.Code === 0) {
 		} else if (res.Code === 2) {
 			dispatch({ type: 'SET_LOGOUT', payload: true });

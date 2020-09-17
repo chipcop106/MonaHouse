@@ -144,7 +144,7 @@ export const convertNumberToText = (number) => {
 export const currencyFormat = (value, seperator = ".", locale = "vi-VN") => {
   value += "";
   let input = value.replace(/[^0-9\-]/g, "");
-  input = Number(input);
+  if(input.length > 0)  input = Number(input);
   return input.toLocaleString(locale); // , en-VN || . vi-VN  // default vi-VN
 };
 

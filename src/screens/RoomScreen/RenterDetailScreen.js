@@ -202,6 +202,7 @@ const RenterModal = forwardRef(
           </Text>
           <View style={styles.formRow}>
             <Input
+              returnKeyType={"done"}
               textStyle={styles.textInput}
               label="Họ và tên"
               placeholder="Họ tên"
@@ -212,6 +213,7 @@ const RenterModal = forwardRef(
           </View>
           <View style={styles.formRow}>
             <Input
+              returnKeyType={"done"}
               textStyle={styles.textInput}
               label="Số điện thoại"
               placeholder="VD: 0969xxxxx"
@@ -374,8 +376,8 @@ const RenterDetailScreen = ({ navigation, route }) => {
   };
 
   const cleanUpComponent = () => {
-    if (refRBSheet.current) refRBSheet.current = false;
-    if (refCURDRenter.current) refCURDRenter.current = false;
+    if (!!refRBSheet.current) refRBSheet.current = false;
+    if (!!refCURDRenter.current) refCURDRenter.current = false;
   };
 
   const handleIMG_RS = async (images) => {
@@ -396,7 +398,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
   };
 
   const _onPressTakePhotos = async () => {
-    refRBSheet.current.close();
+    refRBSheet.current?.close();
     await new Promise((a) => setTimeout(a, 250));
     try {
       const options = {
@@ -543,6 +545,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
           <View style={styles.formWrap}>
             <View style={[styles.formRow]}>
               <Input
+                returnKeyType={"done"}
                 textStyle={styles.textInput}
                 label="Họ và tên"
                 placeholder=""
@@ -557,6 +560,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
             </View>
             <View style={[styles.formRow]}>
               <Input
+                returnKeyType={"done"}
                 textStyle={styles.textInput}
                 label="Số điện thoại"
                 placeholder="09xxxxxx"
@@ -584,6 +588,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
                         </View> */}
             <View style={[styles.formRow]}>
               <Input
+                returnKeyType={"done"}
                 textStyle={styles.textInput}
                 label="Công việc hiện tại"
                 placeholder="Văn phòng, sinh viên, phổ thông, khác"
@@ -641,6 +646,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
             </View>
             <View style={[styles.formRow]}>
               <Input
+                returnKeyType={"done"}
                 textStyle={styles.textInput}
                 label="Ghi chú"
                 placeholder=""
@@ -805,7 +811,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
             <Text
               style={[
                 styles.listButton_txt,
-                { color: '#147AFC', textAlign: 'center' },
+                { color: '#147afc', textAlign: 'center' },
               ]}>
               Trở lại
             </Text>

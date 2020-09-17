@@ -1,7 +1,7 @@
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import CreateDataContext from './CreateDataContext';
-import { getMotels, getOptionsSortRoom } from '../api/MotelAPI';
+import { getMotels, getOptionsSortRoom, updateMotel} from '../api/MotelAPI';
 
 const motelReducer = (prevstate, action) => {
     switch (action.type) {
@@ -34,7 +34,6 @@ const motelReducer = (prevstate, action) => {
             return { ...prevstate };
     }
 };
-
 
 const getListMotels = (dispatch) => async (callback) => {
     dispatch({ type: 'SET_LOADING'});

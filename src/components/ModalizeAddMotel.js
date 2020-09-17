@@ -127,7 +127,8 @@ const ModalizeAddMotel = forwardRef((props, ref) => {
 
     const _renderItem = (item, index) => {
         return <View style={styles.formRow} key={`${item.id}`}>
-            <Input 
+            <Input
+              returnKeyType={"done"}
                 textStyle={styles.input}
                 style={{flex: 1, marginRight: 10, marginBottom: -5}}
                 label=""

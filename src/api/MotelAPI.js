@@ -34,7 +34,13 @@ export const createMotelByName = async (params) => {
   }
 };
 
-export const updateMotel = async (params) => {
+export const updateMotel = async (params = {
+  motelid: 0,
+  motelname: '',
+  address: '',
+  motelIMG: '',
+  addons: '', //'[{ ID: 0, Name: "", Price: "" }]'
+}) => {
   try {
     const token = await getAccessToken();
     let res = await instance.get(`${path}/updatemotel`, {

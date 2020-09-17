@@ -205,6 +205,7 @@ const MoneyCollectScreen = () => {
                 <View style={[styles.formRow, styles.rowInfo]}>
                   <Text style={styles.rowLabel}>Thực nhận:</Text>
                   <Input
+                    returnKeyType={"done"}
                     style={[styles.rowValue, styles.formControl]}
                     placeholder="0"
                     keyboardType="numeric"

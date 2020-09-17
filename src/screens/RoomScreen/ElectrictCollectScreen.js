@@ -137,6 +137,7 @@ const ElectrictCollectScreen = ({ route }) => {
               <View style={styles.formWrap}>
                 <View style={[styles.formRow, styles.halfCol]}>
                   <Input
+                    returnKeyType={"done"}
                     textStyle={styles.textInput}
                     label="Số điện cũ"
                     placeholder={'0'}
@@ -148,6 +149,7 @@ const ElectrictCollectScreen = ({ route }) => {
                 </View>
                 <View style={[styles.formRow, styles.halfCol]}>
                   <Input
+                    returnKeyType={"done"}
                     textStyle={styles.textInput}
                     label="Số nước cũ"
                     placeholder="0"

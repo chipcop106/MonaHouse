@@ -29,7 +29,7 @@ const CheckoutInfoForm = () => {
   const { paymentType } = stateCheckout;
   const [offsetDays, setOffsetDays] = useState(0);
   const [hasOffsetPrice, setHasOffsetPrice] = useState(true);
-  
+  const [isPrepay, setIsPrepay] = useState(true);
   const pricePerDay =  roomInfo.roomPrice / parseInt(moment(roomInfo.dateGoIn).endOf('months').format("DD"));
   useEffect(() => {
     changeStateFormStep(
@@ -88,9 +88,6 @@ const CheckoutInfoForm = () => {
       alert(JSON.stringify(error.message));
     }
   };
-
-  
-  
   return (
     <>
       <View style={styles.mainWrap}>
@@ -179,7 +176,46 @@ const CheckoutInfoForm = () => {
           </View>
         </View>
         <View style={styles.section}>
-          <Text style={[styles.secTitle]}>Trả trước tiền nhà</Text>
+          <View style={[styles.secTitle, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+            <Text style={[styles.secTitle, {marginBottom: 0}]}>Tiền nhà tháng này </Text>
+            <CheckBox
+              checked={hasOffsetPrice}
+              onChange={nextChecked => {
+                changeStateFormStep('isCollect', nextChecked);
+                setHasOffsetPrice(nextChecked);
+              }}>
+              Thu phí
+            </CheckBox>
+          </View>
+
+          <View style={[styles.formWrap]}>
+            <View style={[styles.formRow, styles.fullWidth]}>
+              <Text style={{fontSize: 14, marginVertical: 5}}>Tiền nhà đến { moment().endOf('months').format('DD/MM') } </Text>
+              <Input
+                disabled
+                textStyle={styles.dangerValue}
+                accessoryLeft={() => <View style={styles.leftInput}>
+                  <Text>
+                    {`${ offsetDays } ngày`}
+                  </Text>
+                </View>}
+                value={ `${ hasOffsetPrice ? cf(renderOffsetPrice()) : 0 }` }
+              />
+            </View>
+
+          </View>
+        </View>
+        <View style={styles.section}>
+          <View style={[styles.secTitle, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+            <Text style={[styles.secTitle, {marginBottom: 0}]}>Trả trước tiền nhà</Text>
+            <CheckBox
+              checked={isPrepay}
+              onChange={nextChecked => {
+                setIsPrepay(nextChecked)
+              }}>
+              Thu phí
+            </CheckBox>
+          </View>
           <View style={[styles.formWrap]}>
             <View style={[styles.formRow, styles.fullWidth]}>
               <Select
@@ -212,7 +248,7 @@ const CheckoutInfoForm = () => {
                 )}
                 label="Tổng tiền"
                 placeholder=""
-                value={cf(stateCheckout.totalPrepay)}
+                value={`${ isPrepay ? cf(stateCheckout.totalPrepay) : 0 }`}
                 onChangeText={(nextValue) =>
                   changeStateFormStep(
                     "totalPrepay",
@@ -225,32 +261,7 @@ const CheckoutInfoForm = () => {
             </View>
           </View>
         </View>
-        <View style={styles.section}>
-          <Text style={[styles.secTitle]}>Tiền nhà cần bù</Text>
-          <Text style={{fontSize: 12, marginBottom: 5}}>Tiền phát sinh khi ngày dọn vào không phải là ngày đầu tháng/cuối tháng</Text>
-          <View style={[styles.formWrap]}>
-            <View style={[styles.formRow, styles.fullWidth]}>
-                <Input 
-                  disabled
-                  textStyle={styles.dangerValue}
-                  accessoryLeft={() => <View style={styles.leftInput}>
-                    <Text>
-                      {`${ offsetDays } ngày`}
-                    </Text>
-                  </View>}
-                  accessoryRight={ ()=><CheckBox
-                    checked={hasOffsetPrice}
-                    onChange={nextChecked => {
-                      changeStateFormStep('isCollect', nextChecked);
-                      setHasOffsetPrice(nextChecked);
-                    }}>
-                      Thu phí
-                    </CheckBox> }
-                  value={ `${ cf(renderOffsetPrice()) }` }
-                />
-            </View>
-          </View>
-        </View>
+
         <View style={styles.section}>
           <Text style={[styles.secTitle]}>Thanh toán</Text>
           <View style={[styles.formWrap]}>
@@ -270,7 +281,7 @@ const CheckoutInfoForm = () => {
               <Text style={styles.rowLabel}>Tiền trả trước</Text>
               <Text style={styles.rowValue}>
                 {" "}
-                {cf(stateCheckout.totalPrepay) || "0"}
+                {isPrepay ? cf(stateCheckout.totalPrepay) : 0 || "0"}
               </Text>
             </View>
             <View style={[styles.formRow, styles.rowInfo]}>
@@ -290,13 +301,14 @@ const CheckoutInfoForm = () => {
               <Text style={[styles.dangerValue, styles.rowValue]}>
                 {cf(
                   parseInt(stateCheckout.totalPrepay)
-                  + parseInt(stateCheckout.totalDeposit)
+                  + (isPrepay ? parseInt(stateCheckout.totalDeposit) : 0)
                   + (hasOffsetPrice ? renderOffsetPrice() : 0)
                 )}
               </Text>
             </View>
             <View style={[styles.formRow, styles.fullWidth]}>
               <Input
+                returnKeyType={"done"}
                 label="Thực nhận của khách"
                 placeholder="0"
                 value={cf(stateCheckout.actuallyReceived)}
@@ -331,6 +343,7 @@ const CheckoutInfoForm = () => {
             </View>
             <View style={[styles.formRow, styles.fullWidth]}>
               <Input
+                returnKeyType={"done"}
                 label="Ghi chú thanh toán"
                 placeholder="Ghi chú"
                 value={stateCheckout.paymentNote}

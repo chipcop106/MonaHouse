@@ -161,11 +161,13 @@ const RoomGoOutScreen = ({ navigation }) => {
         }
       >
         {!!!loading && !!userInfo && (
-          <UserInfo
-            avatar={userInfo.Avatar}
-            name={userInfo.FullName}
-            phone={userInfo.Phone}
-          />
+          <View style={{padding: 15, paddingBottom: 0}}>
+            <UserInfo
+              avatar={userInfo.Avatar}
+              name={userInfo.FullName}
+              phone={userInfo.Phone}
+            />
+          </View>
         )}
         {loading ? (
           <View style={{ padding: 15, alignItems: "center" }}>

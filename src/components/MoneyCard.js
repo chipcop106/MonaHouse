@@ -130,6 +130,7 @@ const MoneyCard = ({ roomInfo, handleValueChange }) => {
                 <View style={[styles.formRow, styles.rowInfo]}>
                   <Text style={{ fontWeight: "600" }}>Thực nhận:</Text>
                   <Input
+                    returnKeyType={"done"}
                     style={[styles.rowValue, styles.dangerValue]}
                     textAlign={'right'}
                     placeholder="000.000.000"

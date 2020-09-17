@@ -4,7 +4,7 @@ import { Input, Datepicker, Text } from '@ui-kitten/components';
 import IncludeElectrictWater from '../IncludeElectrictWater';
 import { color, settings } from '~/config';
 import { Context as RoomGoOutContext } from '../../context/RoomGoOutContext';
-
+import moment from 'moment'
 const GoOutInfo = () => {
   const { state, changeStateFormStep } = useContext(RoomGoOutContext);
   const stateGoOutInfo = state.dataForm[state.step];
@@ -22,6 +22,7 @@ const GoOutInfo = () => {
           <View style={[styles.formWrap]}>
             <View style={[styles.formRow, styles.fullWidth]}>
               <Input
+                returnKeyType={"done"}
                 placeholder="dd/mm/yyyy"
                 value={`Từ ${stateGoOutInfo.constract}`}
                 label="Hợp đồng"
@@ -43,7 +44,7 @@ const GoOutInfo = () => {
                 label="Ngày dọn vào"
                 placeholder="dd/mm/yyyy"
                 date={
-                  !!stateGoOutInfo && stateGoOutInfo.dateGoIn
+                  !!stateGoOutInfo && !!stateGoOutInfo.dateGoIn
                     ? stateGoOutInfo.dateGoIn
                     : new Date()
                 }
@@ -61,7 +62,7 @@ const GoOutInfo = () => {
               <Datepicker
                 label="Ngày dọn ra"
                 date={stateGoOutInfo.dateGoOut}
-                min={stateGoOutInfo.dateGoIn}
+                min={ moment().diff(moment(stateGoOutInfo.dateGoIn)) > 0 ? new Date() : stateGoOutInfo.dateGoIn }
                 max={settings.maxRangeDatePicker}
                 status="basic"
                 dataService={settings.formatDateService}

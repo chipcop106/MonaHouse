@@ -17,6 +17,7 @@ const Service = ({
     <View style={styles.svContainer}>
       <View style={[styles.svName]}>
         <Input
+          returnKeyType={"done"}
           status="primary"
           textStyle={styles.textInput}
           placeholder="Internet/phí giữ xe/tiền nước bình"
@@ -31,6 +32,7 @@ const Service = ({
       </View>
       <View style={[styles.svPrice]}>
         <Input
+          returnKeyType={"done"}
           textStyle={styles.textInput}
           placeholder="Số tiền"
           value={cf(priceState)}

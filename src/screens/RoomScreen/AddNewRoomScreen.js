@@ -187,6 +187,7 @@ const AddNewRoomScreen = () => {
                     </View>
                     <View style={styles.formGroup}>
                         <Input
+                          returnKeyType={"done"}
                             label="Tên phòng"
                             placeholder="Phòng 01"
                             value={state.roomName}
@@ -199,6 +200,7 @@ const AddNewRoomScreen = () => {
                     </View>
                     <View style={[styles.formGroup, styles.half]}>
                         <Input
+                          returnKeyType={"done"}
                             label="Giá phòng / tháng"
                             placeholder="vd: 3,000,000"
                             value={cf(state.roomPrice)}
@@ -215,6 +217,7 @@ const AddNewRoomScreen = () => {
                     <View style={styles.formRow}>
                         <View style={[styles.formGroup, styles.col]}>
                             <Input
+                              returnKeyType={"done"}
                                 label="Giá điện / kW"
                                 placeholder="3.500"
                                 value={cf(state.electrictPrice)}
@@ -228,6 +231,7 @@ const AddNewRoomScreen = () => {
                         </View>
                         <View style={[styles.formGroup, styles.col]}>
                             <Input
+                              returnKeyType={"done"}
                                 label="Giá nước / m3"
                                 placeholder="5.000"
                                 value={cf(state.waterPrice)}
@@ -243,6 +247,7 @@ const AddNewRoomScreen = () => {
 
                     <View style={styles.formGroup}>
                         <Input
+                          returnKeyType={"done"}
                             label="Mô tả phòng"
                             placeholder="VD: Phòng có điều hòa"
                             value={state.description}

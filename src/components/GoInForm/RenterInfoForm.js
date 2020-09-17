@@ -1,11 +1,21 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
-import { Text, StyleSheet, View, Image, FlatList } from "react-native";
-import { Input, Select, SelectItem, Button, Icon, IndexPath } from '@ui-kitten/components'
-import ImagePicker from "react-native-image-crop-picker";
+import React, { useContext, useEffect, useState, useRef } from 'react';
+import { Text, StyleSheet, View, Image, FlatList } from 'react-native';
+import {
+  Input,
+  Select,
+  SelectItem,
+  Button,
+  Icon,
+  IndexPath,
+} from '@ui-kitten/components';
+import ImagePicker from 'react-native-image-crop-picker';
 import { sizes, color, settings } from '~/config';
-import { Context as RoomGoInContext } from "../../context/RoomGoInContext";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import RBSheet from "react-native-raw-bottom-sheet";
+import { Context as RoomGoInContext } from '../../context/RoomGoInContext';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import { uploadRenterImage } from '~/api/RenterAPI';
+import ProgressiveImage from '~/components/common/ProgressiveImage';
+
 const RenterInfoForm = () => {
   const { state: RoomGoInState, changeStateFormStep } = useContext(
     RoomGoInContext
@@ -67,7 +77,7 @@ const RenterInfoForm = () => {
         })
       )
     );
-    changeStateFormStep('numberPeople', `${ renterDeposit.Quantity }`);
+    changeStateFormStep('numberPeople', `${renterDeposit.Quantity}`);
     changeStateFormStep(
       'relationshipIndex',
       new IndexPath(
@@ -76,73 +86,87 @@ const RenterInfoForm = () => {
         })
       )
     );
-    changeStateFormStep('note', renterDeposit.Note)
-
-  }
+    changeStateFormStep('note', renterDeposit.Note);
+  };
+  const deleteLicenseImage = (imageID) => {
+    console.log(imageID);
+    changeStateFormStep(
+      'licenseImages',
+      [...stateRenterInfo.licenseImages].filter((image) => image.ID !== imageID)
+    );
+  };
 
   const refRBSheet = useRef();
   let RBSheetKey = '';
-  const handleIMG_RS = async images => {
-    console.log(images);
+  const [isUploading, setUploading] = useState(false);
+  const handleIMG_RS = async (images) => {
+    console.log('handleIMG_RS', images);
+    setUploading(true);
     try {
       const res = await uploadRenterImage(images);
       if (res.Code === 1) {
-        changeStateFormStep(RBSheetKey, res.Data);
+        stateRenterInfo.licenseImages.length === 1 &&
+          changeStateFormStep(
+            RBSheetKey,
+            [...stateRenterInfo.licenseImages, res?.Data[0]] ?? []
+          );
+        stateRenterInfo.licenseImages.length !== 1 &&
+          changeStateFormStep(RBSheetKey, res?.Data ?? []);
       }
-      return true
+      setUploading(false);
     } catch (error) {
-      throw error
+      setUploading(false);
+      throw error;
     }
-
-  }
+  };
 
   const _onPressTakePhotos = async () => {
     refRBSheet.current.close();
-    await new Promise(a => setTimeout(a, 250));
+    await new Promise((a) => setTimeout(a, 250));
     try {
       const options = {
         cropping: true,
         forceJpg: true,
         cropperToolbarTitle: 'Chỉnh sửa ảnh',
         compressImageMaxWidth: 1280,
-        compressImageMaxHeight: 768
+        compressImageMaxHeight: 768,
       };
       const images = await ImagePicker.openCamera(options);
       await handleIMG_RS(images);
-
     } catch (error) {
       console.log('ImagePicker.openPicker error', error.message);
       alert(error.message);
       changeStateFormStep(RBSheetKey, []);
     }
     RBSheetKey = '';
-  }
+  };
   const _onPressGetPhotos = async () => {
-    refRBSheet.current.close();
-    await new Promise(a => setTimeout(a, 250));
+    refRBSheet.current?.close();
+    await new Promise((a) => setTimeout(a, 250));
+    console.log('_onPressGetPhotos stateRenterInfo', stateRenterInfo);
     try {
       const options = {
         cropping: true,
         forceJpg: true,
         cropperToolbarTitle: 'Chỉnh sửa ảnh',
         multiple: true,
-        maxFiles: 2,
+        maxFiles:
+          stateRenterInfo?.licenseImages?.length >= 2
+            ? 2
+            : 2 - stateRenterInfo?.licenseImages?.length,
         compressImageMaxWidth: 1280,
         compressImageMaxHeight: 768,
         mediaType: 'photo',
       };
       const images = await ImagePicker.openPicker(options);
       await handleIMG_RS(images);
-
     } catch (error) {
       console.log('ImagePicker.openPicker error', error.message);
       changeStateFormStep(RBSheetKey, []);
     }
     RBSheetKey = '';
-  }
-  const _onCloseRBSheet = () => {
-
-  }
+  };
+  const _onCloseRBSheet = () => {};
   const handleChoosePhoto = (key) => {
     RBSheetKey = key;
     refRBSheet.current?.open();
@@ -155,6 +179,7 @@ const RenterInfoForm = () => {
           <View style={styles.formWrap}>
             <View style={[styles.formRow]}>
               <Input
+                returnKeyType={"done"}
                 textStyle={styles.textInput}
                 label="Họ và tên"
                 placeholder=""
@@ -168,6 +193,7 @@ const RenterInfoForm = () => {
             </View>
             <View style={[styles.formRow]}>
               <Input
+                returnKeyType={"done"}
                 textStyle={styles.textInput}
                 label="Số điện thoại"
                 placeholder="09xxxxxx"
@@ -194,6 +220,7 @@ const RenterInfoForm = () => {
             </View> */}
             <View style={[styles.formRow]}>
               <Input
+                returnKeyType={"done"}
                 textStyle={styles.textInput}
                 label="Công việc hiện tại"
                 placeholder="Văn phòng, sinh viên, phổ thông, khác"
@@ -225,6 +252,7 @@ const RenterInfoForm = () => {
             </View>
             <View style={[styles.formRow, styles.halfCol]}>
               <Input
+                returnKeyType={"done"}
                 textStyle={styles.textInput}
                 label="Số người ở"
                 placeholder="0"
@@ -256,6 +284,7 @@ const RenterInfoForm = () => {
             </View>
             <View style={[styles.formRow]}>
               <Input
+                returnKeyType={"done"}
                 textStyle={styles.textInput}
                 label="Ghi chú"
                 placeholder=""
@@ -271,6 +300,7 @@ const RenterInfoForm = () => {
             <View style={[styles.formRow]}>
               <View style={{ marginBottom: 20 }}>
                 <Button
+                  disabled={isUploading}
                   onPress={() => handleChoosePhoto('licenseImages')}
                   accessoryLeft={() => (
                     <Icon
@@ -279,12 +309,11 @@ const RenterInfoForm = () => {
                       style={sizes.iconButtonSize}
                     />
                   )}>
-                  Ảnh giấy tờ
+                  {isUploading ? 'Đang tải ảnh...' : 'Ảnh giấy tờ'}
                 </Button>
               </View>
-
-              {stateRenterInfo.licenseImages &&
-                stateRenterInfo.licenseImages.length > 0 && (
+              {!!stateRenterInfo?.licenseImages &&
+                stateRenterInfo?.licenseImages?.length > 0 && (
                   <FlatList
                     data={stateRenterInfo.licenseImages}
                     keyExtractor={(item, index) => `${index}`}
@@ -292,14 +321,15 @@ const RenterInfoForm = () => {
                     showsHorizontalScrollIndicator={false}
                     renderItem={({ item }) => (
                       <View style={styles.imageWrap}>
-                        <Image
+                        <ProgressiveImage
                           source={{
-                            uri: item.UrlIMG,
+                            uri: item?.UrlIMG ?? '',
                           }}
                           style={[styles.imagePreview]}
                         />
                         <View style={styles.deleteImage}>
-                          <TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => deleteLicenseImage(item.ID)}>
                             <Icon
                               name="minus"
                               style={{
@@ -318,21 +348,22 @@ const RenterInfoForm = () => {
           </View>
         </View>
         {/* end renter info form  */}
-        { !!renterDeposit?.ID && <Button
-          style={{backgroundColor: 'transparent'}}
-          status={'success'}
-          appearance={'outline'}
-          onPress={_onPressUseDepositInfo}
-          accessoryLeft={() => (
-            <Icon
-              name="person-done-outline"
-              fill={color.primary}
-              style={sizes.iconButtonSize}
-            />
-          )}>
-          Lấy thông tin đặt cọc
-        </Button>
-        }
+        {!!renterDeposit?.ID && (
+          <Button
+            style={{ backgroundColor: 'transparent' }}
+            status={'success'}
+            appearance={'outline'}
+            onPress={_onPressUseDepositInfo}
+            accessoryLeft={() => (
+              <Icon
+                name="person-done-outline"
+                fill={color.primary}
+                style={sizes.iconButtonSize}
+              />
+            )}>
+            Lấy thông tin đặt cọc
+          </Button>
+        )}
       </View>
       <RBSheet
         ref={refRBSheet}
@@ -400,24 +431,24 @@ const RenterInfoForm = () => {
 const styles = StyleSheet.create({
   listButtonWrap: {
     borderRadius: 15,
-    backgroundColor: "#fff",
-    marginBottom: 15
+    backgroundColor: '#fff',
+    marginBottom: 15,
   },
   listButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 10,
     borderRadius: 15,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     minHeight: 50,
-    justifyContent: "center",
-    position: "relative",
-    paddingHorizontal: 15
+    justifyContent: 'center',
+    position: 'relative',
+    paddingHorizontal: 15,
   },
   listButton_txt: {
     fontSize: 20,
     flex: 1,
-    color: '#797B7F'
+    color: '#797B7F',
   },
   listButton_icon: {
     width: 30,
@@ -428,13 +459,12 @@ const styles = StyleSheet.create({
     // left: 10,
     // top: 10,
     borderColor: color.primary,
-    justifyContent: "center",
-    alignItems: "center"
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   btnClose: {
-    flexDirection: "row",
-    alignItems: "center",
-
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   mainWrap: {
     padding: 15,
@@ -448,23 +478,23 @@ const styles = StyleSheet.create({
   },
   secTitle: {
     fontSize: 20,
-    fontWeight: "700",
+    fontWeight: '700',
     marginBottom: 15,
   },
   formWrap: {
     paddingHorizontal: 10,
     marginHorizontal: -10,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   formRow: {
     marginBottom: 15,
-    width: "98%",
-    marginHorizontal: "1%",
+    width: '98%',
+    marginHorizontal: '1%',
   },
   halfCol: {
-    width: "48%",
+    width: '48%',
   },
   imagePreview: {
     aspectRatio: 1,
@@ -476,20 +506,20 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   imageWrap: {
-    position: "relative",
+    position: 'relative',
     zIndex: 1,
   },
   deleteImage: {
     width: 30,
     height: 30,
     borderRadius: 30 / 2,
-    backgroundColor: "rgba(255,255,255,.8)",
+    backgroundColor: 'rgba(255,255,255,.8)',
     top: 5,
     right: 15,
     zIndex: 100,
-    position: "absolute",
-    justifyContent: "center",
-    alignItems: "center",
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

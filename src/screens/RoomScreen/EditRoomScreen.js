@@ -158,6 +158,7 @@ const EditRoomScreen = ({ navigation, route }) => {
         <View style={styles.section}>
           <View style={styles.formGroup}>
             <Input
+              returnKeyType={"done"}
               label="Tên phòng"
               placeholder="Phòng 01"
               value={room.NameRoom}
@@ -168,6 +169,7 @@ const EditRoomScreen = ({ navigation, route }) => {
           </View>
           <View style={[styles.formGroup, styles.half]}>
             <Input
+              returnKeyType={"done"}
               label="Giá phòng / tháng"
               placeholder="3.000.000"
               value={cf(room.PriceRoom)}
@@ -183,6 +185,7 @@ const EditRoomScreen = ({ navigation, route }) => {
           <View style={styles.formRow}>
             <View style={[styles.formGroup, styles.col]}>
               <Input
+                returnKeyType={"done"}
                 label="Giá điện / kW"
                 placeholder="3.500"
                 value={cf(room.PriceElectric)}
@@ -199,6 +202,7 @@ const EditRoomScreen = ({ navigation, route }) => {
             </View>
             <View style={[styles.formGroup, styles.col]}>
               <Input
+                returnKeyType={"done"}
                 label="Giá nước / m3"
                 placeholder="5.000"
                 value={cf(room.PriceWater)}
@@ -214,6 +218,7 @@ const EditRoomScreen = ({ navigation, route }) => {
 
           <View style={{ ...styles.formGroup, marginBottom: 0 }}>
             <Input
+              returnKeyType={"done"}
               label="Mô tả phòng"
               placeholder="VD: Phòng có điều hòa"
               value={room.Description}

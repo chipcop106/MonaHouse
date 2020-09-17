@@ -131,7 +131,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
     );
   const { renter, dept, electric, water, room } = roomInfo;
   let PriceRoom, PriceWater, PriceElectric;
-  if (renter.renter.ID === 0) {
+  if (!!!renter.renter) {
     PriceRoom = room?.PriceRoom ?? 0;
     PriceWater = room?.PriceWater ?? 0;
     PriceElectric = room?.PriceElectric ?? 0;
@@ -277,7 +277,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                       <Text style={styles.label}>Số nước</Text>
                       <Text style={[styles.value]}>{numberWater || '0'}</Text>
                     </View>
-                    {!!roomInfo.renter?.renter?.ID && (
+                    {!!renter?.renter?.ID && (
                       <View>
                         {(!!imageWater || !!imageElectric) && (
                           <Text style={{ ...styles.label, marginTop: 15 }}>
@@ -319,7 +319,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                     roomInfo.addons.map((item) => (
                       <View
                         style={{ ...styles.rowInfo, marginBottom: 15 }}
-                        key={item.ID}>
+                        key={`${ item.ID }`}>
                         <Text style={styles.label}>{item.AddOnName}</Text>
                         <Text style={styles.value}>{cf(item.Price)}</Text>
                       </View>
@@ -336,7 +336,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                   )}
                 </View>
 
-                {!!roomInfo.renter.renter.ID && (
+                {!!renter?.renter?.ID && (
                   <View
                     style={{
                       ...styles.sec,

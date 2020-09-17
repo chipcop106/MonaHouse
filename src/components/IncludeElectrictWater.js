@@ -148,6 +148,7 @@ function IncludeElectrictWater({
         <>
           <View style={[styles.formRow, styles.halfCol]}>
             <Input
+              returnKeyType={"done"}
               textStyle={styles.textInput}
               label={electrictTitle}
               placeholder="0"
@@ -161,6 +162,7 @@ function IncludeElectrictWater({
           </View>
           <View style={[styles.formRow, styles.halfCol]}>
             <Input
+              returnKeyType={"done"}
               textStyle={styles.textInput}
               label={waterTitle}
               placeholder="0"
@@ -174,6 +176,7 @@ function IncludeElectrictWater({
             <>
               <View style={[styles.formRow, styles.halfCol]}>
                 <Input
+                  returnKeyType={"done"}
                   textStyle={styles.textInput}
                   label="Giá điện / kW"
                   placeholder="0"
@@ -191,6 +194,7 @@ function IncludeElectrictWater({
               </View>
               <View style={[styles.formRow, styles.halfCol]}>
                 <Input
+                  returnKeyType={"done"}
                   textStyle={styles.textInput}
                   label="Giá nước / m3"
                   placeholder="0"
@@ -259,6 +263,7 @@ function IncludeElectrictWater({
         <>
           <View style={[styles.formRow, styles.halfCol]}>
             <Input
+              returnKeyType={"done"}
               textStyle={styles.textInput}
               label="Tiền trọn gói điện"
               placeholder="0"
@@ -275,6 +280,7 @@ function IncludeElectrictWater({
           </View>
           <View style={[styles.formRow, styles.halfCol]}>
             <Input
+              returnKeyType={"done"}
               textStyle={styles.textInput}
               label="Tiền trọn gói nước"
               placeholder="0"
@@ -296,6 +302,7 @@ function IncludeElectrictWater({
         <>
           <View style={[styles.formRow]}>
             <Input
+              returnKeyType={"done"}
               textStyle={styles.textInput}
               label="Tiền trọn gói điện"
               placeholder="0"
@@ -312,6 +319,7 @@ function IncludeElectrictWater({
           </View>
           <View style={[styles.formRow]}>
             <Input
+              returnKeyType={"done"}
               textStyle={styles.textInput}
               label="Số nước lúc dọn vào"
               placeholder="0"
@@ -323,6 +331,7 @@ function IncludeElectrictWater({
           </View>
           <View style={[styles.formRow]}>
             <Input
+              returnKeyType={"done"}
               textStyle={styles.textInput}
               label="Tiền nước theo m3"
               placeholder="0"
@@ -365,6 +374,7 @@ function IncludeElectrictWater({
         <>
           <View style={[styles.formRow]}>
             <Input
+              returnKeyType={"done"}
               textStyle={styles.textInput}
               label="Tiền trọn gói nước"
               placeholder="0"
@@ -381,6 +391,7 @@ function IncludeElectrictWater({
           </View>
           <View style={[styles.formRow]}>
             <Input
+              returnKeyType={"done"}
               textStyle={styles.textInput}
               label="Số điện lúc dọn vào"
               placeholder="0"
@@ -395,6 +406,7 @@ function IncludeElectrictWater({
 
           <View style={[styles.formRow]}>
             <Input
+              returnKeyType={"done"}
               textStyle={styles.textInput}
               label="Tiền điện theo kw"
               placeholder="0"

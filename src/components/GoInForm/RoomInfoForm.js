@@ -56,6 +56,7 @@ const RoomInfoForm = () => {
           <View style={[styles.formWrap]}>
             <View style={[styles.formRow, styles.halfCol]}>
               <Input
+                returnKeyType={'done'}
                 textStyle={styles.textInput}
                 label="Giá thuê / tháng"
                 placeholder="0"
@@ -94,6 +95,7 @@ const RoomInfoForm = () => {
             </View>
             <View style={[styles.formRow, styles.halfCol]}>
               <Input
+                returnKeyType={"done"}
                 textStyle={styles.textInput}
                 label="Thời gian thuê"
                 placeholder="0"
