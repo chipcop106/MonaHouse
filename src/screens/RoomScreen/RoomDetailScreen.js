@@ -312,7 +312,7 @@ const RoomDetailScreen = ({ navigation, route }) => {
                     )}
                   </View>
                 </View>
-                <Text style={styles.secTitle}>Dịch vụ phòng</Text>
+                <Text style={styles.secTitle}>Dịch vụ hằng tháng</Text>
                 <View
                   style={{ ...styles.sec, paddingBottom: 0, marginBottom: 15 }}>
                   {roomInfo.addons.length > 0 ? (

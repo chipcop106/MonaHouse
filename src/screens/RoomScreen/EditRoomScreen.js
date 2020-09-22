@@ -234,7 +234,7 @@ const EditRoomScreen = ({ navigation, route }) => {
         </View>
         <View style={styles.serviceTitle}>
           <Text style={{ ...styles.secTitle, marginBottom: 0 }}>
-            Dịch vụ phòng
+            Dịch vụ hằng tháng
           </Text>
           <TouchableOpacity onPress={addService} style={styles.addServiceBtn}>
             <Icon

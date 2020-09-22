@@ -81,7 +81,7 @@ const signIn = (dispatch) => async (username, password) => {
     const res = await loginAccount({ username, password });
     console.log('signIn Res:', res);
 
-    if (res.Code == 0) {
+    if (res.Code === 2) {
       dispatch({
         type: 'ADD_ERROR',
         payload: 'Tài khoản hoặc mật khẩu không đúng!!',

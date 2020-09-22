@@ -20,6 +20,7 @@ const SearchBox = ({ defaultValue = "" }) => {
   const { setQuerySearch } = useContext(CustomerContext);
   return (
     <Input
+      returnKeyType={"done"}
       value={state}
       accessoryRight={() => (
         <TouchableOpacity onPress={() => setQuerySearch(state)}>

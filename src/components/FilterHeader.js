@@ -154,6 +154,7 @@ const FilterHeader = ({
             {filterShow && (
                 <View style={styles.filterSearch}>
                     <Input
+                      returnKeyType={"done"}
                         editable={loading}
                         status="transparent"
                         placeholder="Tìm kiếm..."

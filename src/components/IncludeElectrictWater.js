@@ -18,10 +18,10 @@ import { uploadRenterImage } from '~/api/RenterAPI';
 //   waterImage: null,
 // };
 
-IncludeElectrictWater.defaultProps = {
+IncludeElectricWater.defaultProps = {
   index: 0,
   waterTitle: 'Số nước',
-  electrictTitle: 'Số điện',
+  electricTitle: 'Số điện',
   priceDisplay: true,
 };
 
@@ -29,7 +29,7 @@ const reducer = (state, { field, value }) => ({
   ...state,
   [field]: value,
 });
-const uploadIMG = async (file) => {
+export const uploadIMG = async (file) => {
   let result = '';
   try {
     const res = await uploadRenterImage(file);
@@ -43,10 +43,10 @@ const uploadIMG = async (file) => {
   return result;
 };
 
-function IncludeElectrictWater({
+function IncludeElectricWater({
   index,
   waterTitle,
-  electrictTitle,
+  electricTitle,
   priceDisplay,
   handleValueChange,
   initialState,
@@ -62,9 +62,9 @@ function IncludeElectrictWater({
       try {
         console.log('Electtric/Water roomData', roomData);
         // dispatch
-        // waterPrice, electrictPrice
+        // waterPrice, electricPrice
         dispatch({
-          field: 'electrictPrice',
+          field: 'electricPrice',
           value: `${roomData.PriceElectric}`,
         });
         dispatch({ field: 'waterPrice', value: `${roomData.PriceWater}` });
@@ -150,11 +150,11 @@ function IncludeElectrictWater({
             <Input
               returnKeyType={"done"}
               textStyle={styles.textInput}
-              label={electrictTitle}
+              label={electricTitle}
               placeholder="0"
-              value={`${ state.electrictNumber }`}
+              value={`${ state.electricNumber }`}
               onChangeText={(nextValue) =>
-                onChange('electrictNumber', nextValue.replace(/[^0-9\-]/g, ''))
+                onChange('electricNumber', nextValue.replace(/[^0-9\-]/g, ''))
               }
               textContentType="none"
               keyboardType="numeric"
@@ -180,10 +180,10 @@ function IncludeElectrictWater({
                   textStyle={styles.textInput}
                   label="Giá điện / kW"
                   placeholder="0"
-                  value={cf(String(state.electrictPrice))}
+                  value={cf(String(state.electricPrice))}
                   onChangeText={(nextValue) => {
                     onChange(
-                      'electrictPrice',
+                      'electricPrice',
                       nextValue.replace(/[^0-9\-]/g, '')
                     );
                     console.log(nextValue.replace(/[^0-9\-]/g, ''));
@@ -210,19 +210,19 @@ function IncludeElectrictWater({
           )}
 
           <View style={[styles.formRow, styles.halfCol]}>
-            {!!state.electrictImage && (
+            {!!state.electricImage && (
               <Image
                 source={{
                   uri:
-                    state.electrictImage.path ||
-                    state.electrictImage.UrlIMG ||
-                    state.electrictImage,
+                    state.electricImage.path ||
+                    state.electricImage.UrlIMG ||
+                    state.electricImage,
                 }}
                 style={[styles.imagePreview]}
               />
             )}
             <Button
-              onPress={() => handleChoosePhoto('electrictImage')}
+              onPress={() => handleChoosePhoto('electricImage')}
               accessoryLeft={() => (
                 <Icon
                   name="camera-outline"
@@ -267,10 +267,10 @@ function IncludeElectrictWater({
               textStyle={styles.textInput}
               label="Tiền trọn gói điện"
               placeholder="0"
-              value={String(state.electrictPriceInclude)}
+              value={`${ cf(state.electricPriceInclude) }`}
               onChangeText={(nextValue) =>
                 onChange(
-                  'electrictPriceInclude',
+                  'electricPriceInclude',
                   nextValue.replace(/[^0-9\-]/g, '')
                 )
               }
@@ -284,7 +284,7 @@ function IncludeElectrictWater({
               textStyle={styles.textInput}
               label="Tiền trọn gói nước"
               placeholder="0"
-              value={String(state.waterPriceInclude)}
+              value={`${ cf(state.waterPriceInclude) }`}
               onChangeText={(nextValue) =>
                 onChange(
                   'waterPriceInclude',
@@ -306,10 +306,10 @@ function IncludeElectrictWater({
               textStyle={styles.textInput}
               label="Tiền trọn gói điện"
               placeholder="0"
-              value={cf(String(state.electrictPriceInclude))}
+              value={cf(String(state.electricPriceInclude))}
               onChangeText={(nextValue) =>
                 onChange(
-                  'electrictPriceInclude',
+                  'electricPriceInclude',
                   nextValue.replace(/[^0-9\-]/g, '')
                 )
               }
@@ -395,9 +395,9 @@ function IncludeElectrictWater({
               textStyle={styles.textInput}
               label="Số điện lúc dọn vào"
               placeholder="0"
-              value={String(state.electrictNumber)}
+              value={String(state.electricNumber)}
               onChangeText={(nextValue) =>
-                onChange('electrictNumber', nextValue)
+                onChange('electricNumber', nextValue)
               }
               textContentType="none"
               keyboardType="numeric"
@@ -410,9 +410,9 @@ function IncludeElectrictWater({
               textStyle={styles.textInput}
               label="Tiền điện theo kw"
               placeholder="0"
-              value={cf(String(state.electrictPrice))}
+              value={cf(String(state.electricPrice))}
               onChangeText={(nextValue) =>
-                onChange('electrictPrice', nextValue.replace(/[^0-9\-]/g, ''))
+                onChange('electricPrice', nextValue.replace(/[^0-9\-]/g, ''))
               }
               textContentType="none"
               keyboardType="numeric"
@@ -420,19 +420,19 @@ function IncludeElectrictWater({
           </View>
 
           <View style={[styles.formRow]}>
-            {state.electrictImage && (
+            {state.electricImage && (
               <Image
                 source={{
                   uri:
-                    state.electrictImage.path ||
-                    state.electrictImage.UrlIMG ||
-                    state.electrictImage,
+                    state.electricImage.path ||
+                    state.electricImage.UrlIMG ||
+                    state.electricImage,
                 }}
                 style={[styles.imagePreview]}
               />
             )}
             <Button
-              onPress={() => handleChoosePhoto('electrictImage')}
+              onPress={() => handleChoosePhoto('electricImage')}
               accessoryLeft={() => (
                 <Icon
                   name="camera-outline"
@@ -578,4 +578,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(IncludeElectrictWater);
+export default memo(IncludeElectricWater);

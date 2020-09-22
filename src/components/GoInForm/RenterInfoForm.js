@@ -207,6 +207,7 @@ const RenterInfoForm = () => {
             </View>
             {/* <View style={[styles.formRow]}>
                 <Input
+                    returnKeyType={"done"}
                     textStyle={styles.textInput}
                     label="Địa chỉ email"
                     placeholder=""

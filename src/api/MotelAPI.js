@@ -39,6 +39,7 @@ export const updateMotel = async (params = {
   motelname: '',
   address: '',
   motelIMG: '',
+  description: '',
   addons: '', //'[{ ID: 0, Name: "", Price: "" }]'
 }) => {
   try {
@@ -54,6 +55,27 @@ export const updateMotel = async (params = {
     return error.message;
   }
 };
+export const createMotelOne = async (params = {
+  motelname: '',
+  address: '',
+  motelIMG: '',
+  description: '',
+  addons: '', //'[{ ID: 0, Name: "", Price: "" }]'
+}) => {
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(`${path}/createmotelone`, {
+      params: {
+        ...params,
+        token,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error.message;
+  }
+};
+
 
 export const deleteMotel = async (params) => {
   try {

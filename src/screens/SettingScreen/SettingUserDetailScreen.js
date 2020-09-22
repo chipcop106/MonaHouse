@@ -1,24 +1,46 @@
-import React, { useReducer } from 'react';
+import React, { useContext, useReducer, useState } from 'react';
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
-  ScrollView,
   Alert,
-  Image,
+  RefreshControl,
 } from 'react-native';
-import { Avatar, Input, Icon, Button } from '@ui-kitten/components';
-import { color, sizes } from '~/config';
+import { useHeaderHeight } from '@react-navigation/stack';
+import {
+  Avatar,
+  Input,
+  Icon,
+  Button,
+  Datepicker,
+  SelectItem,
+  Select,
+  IndexPath,
+} from '@ui-kitten/components';
+import { color, settings, shadowStyle, sizes } from '~/config';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import ImagePicker from 'react-native-image-crop-picker';
+import Loading from '~/components/common/Loading';
+import { Context as AuthContext } from '~/context/AuthContext';
+import { getUserInfo, updateAccount } from '~/api/AccountAPI';
+import moment from 'moment';
+import { uploadIMG } from '~/components/IncludeElectrictWater'
+import AsyncStorage from '@react-native-community/async-storage'
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const initialState = {
+  refreshing: false,
+  loading: false,
+	imageUploading: false,
   avatar: null,
   fullName: 'Lê Chân',
   phoneNumber: '0886706289',
   email: 'vietdat106@gmail.com',
   address: '319 c16, Lý Thường Kiệt, Phường 15, quậ 11, tp HCM',
+  birthday: new Date(),
+  cityName: '',
+  cityId: '',
   oldPassword: '',
   newPassword: '',
   renewPassword: '',
@@ -33,21 +55,68 @@ const reducer = (state, { type, payload }) => {
       };
       break;
     }
-
+    case 'STATE_OVERWRITE': {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
     default:
       return state;
       break;
   }
 };
-
-const SettingUserDetailScreen = ({ navigation }) => {
+const noImageSrc = require('~/../assets/user.png');
+const SettingUserDetailScreen = ({ navigation, route }) => {
+  const headerHeight = useHeaderHeight();
+  const { cityLists } = settings;
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [cityIndex, setCityIndex] = useState(new IndexPath(0));
+  const [spinner, setSpinner] = useState(false);
+  const { signOut } = useContext(AuthContext);
+  const { refreshing, loading } = state;
 
-  const _onSubmit = () => {
-    Alert.alert('Thông báo', 'Cập nhật thành công !!');
+  const _onSubmit = async () => {
+    try {
+      console.log(state);
+      const params = {
+        phone: state?.phoneNumber,
+        name: state?.fullName,
+        email: state?.email,
+        birthday: state?.birthday,
+        cityid: state?.cityId,
+	      avatarId: state?.avatar?.ID ?? 0
+      };
+      console.log(params);
+      setSpinner(true);
+
+      const res = await updateAccount(params);
+      setSpinner(false);
+      await new Promise(a => setTimeout(a, 300));
+      if( res.Code === 1 ){
+      	Alert.alert('Cập nhật thành công !!','');
+	      await _onRefresh();
+        route.params.doReload();
+      } else if( res.Code === 0 ){
+	      Alert.alert('Oops!!', JSON.stringify(res));
+      } else if( res.Code === 2 ){
+      	signOut();
+	      Alert.alert('Phiên làm việc của bạn đã hết, vui lòng đăng nhập lại !!','');
+      } else {
+      	Alert.alert('Lỗi', 'dữ liệu  lỗi vui lòng liên hệ nhà cung cấp');
+      }
+
+    } catch (e) {
+      setSpinner(false);
+      await new Promise(a => setTimeout(a, 300));
+      console.log('_onSubmit error', e);
+	    Alert.alert('Lỗi', JSON.stringify(e));
+    }
+
+    // Alert.alert('Thông báo', 'Cập nhật thành công !!');
   };
 
-  const onPressWithParrams = (key, params = {}) => {
+  const onPressWithParams = (key, params = {}) => {
     navigation.navigate(key, params);
   };
 
@@ -56,6 +125,7 @@ const SettingUserDetailScreen = ({ navigation }) => {
   };
 
   const handleChoosePhoto = async (key) => {
+	  updateState('imageUploading', true);
     try {
       const options = {
         cropping: true,
@@ -65,149 +135,264 @@ const SettingUserDetailScreen = ({ navigation }) => {
         compressImageMaxHeight: 768,
         mediaType: 'photo',
       };
-      ImagePicker.openPicker(options).then((images) => {
-        updateState(key, images);
-      });
-    } catch (error) {}
-  };
+      const images = await ImagePicker.openPicker(options);
+	    const rs = await uploadIMG(images);
+	    console.log('uploadAvatarIMG rs', rs);
+	    await updateState(key, rs[0]);
 
+    } catch (error) {}
+    updateState('imageUploading', false);
+  };
+  const loadUserInfo = async () => {
+    try {
+      const res = await getUserInfo();
+
+      if (res.Code === 1) {
+        let userData = await AsyncStorage.getItem("userInfo");
+        userData = JSON.parse(userData);
+        await AsyncStorage.setItem(
+          'userInfo',
+          JSON.stringify({ ...userData, ...(res?.Data ?? {}) })
+        );
+        
+        dispatch({
+          type: 'STATE_OVERWRITE',
+          payload: {
+            avatar: res?.Data?.AvatarThumbnail || '',
+            fullName: res?.Data?.FullName || '',
+            phoneNumber: res?.Data?.Phone || '',
+            email: res?.Data?.Email || '',
+            address: res?.Data?.Address || '',
+            cityId: res?.Data?.CityID || '',
+            cityName: res?.Data?.CityName || '',
+            birthday: res?.Data?.Birthday || '',
+          },
+        });
+        const selectedCityIndex = cityLists.findIndex((item) => {
+          return res?.Data?.CityID === item.ID;
+        });
+        setCityIndex(new IndexPath(selectedCityIndex));
+      } else if (res.Code === 2) {
+        signOut();
+        Alert.alert('Oops!!', 'Phiên làm việc đã hết vui lòng đăng nhập lại');
+      } else if (res.Code === 0) {
+        Alert.alert('Oops!!', JSON.parse(res));
+      } else {
+        Alert.alert('Oops!!', JSON.parse(res));
+      }
+    } catch (e) {
+      console.log('loadUserInfo error', e);
+    }
+  };
   React.useEffect(() => {
     // console.log(state);
-  });
-
+    (async () => {
+      updateState('loading', true);
+      await loadUserInfo();
+      updateState('loading', false);
+    })();
+  }, []);
+  const _onRefresh = async () => {
+    updateState('refreshing', true);
+    await loadUserInfo();
+    updateState('refreshing', false);
+  };
   return (
-    <View style={styles.container}>
-      <KeyboardAwareScrollView>
-	      <View style={styles.userInfo}>
-		      <TouchableOpacity onPress={() => handleChoosePhoto('avatar')}>
-			      <Avatar
-				      source={{
-					      uri:
-						      state.avatar?.path ??
-						      'https://photo-1-baomoi.zadn.vn/w1000_r1/2019_03_06_251_29881209/fdd38a4374029d5cc413.jpg',
-				      }}
-				      shape="round"
-				      size="giant"
-				      style={styles.avatar}
-			      />
-		      </TouchableOpacity>
-		      <View style={styles.userName}>
-			      <Text style={[styles.name, styles.textColor]}>Lê Chân</Text>
-			      <View style={styles.badge}>
-				      <Text
-					      style={{
-						      fontWeight: 'bold',
-						      color: color.darkColor,
-					      }}>
-					      Premium
-				      </Text>
-			      </View>
-		      </View>
-		      <Text style={styles.expiredDate}>
-			      Hết hạn: <Text style={{ fontWeight: 'bold' }}>03/02/2020</Text>
-		      </Text>
-	      </View>
-        <View style={styles.secWrap}>
-          <View style={styles.formGroup}>
-            <Input
-              label="Họ và tên"
-              placeholder="Full name"
-              style={styles.inputControl}
-              textStyle={styles.inputText}
-              value={state.fullName}
-              onChangeText={(value) => updateState('fullName', value)}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <Input
-              disabled
-              label="Số điện thoại"
-              placeholder="Phone"
-              style={[styles.inputControl, styles.disabledInput]}
-              textStyle={[styles.inputText, { color: color.primary, fontWeight: 'bold'}]}
-              value={state.phoneNumber}
-              keyboardType="numeric"
-              accessoryRight={() => (
-                <>
-                  <Icon
-                    name="lock"
-                    fill={color.primary}
-                    style={{
-                      width: 25,
-                      height: 25,
-                    }}
-                  />
-                </>
-              )}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <Input
-              label="Email"
-              placeholder="Email address"
-              style={styles.inputControl}
-              textStyle={styles.inputText}
-              value={state.email}
-              onChangeText={(value) => updateState('email', value)}
-              keyboardType="email-address"
-            />
-          </View>
-          <View style={[styles.formGroup, { paddingBottom: 15 }]}>
-            <Input
-              label="Địa chỉ"
-              placeholder="Address"
-              style={styles.inputControl}
-              textStyle={styles.inputText}
-              value={state.address}
-              onChangeText={(value) => updateState('address', value)}
-              keyboardType="default"
-            />
-          </View>
+    <>
+      {!!loading ? (
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Loading />
         </View>
-        <View style={styles.secWrap}>
-          <View style={styles.itemWrap}>
-            <TouchableOpacity
-              style={styles.itemInner}
-              onPress={() =>
-                onPressWithParrams('SettingChangePassword', initialState)
-              }>
+      ) : (
+        <KeyboardAwareScrollView
+          extraHeight={headerHeight + 60}
+          style={[styles.container, {  }]}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={_onRefresh}
+              tintColor={'#444'}
+            />
+          }>
+          <View style={styles.secWrap}>
+            <View style={styles.userInfo}>
+              <TouchableOpacity onPress={() => handleChoosePhoto('avatar')} disabled={state.imageUploading}>
+                <Avatar
+                  source={!!state.avatar ? { url: state.avatar?.UrlIMG ?? state.avatar } : noImageSrc}
+                  shape="round"
+                  size="giant"
+                  style={styles.avatar}
+                />
+              </TouchableOpacity>
+              <View style={styles.userName}>
+                <Text style={[styles.name, styles.textColor]}>
+                  {state.fullName}
+                </Text>
+                {/*<View style={styles.badge}>*/}
+                {/*  <Text*/}
+                {/*    style={{*/}
+                {/*      fontWeight: 'bold',*/}
+                {/*      color: color.darkColor,*/}
+                {/*    }}>*/}
+                {/*    Premium*/}
+                {/*  </Text>*/}
+                {/*</View>*/}
+              </View>
+            </View>
+            <Button
+              style={{
+                paddingHorizontal: 15,
+                marginHorizontal: 15,
+                marginTop: -20,
+                borderRadius: 6,
+                minHeight: 48,
+                marginBottom: 10,
+                backgroundColor: '#F8604C',
+                borderColor: '#F8604C',
+                ...shadowStyle,
+              }}
+              onPress={() => onPressWithParams('SettingPremiumPackage', state)}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                }}>
+                Hết hạn: <Text style={{ fontWeight: 'bold' }}>03/02/2020</Text>
+              </Text>
+            </Button>
+            <View style={styles.formGroup}>
+              <Input
+                returnKeyType={'done'}
+                label="Họ và tên"
+                placeholder="Full name"
+                style={styles.inputControl}
+                textStyle={styles.inputText}
+                value={state.fullName}
+                onChangeText={(value) => updateState('fullName', value)}
+              />
+            </View>
+            <View style={styles.formGroup}>
+              <Input
+                returnKeyType={'done'}
+                disabled
+                label="Số điện thoại"
+                placeholder="Phone"
+                style={[styles.inputControl, styles.disabledInput]}
+                textStyle={[
+                  styles.inputText,
+                  { color: color.primary, fontWeight: 'bold' },
+                ]}
+                value={state.phoneNumber}
+                keyboardType="numeric"
+                accessoryRight={() => (
+                  <>
+                    <Icon
+                      name="lock"
+                      fill={color.primary}
+                      style={{
+                        width: 25,
+                        height: 25,
+                      }}
+                    />
+                  </>
+                )}
+              />
+            </View>
+            <View style={styles.formGroup}>
+              <Datepicker
+                label="Ngày sinh"
+                date={moment(state.birthday, 'DD/MM/YYYY').toDate()}
+                max={new Date()}
+                // min={  }
+                dataService={settings.formatDateService}
+                onSelect={(nextDate) =>
+                  updateState('birthday', moment(nextDate).format('DD/MM/YYYY'))
+                }
+                style={[{ backgroundColor: 'transparent', borderWidth: 0 }]}
+              />
+            </View>
+            <View style={[styles.formGroup, {}]}>
+              <Input
+                returnKeyType={'done'}
+                label="Email"
+                placeholder="email"
+                style={styles.inputControl}
+                textStyle={styles.inputText}
+                value={state.email}
+                onChangeText={(value) => updateState('email', value)}
+                keyboardType="email-address"
+              />
+            </View>
+            <View style={[styles.formGroup, { marginBottom: 5 }]}>
+              <Select
+                label="Thành phố"
+                value={
+                  cityLists[cityIndex?.row ?? 0]?.CityName ?? 'Chọn thành phố'
+                }
+                selectedIndex={cityIndex}
+                onSelect={(index) => {
+                  setCityIndex(index);
+	                updateState( 'cityId', cityLists[index.row].ID)
+                }}>
+                {!!cityLists
+                  ? cityLists.map((option) => (
+                      <SelectItem key={option.ID} title={option.CityName} />
+                    ))
+                  : null}
+              </Select>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={[styles.btnGray, { marginBottom: 20, marginTop: -5 }]}
+            onPress={() => onPressWithParams('SettingChangePassword', state)}>
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'row',
+              }}>
               <Icon
                 name="shield-outline"
                 fill={color.disabledTextColor}
                 style={styles.settingIcon}
               />
-              <View style={[styles.linkText, { borderBottomWidth: 0 }]}>
-                <Text style={[styles.textColor, styles.textSettingSize]}>
-                  Thay đổi mật khẩu
-                </Text>
+              <Text style={[{ color: '#000', fontSize: 16 }]}>
+                Thay đổi mật khẩu
+              </Text>
+            </View>
+            <Icon
+              name="chevron-right"
+              fill={color.disabledTextColor}
+              style={styles.linkCarret}
+            />
+          </TouchableOpacity>
+          <View style={styles.submitButton}>
+            <Button
+              onPress={_onSubmit}
+              status="danger"
+              size="giant"
+              accessoryLeft={() => (
                 <Icon
-                  name="chevron-right"
-                  fill={color.disabledTextColor}
-                  style={styles.linkCarret}
+                  name="sync"
+                  fill={color.whiteColor}
+                  style={sizes.iconButtonSize}
                 />
-              </View>
-            </TouchableOpacity>
+              )}
+              style={{ borderRadius: 6 }}
+              textStyle={{ fontSize: 18 }}>
+              Cập nhật tài khoản
+            </Button>
           </View>
-        </View>
-        <View style={styles.submitButton}>
-          <Button
-            onPress={_onSubmit}
-            status="danger"
-            size="giant"
-            accessoryLeft={() => (
-              <Icon
-                name="sync"
-                fill={color.whiteColor}
-                style={sizes.iconButtonSize}
-              />
-            )}
-            style={{ borderRadius: 0 }}
-            textStyle={{ fontSize: 18 }}>
-            Cập nhật tài khoản
-          </Button>
-        </View>
-      </KeyboardAwareScrollView>
-    </View>
+          <Spinner
+            visible={spinner}
+            textContent={'Vui lòng chờ giây lát...'}
+            textStyle={{ color: '#fff' }} />
+        </KeyboardAwareScrollView>
+      )}
+    </>
   );
 };
 
@@ -217,9 +402,15 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: color.bgmain,
     flex: 1,
+    padding: 15,
   },
   secWrap: {
     marginBottom: 30,
+    backgroundColor: '#fff',
+    borderRadius: 6,
+    minHeight: 40,
+    padding: 5,
+    ...shadowStyle,
   },
   avatar: {
     width: 75,
@@ -242,8 +433,8 @@ const styles = StyleSheet.create({
   },
   formGroup: {
     backgroundColor: '#fff',
-    padding: 15,
-    paddingBottom: 0,
+    padding: 10,
+    paddingVertical: 7,
   },
   upgradeBtn: {
     flexDirection: 'row',
@@ -265,12 +456,18 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     alignItems: 'center',
-	  padding: 15,
+    padding: 15,
+    paddingHorizontal: 20,
+    margin: -5,
+    backgroundColor: '#D1D1D1',
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
   },
   userName: {
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 10,
+    marginBottom: 20,
   },
   badge: {
     paddingHorizontal: 5,
@@ -284,43 +481,25 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 18,
   },
-  expiredDate: {
-    // color: color.whiteColor,
-  },
-  itemWrap: {
-    // backgroundColor: 'rgba(65,63,98,1)',
-  },
-  itemInner: {
+  btnGray: {
     paddingHorizontal: 15,
+    paddingVertical: 8,
     minHeight: 30,
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
-	  borderBottomWidth: 1,
-	  borderTopWidth: 1,
-	  backgroundColor: '#D1D1D1',
-	  borderColor: color.disabledTextColor,
-  },
-  textColor: {},
-  textSettingSize: {
-    fontSize: 16,
+    backgroundColor: '#D1D1D1',
+    borderRadius: 6,
+    borderColor: '#D1D1D1',
+    ...shadowStyle,
   },
   settingIcon: {
-    width: 35,
-    height: 35,
+    width: 30,
+    height: 30,
+    marginRight: 10,
   },
   disabledInput: {
     // backgroundColor: color.darkShadowColor,
-  },
-  linkText: {
-    flexGrow: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginLeft: 15,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#c1c1c1',
-    paddingVertical: 10,
   },
   submitButton: {
     marginBottom: 30,

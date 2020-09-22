@@ -1,21 +1,54 @@
-import React, { useLayoutEffect, useContext, useEffect, useState } from 'react'
-import { Text, StyleSheet, View, TouchableOpacity, Alert, RefreshControl } from 'react-native'
+import React, { useLayoutEffect, useContext, useEffect, useState } from 'react';
+import {
+  Text,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Alert,
+  RefreshControl, StatusBar, SafeAreaView,
+} from 'react-native'
 import { Layout, Button, Icon } from '@ui-kitten/components';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
 import { useHeaderHeight } from '@react-navigation/stack';
-import { sizes, color, settings } from '~/config'
+import { sizes, color, settings } from '~/config';
+import StepIndicator from 'react-native-step-indicator';
+
 import RoomInfoForm from '../../components/GoInForm/RoomInfoForm';
 import RenterInfoForm from '../../components/GoInForm/RenterInfoForm';
 import CheckoutInfoForm from '../../components/GoInForm/CheckoutInfoForm';
+
 import { Context as RoomGoInContext } from '../../context/RoomGoInContext';
 import { Context as AuthContext } from '../../context/AuthContext';
 import { Context as RoomContext } from '~/context/RoomContext';
 import Loading from '~/components/common/Loading';
-import { currencyFormat } from '~/utils'
+import { currencyFormat } from '~/utils';
 
+const customStyles = {
+  stepIndicatorSize: 25,
+  currentStepIndicatorSize: 30,
+  separatorStrokeWidth: 2,
+  currentStepStrokeWidth: 3,
+  stepStrokeCurrentColor: color.primary,
+  stepStrokeWidth: 3,
+  stepStrokeFinishedColor: color.primary,
+  stepStrokeUnFinishedColor: color.disabledTextColor,
+  separatorFinishedColor: color.primary,
+  separatorUnFinishedColor: color.disabledTextColor,
+  stepIndicatorFinishedColor: color.primary,
+  stepIndicatorUnFinishedColor: '#fff',
+  stepIndicatorCurrentColor: '#fff',
+  stepIndicatorLabelFontSize: 12,
+  currentStepIndicatorLabelFontSize: 13,
+  stepIndicatorLabelCurrentColor: color.primary,
+  stepIndicatorLabelFinishedColor: '#fff',
+  stepIndicatorLabelUnFinishedColor: color.disabledTextColor,
+  labelColor: '#999',
+  labelSize: 13,
+  currentStepLabelColor: color.primary
+}
 const titleHeader = [
-  'Thông tin phòng, ki ốt',
+  'Thông tin phòng',
   'Thông tin người thuê',
   'Thanh toán',
 ];
@@ -88,19 +121,10 @@ const RoomGoInScreen = ({ navigation, route }) => {
   useLayoutEffect(() => {
     !RoomGoinState.isLoading &&
       navigation.setOptions({
-        headerLeft: () => (
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={onPress_headerLeft}>
-            <Icon
-              name="arrow-back-outline"
-              fill={color.primary}
-              style={sizes.iconButtonSize}
-            />
-            <Text style={styles.backButtonText}>Back</Text>
-          </TouchableOpacity>
-        ),
-        headerTitle: titleHeader[RoomGoinState.step],
+        headerShown: false,
+        headerLeft: () => null,
+        gesturesEnabled: false,
+        // headerTitle: titleHeader[RoomGoinState.step],
       });
   }, [RoomGoinState]);
 
@@ -116,9 +140,8 @@ const RoomGoInScreen = ({ navigation, route }) => {
       };
     });
     const pageNum = parseInt(actuallyReceived || 0);
-    if(route.params?.isDeposit){
+    if (route.params?.isDeposit) {
       // dat coc choi cho vui
-
     } else {
       if (pageNum < parseInt(totalDeposit) + parseInt(0)) {
         return Alert.alert(
@@ -128,7 +151,6 @@ const RoomGoInScreen = ({ navigation, route }) => {
         );
       }
     }
-
 
     const imageArr = [
       {
@@ -249,7 +271,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
           DateOutContract: contractInfo?.date ?? '',
           contractNote: contractInfo?.note ?? '',
           typeew: 1,
-          isCollect: checkout?.isCollect ?? true
+          isCollect: checkout?.isCollect ?? true,
         },
         {
           navigation,
@@ -294,60 +316,88 @@ const RoomGoInScreen = ({ navigation, route }) => {
   };
   return (
     <Layout style={styles.container} level="3">
+      <StatusBar barStyle='dark-content' />
+      <SafeAreaView />
       {!!RoomGoinState.isLoading ? (
-        <View style={{ alignItems: 'center', padding: 15, flex: 1, justifyContent: 'center' }}>
+        <View
+          style={{
+            alignItems: 'center',
+            padding: 15,
+            flex: 1,
+            justifyContent: 'center',
+          }}>
           <Loading />
         </View>
       ) : (
-        <KeyboardAwareScrollView
-          refreshControl={
-            <RefreshControl
-              onRefresh={_onRefresh}
-              refreshing={refreshing}
+        <>
+          <View style={{paddingBottom: 5}}>
+            <StepIndicator
+              customStyles={customStyles}
+              currentPosition={step}
+              labels={titleHeader}
+              stepCount={titleHeader.length}
             />
-          }
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingVertical: 15 }}
-          extraScrollHeight={headerHeight}
-          // viewIsInsideTabBar={true}
-          keyboardOpeningTime={150}>
-          <RenderForm />
-          <View style={styles.mainWrap}>
-            {RoomGoinState.step < 2 ? (
-              <Button
-                style={styles.btnFt}
-                onPress={changeNextStep}
-                accessoryRight={() => (
-                  <Icon
-                    name="arrow-right"
-                    fill={color.whiteColor}
-                    style={sizes.iconButtonSize}
-                  />
-                )}
-                size="large"
-                status="danger">
-                {RoomGoinState.step === 0
-                  ? 'Cấu hình người thuê'
-                  : 'Thông tin thanh toán'}
-              </Button>
-            ) : (
-              <Button
-                style={styles.btnFt}
-                onPress={sendFormData}
-                accessoryLeft={() => (
-                  <Icon
-                    name="save"
-                    fill={color.whiteColor}
-                    style={sizes.iconButtonSize}
-                  />
-                )}
-                size="large"
-                status="success">
-                Lưu thông tin phòng
-              </Button>
-            )}
           </View>
-        </KeyboardAwareScrollView>
+          <KeyboardAwareScrollView
+            refreshControl={
+              <RefreshControl onRefresh={_onRefresh} refreshing={refreshing} />
+            }
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingBottom: 15 }}
+            extraScrollHeight={headerHeight}
+            // viewIsInsideTabBar={true}
+            keyboardOpeningTime={150}>
+            <RenderForm />
+            <View style={styles.mainWrap}>
+              <View style={styles.btnGroup}>
+                <Button
+                  style={[styles.btnFt, { borderBottomRightRadius: 0, borderTopRightRadius: 0 }]}
+                  onPress={onPress_headerLeft}
+                  accessoryLeft={() => <Icon
+                    name="arrow-left"
+                    fill={color.whiteColor}
+                    style={sizes.iconButtonSize}
+                  />}
+                >
+                  Trở lại
+                </Button>
+                {RoomGoinState.step < 2 ? (
+                  <Button
+                    style={[styles.btnFt, { borderBottomLeftRadius: 0, borderTopLeftRadius: 0 }]}
+                    onPress={changeNextStep}
+                    accessoryRight={() => (
+                      <Icon
+                        name="arrow-right"
+                        fill={color.whiteColor}
+                        style={sizes.iconButtonSize}
+                      />
+                    )}
+                    size="large"
+                    status="danger">
+                    {RoomGoinState.step === 0
+                      ? 'Cấu hình người thuê'
+                      : 'Thông tin thanh toán'}
+                  </Button>
+                ) : (
+                  <Button
+                    style={[styles.btnFt, { borderBottomLeftRadius: 0, borderTopLeftRadius: 0 }]}
+                    onPress={sendFormData}
+                    accessoryLeft={() => (
+                      <Icon
+                        name="save"
+                        fill={color.whiteColor}
+                        style={sizes.iconButtonSize}
+                      />
+                    )}
+                    size="large"
+                    status="success">
+                    Lưu thông tin phòng
+                  </Button>
+                )}
+              </View>
+            </View>
+          </KeyboardAwareScrollView>
+        </>
       )}
     </Layout>
   );
@@ -370,7 +420,11 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontSize: 16,
   },
+  btnGroup: {
+    flexDirection: 'row',
+  },
   btnFt: {
+    flexGrow: 1,
     // borderRadius: 0,
   },
 });

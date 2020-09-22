@@ -1,4 +1,10 @@
-import React, { useReducer, useState, useEffect, useContext } from 'react';
+import React, {
+  useReducer,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,8 +18,7 @@ import Loading from '~/components/common/Loading';
 import { Context as AuthContext } from '~/context/AuthContext';
 import { Context as MotelContext } from '~/context/MotelContext';
 import { settings, color, sizes, shadowStyle } from '~/config';
-import { getMotels } from '~/api/MotelAPI';
-
+// import AddMotelBSheet from './settingComp/AddMotelBSheet';
 const reducer = (prevState, { type, value }) => {
   switch (type) {
     case 'SET_STATE':
@@ -25,33 +30,29 @@ const reducer = (prevState, { type, value }) => {
       return prevState;
   }
 };
-const initialState = {
-  isRefesh: false,
-  listHouse: [],
-};
 
 const SettingHouseScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { signOut } = useContext(AuthContext);
   const { state: motelState, getListMotels } = useContext(MotelContext);
-  // const [state, dispatch] = useReducer(reducer, initialState)
-  const [isLoading, setloading] = useState(false);
-  const [isRefesh, setrefesh] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const [isRefresh, setRefresh] = useState(false);
 
   useEffect(() => {
     !!!motelState.listMotels &&
       (async () => {
-        setloading(true);
+        setLoading(true);
         await getListMotels(signOut);
-        setloading(false);
+        setLoading(false);
       })();
+    return () => {};
   }, []);
 
   const _onRefresh = async () => {
-    setrefesh(true);
+    setRefresh(true);
     await getListMotels(signOut);
-    setrefesh(false);
+    setRefresh(false);
   };
   const onPressItem = (data) =>
     navigation.navigate('SettingHouseDetail', { data });
@@ -71,7 +72,10 @@ const SettingHouseScreen = () => {
       )}
     />
   );
-  const _pressAddNewMotel = () => {};
+  const _pressAddNewMotel = () => {
+    // navigation.navigate('SettingHouseDetail', { data });
+    navigation.navigate('SettingHouseDetail', { isAddMotel: true, data: {} });
+  };
   return (
     <View style={styles.container}>
       {!!isLoading && (
@@ -84,7 +88,7 @@ const SettingHouseScreen = () => {
           <List
             contentContainerStyle={styles.listwrap}
             refreshControl={
-              <RefreshControl onRefresh={_onRefresh} refreshing={isRefesh} />
+              <RefreshControl onRefresh={_onRefresh} refreshing={isRefresh} />
             }
             ItemSeparatorComponent={Divider}
             data={motelState.listMotels}

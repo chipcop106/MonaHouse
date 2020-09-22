@@ -19,6 +19,7 @@ export const InputValidate =  props => {
     
     return (
         <Input
+            returnKeyType={"done"}
             {...props}
             {...fieldProps}
             caption={!!error && idTouched && error}

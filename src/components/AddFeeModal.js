@@ -79,7 +79,7 @@ const AddFeeModal = (props) => {
             <Input
               returnKeyType={'done'}
               autoFocus={true}
-              label="Số tiền"
+              label="Tiền phí phát sinh"
               placeholder="0"
               keyboardType="numeric"
               value={currencyFormat(money)}

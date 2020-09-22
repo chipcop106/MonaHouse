@@ -95,7 +95,39 @@ export const registerAccount = async (params) => {
 
 }
 
+export const getUserInfo = async () => {
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(path + '/getinfo', {
+      params: {
+        token
+      }
+    })
+    return res.data;
+  } catch (error) {
+    return error.message;
+  }
 
+}
+
+export const changePassword = async (params = {
+  oldpass: '',
+  newpass: '',
+}) => {
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(path + '/newpassword', {
+      params: {
+        ...params,
+        token
+      }
+    })
+    return res.data;
+  } catch (error) {
+    return error.message;
+  }
+
+}
 
 export const loginAccount = async (params) => {
   try {

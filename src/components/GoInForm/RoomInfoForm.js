@@ -56,7 +56,7 @@ const RoomInfoForm = () => {
           <View style={[styles.formWrap]}>
             <View style={[styles.formRow, styles.halfCol]}>
               <Input
-                returnKeyType={'done'}
+                returnKeyType={"done"}
                 textStyle={styles.textInput}
                 label="Giá thuê / tháng"
                 placeholder="0"
@@ -131,7 +131,7 @@ const RoomInfoForm = () => {
         </View>
         <View style={styles.serviceTitle}>
           <Text style={{ ...styles.secTitle, marginBottom: 0 }}>
-            Dịch vụ phòng
+            Dịch vụ hằng tháng
           </Text>
           <TouchableOpacity
             onPress={_onPressAddService}

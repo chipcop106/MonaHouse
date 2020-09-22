@@ -76,4 +76,7 @@ export const settings = {
   monthLists: monthOptions,
   yearLists: yearOptions,
   hostURL: "https://app.mona.house",
+  cityLists: [],
+  relationLists: [],
+  phoneHelp: []
 };

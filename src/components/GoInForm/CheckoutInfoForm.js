@@ -157,6 +157,7 @@ const CheckoutInfoForm = () => {
             </View>
             <View style={[styles.formRow, styles.fullWidth]}>
               <Input
+                returnKeyType={"done"}
                 textStyle={styles.dangerValue}
                 disabled
                 accessoryLeft={() => (
@@ -192,6 +193,7 @@ const CheckoutInfoForm = () => {
             <View style={[styles.formRow, styles.fullWidth]}>
               <Text style={{fontSize: 14, marginVertical: 5}}>Tiền nhà đến { moment().endOf('months').format('DD/MM') } </Text>
               <Input
+                returnKeyType={"done"}
                 disabled
                 textStyle={styles.dangerValue}
                 accessoryLeft={() => <View style={styles.leftInput}>
@@ -237,6 +239,7 @@ const CheckoutInfoForm = () => {
 
             <View style={[styles.formRow, styles.fullWidth]}>
               <Input
+                returnKeyType={"done"}
                 textStyle={styles.dangerValue}
                 disabled
                 accessoryLeft={() => (

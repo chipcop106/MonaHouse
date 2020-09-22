@@ -21,7 +21,7 @@ import ServiceList from './settingComp/ServiceList';
 import { Context as AuthContext } from '~/context/AuthContext';
 import { Context as MotelContext } from '~/context/MotelContext';
 import { settings, color, sizes, shadowStyle } from '~/config';
-import { getMotels, updateMotel, getMotelById } from '~/api/MotelAPI';
+import { getMotels, updateMotel, getMotelById, createMotelOne } from '~/api/MotelAPI';
 
 const reducer = (prevState, { type, value }) => {
   switch (type) {
@@ -37,7 +37,7 @@ const reducer = (prevState, { type, value }) => {
 const initialState = {
   isLogout: false,
   waterPrice: '',
-  electrictPrice: '',
+  electricPrice: '',
   roomPrice: '',
   address: '',
   motelName: '',
@@ -45,19 +45,21 @@ const initialState = {
   owner: '',
   ownerPhone: '',
   preWaterPrice: '',
-  preElectrictPrice: '',
-
+  preElectricPrice: '',
   isAlertVisible: false,
+  addons: []
 };
 
 const SettingHouseDetailScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const { getListMotels } = useContext(MotelContext);
+  const { isAddMotel } = route.params;
   const { ID: motelid, MotelName, Address, Description } = route.params?.data;
   const { signOut } = useContext(AuthContext);
   const [state, dispatch] = useReducer(reducer, initialState);
   const [isLoading, setloading] = useState(false);
-  const [isRefesh, setrefesh] = useState(false);
+  const [isRefresh, setRefresh] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -66,11 +68,11 @@ const SettingHouseDetailScreen = () => {
   }, []);
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: `${state.motelName || MotelName}`,
+      title: `${state.motelName || MotelName || 'Thêm nhà'}`,
     });
   }, [state.motelName]);
   useEffect(() => {
-    (async () => {
+    !!!isAddMotel && (async () => {
       setloading(true);
       await loadData();
       setloading(false);
@@ -81,6 +83,10 @@ const SettingHouseDetailScreen = () => {
     dispatch({ type: 'SET_STATE', value });
   };
   const _onSubmit = async () => {
+    if(state.motelName.trim().length === 0){
+      Alert.alert('Tên nhà không được chừa trống');
+      return false;
+    }
     try {
       console.log(state);
       const addonRender = () => {
@@ -102,24 +108,48 @@ const SettingHouseDetailScreen = () => {
         motelname: state.motelName,
         address: state.address,
         description: state.description,
-        motelIMG: '',
         addons: JSON.stringify(addonRender())
       };
+      isAddMotel && ( delete params.motelid );
       console.log('_onSubmit params', params);
-      // const res = await updateMotel(params);
+      let res = null;
+      if(!!isAddMotel){
+        // add new
+        res = await  createMotelOne(params);
 
-      // Alert.alert('Thông báo', 'Cập nhật thành công !!', [
-      //   {
-      //     text: 'Trở về',
-      //     onPress: () => {
-      //       navigation.pop();
-      //     },
-      //   },
-      // ]);
-    } catch (error) {}
+      } else {
+        // update
+        res = await updateMotel(params);
+
+      }
+
+      if(res.Code === 1 ){
+        Alert.alert('Thông báo', `${ isAddMotel ? `Thêm mới`: `Cập nhật` }  thành công !!`, [
+          {
+            text: 'Trở về',
+            onPress: () => {
+              getListMotels();
+              navigation.pop();
+            },
+          },
+        ]);
+      } else if( res.Code === 0 ){
+        Alert.alert('Oops!!', JSON.stringify(res));
+      } else if( res.Code === 2 ){
+        signOut();
+        Alert.alert('Phiên làm việc của bạn đã hết, vui lòng đăng nhập lại !!','');
+      } else {
+        Alert.alert('Lỗi', 'Dữ liệu  lỗi vui lòng liên hệ nhà cung cấp');
+      }
+
+    } catch (error) {
+      console.log( '_onSubmit' , error);
+      Alert.alert('Lỗi', JSON.stringify(error));
+    }
   };
 
   const loadData = async () => {
+
     try {
       const res = await  getMotelById({motelid});
       if (res.Code === 2) {
@@ -142,9 +172,22 @@ const SettingHouseDetailScreen = () => {
     }
   };
   const _onRefresh = async () => {
-    setrefesh(true);
-    await loadData();
-    setrefesh(false);
+
+    setRefresh(true);
+    if( !!isAddMotel ){
+      await new Promise(a => setTimeout(a,300));
+      setRefresh(false);
+      return updateState({
+        address:  '',
+        description:  '',
+        motelName:  '',
+        addons: []
+      });
+    } else {
+      await loadData();
+    }
+
+    setRefresh(false);
   };
 
   const LogoutRender = () => {
@@ -152,7 +195,7 @@ const SettingHouseDetailScreen = () => {
     return <></>;
   };
   const _onChangeServices = (services) => {
-    console.log(services);
+    console.log('_onChangeServices', services);
     updateState({
       addons: services
     })
@@ -170,7 +213,7 @@ const SettingHouseDetailScreen = () => {
           style={{ flex: 1 }}
           contentContainerStyle={{ paddingVertical: 15 }}
           refreshControl={
-            <RefreshControl onRefresh={_onRefresh} refreshing={isRefesh} />
+            <RefreshControl onRefresh={_onRefresh} refreshing={isRefresh} />
           }>
           <>
           {/*<View style={styles.secWrap}>*/}
@@ -182,7 +225,7 @@ const SettingHouseDetailScreen = () => {
           {/*      /!* owner: "",*/}
           {/*      ownerPhone: "",*/}
           {/*      preWaterPrice: "",*/}
-          {/*      preElectrictPrice: "" *!/*/}
+          {/*      preElectricPrice: "" *!/*/}
           {/*    </Text>*/}
           {/*  </View>*/}
           {/*  <View style={styles.formGroup}>*/}
@@ -224,9 +267,9 @@ const SettingHouseDetailScreen = () => {
           {/*      placeholder="0"*/}
           {/*      style={styles.inputControl}*/}
           {/*      textStyle={styles.inputText}*/}
-          {/*      value={state.preElectrictPrice}*/}
+          {/*      value={state.preElectricPrice}*/}
           {/*      onChangeText={(value) =>*/}
-          {/*        updateState({ preElectrictPrice: value })*/}
+          {/*        updateState({ preElectricPrice: value })*/}
           {/*      }*/}
           {/*      keyboardType={'number-pad'}*/}
           {/*    />*/}
@@ -258,7 +301,7 @@ const SettingHouseDetailScreen = () => {
                     Tên nhà trọ:
                   </Text>
                 )}
-                placeholder="0"
+                placeholder="632 CMT8 P11 Q3,..."
                 style={styles.inputControl}
                 textStyle={styles.inputText}
                 value={state.motelName}
@@ -273,22 +316,23 @@ const SettingHouseDetailScreen = () => {
                     Địa chỉ nhà:
                   </Text>
                 )}
-                placeholder="0"
+                placeholder="632 CMT8 P11 Q3,..."
                 style={styles.inputControl}
                 textStyle={styles.inputText}
                 value={state.address}
                 onChangeText={(value) => updateState({ address: value })}
               />
             </View>
-            <View style={styles.formGroup}>
+            <View style={[styles.formGroup, { marginBottom: 10}]}>
               <Input
+                multiline={true}
                 returnKeyType={"done"}
                 label={(props) => (
                   <Text {...props} style={[...props.style, styles.lbInput]}>
                     Mô tả:
                   </Text>
                 )}
-                placeholder="0"
+                placeholder="Một căn nhà đẹp, có nhiều phòng ..."
                 style={styles.inputControl}
                 textStyle={styles.inputText}
                 value={state.description}
@@ -336,22 +380,31 @@ const SettingHouseDetailScreen = () => {
             {/*    placeholder="0"*/}
             {/*    style={styles.inputControl}*/}
             {/*    textStyle={styles.inputText}*/}
-            {/*    value={state.electrictPrice}*/}
+            {/*    value={state.electricPrice}*/}
             {/*    keyboardType={'number-pad'}*/}
-            {/*    onChangeText={(value) => updateState({ electrictPrice: value })}*/}
+            {/*    onChangeText={(value) => updateState({ electricPrice: value })}*/}
             {/*  />*/}
             {/*</View>*/}
 
           </View>
           <View style={styles.submitActions} />
-          <ServiceList onChange={_onChangeServices} />
+          {
+            isAddMotel && !isRefresh && <ServiceList onChange={_onChangeServices}  />
+          }
+          {
+            !isAddMotel && <ServiceList onChange={_onChangeServices}  />
+          }
         </KeyboardAwareScrollView>
       )}
       {!!!isLoading && (
         <View style={[{ paddingVertical: 15 }]}>
           <Button
             onPress={_onSubmit}
-            accessoryLeft={() => (
+            accessoryLeft={() => !!isAddMotel ? ( <Icon
+              name="plus"
+              fill={color.whiteColor}
+              style={sizes.iconButtonSize}
+            /> ) : (
               <Icon
                 name="sync"
                 fill={color.whiteColor}
@@ -360,7 +413,7 @@ const SettingHouseDetailScreen = () => {
             )}
             style={styles.submitButton}
             textStyle={{ fontSize: 18 }}>
-            Cập nhật
+            { !!isAddMotel ? 'Thêm nhà' : 'Cập nhật' }
           </Button>
         </View>
       )}
@@ -401,6 +454,7 @@ const styles = StyleSheet.create({
   inputText: {
     color: '#000',
     marginLeft: 0,
+    paddingVertical: 5,
   },
   formGroup: {
     padding: 15,

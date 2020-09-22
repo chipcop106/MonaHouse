@@ -10,6 +10,7 @@ const TextField = (props) => {
   };
   return (
     <Input
+      returnKeyType={"done"}
       {...props}
       value={value}
       onChangeText={_onChangeText}
