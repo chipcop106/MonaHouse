@@ -145,8 +145,8 @@ const RoomManagementScreen = () => {
 
   const bsFee = createRef();
   const bsAddMotel = createRef();
-  const _onPressaddFee = (roomdata) => {
-    const { HouseID, RoomName, RoomID, RenterID } = roomdata;
+  const _onPressAddFee = (roomData) => {
+    const { HouseID, RoomName, RoomID, RenterID } = roomData;
 
     bsFee.current?.open();
     setTimeout(() => {
@@ -165,6 +165,9 @@ const RoomManagementScreen = () => {
   };
   const _onModalizeAddMotelClose = () => {
     console.log('_onModalizeAddMotelClose');
+    if(!!bsAddMotel.current) {
+      bsAddMotel.current = null;
+    }
     loadData();
   };
 
@@ -205,7 +208,7 @@ const RoomManagementScreen = () => {
               renderItem={(room) => (
                 <RoomCard
                   roomInfo={room}
-                  onPressaddFee={() => _onPressaddFee(room.item)}
+                  onPressaddFee={() => _onPressAddFee(room.item)}
                 />
               )}
             />

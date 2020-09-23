@@ -21,7 +21,14 @@ import ServiceList from './settingComp/ServiceList';
 import { Context as AuthContext } from '~/context/AuthContext';
 import { Context as MotelContext } from '~/context/MotelContext';
 import { settings, color, sizes, shadowStyle } from '~/config';
-import { getMotels, updateMotel, getMotelById, createMotelOne } from '~/api/MotelAPI';
+import {
+  getMotels,
+  updateMotel,
+  getMotelById,
+  createMotelOne,
+  deleteMotel,
+} from '~/api/MotelAPI';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const reducer = (prevState, { type, value }) => {
   switch (type) {
@@ -47,7 +54,7 @@ const initialState = {
   preWaterPrice: '',
   preElectricPrice: '',
   isAlertVisible: false,
-  addons: []
+  addons: [],
 };
 
 const SettingHouseDetailScreen = () => {
@@ -60,10 +67,24 @@ const SettingHouseDetailScreen = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [isLoading, setloading] = useState(false);
   const [isRefresh, setRefresh] = useState(false);
-
+  const [spinner, setSpinner] = useState(false);
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitleStyle: { maxWidth: 240, color: '#fff' }
+      headerTitleStyle: { maxWidth: 240, color: '#fff' },
+      headerRight: () =>
+        !isAddMotel ? (
+          <Button
+            accessoryRight={()=> <Icon
+              name="trash-2-outline"
+              fill={color.redColor}
+              style={{width: 20, height: 20}}
+            />}
+            status={'danger'}
+            appearance={'ghost'}
+            onPress={_onPressRemove}>
+            <Text style={{fontSize: 16, fontWeight: 'normal'}}>Xoá</Text>
+          </Button>
+        ) : null,
     });
   }, []);
   useLayoutEffect(() => {
@@ -72,18 +93,78 @@ const SettingHouseDetailScreen = () => {
     });
   }, [state.motelName]);
   useEffect(() => {
-    !!!isAddMotel && (async () => {
-      setloading(true);
-      await loadData();
-      setloading(false);
-    })();
+    !!!isAddMotel &&
+      (async () => {
+        setloading(true);
+        await loadData();
+        setloading(false);
+      })();
     return () => {};
   }, []);
   const updateState = (value) => {
     dispatch({ type: 'SET_STATE', value });
   };
+  const _onPressRemove = () => {
+    Alert.alert(
+      'Cảnh báo !',
+      'Bạn có chắc chắn xoá nhà này ??',
+      [
+        {
+          text: 'Tôi chắc chắn',
+          style: 'destructive',
+          onPress: actionRemoveMotel,
+        },
+        {
+          text: 'Hủy thao tác',
+
+          onPress: () => console.log('Cancel Pressed'),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+  const actionRemoveMotel = async () => {
+
+    try {
+      setSpinner(true);
+      const res = await deleteMotel({motelid});
+      setSpinner(false);
+      await new Promise((a) => setTimeout(a, 300));
+      if (res.Code === 1) {
+        Alert.alert(
+          'Thông báo',
+          `xoá thành công !!`,
+          [
+            {
+              text: 'Trở về',
+              onPress: () => {
+                getListMotels();
+                navigation.pop();
+              },
+            },
+          ]
+        );
+      } else if (res.Code === 0) {
+        Alert.alert('Oops!!', JSON.stringify(res));
+      } else if (res.Code === 2) {
+        signOut();
+        Alert.alert(
+          'Phiên làm việc của bạn đã hết, vui lòng đăng nhập lại !!',
+          ''
+        );
+      } else {
+        Alert.alert('Lỗi', 'Dữ liệu  lỗi vui lòng liên hệ nhà cung cấp');
+      }
+
+
+    } catch (e) {
+      console.log('actionRemoveMotel error', e);
+
+    }
+
+  }
   const _onSubmit = async () => {
-    if(state.motelName.trim().length === 0){
+    if (state.motelName.trim().length === 0) {
       Alert.alert('Tên nhà không được chừa trống');
       return false;
     }
@@ -93,73 +174,90 @@ const SettingHouseDetailScreen = () => {
         let rs = [];
         try {
           //[{ ID: 0, Name: "", Price: "" }]
-          rs = state.addons.map(item => {
-           if(item.name.trim().length > 0){
-             return { ID: 0, Name: item.name, Price: item.price || 0 }
-           }
+          rs = state.addons.map((item) => {
+            if (item.name.trim().length > 0) {
+              if (!!item.ID) {
+                return { ID: item.ID, Name: item.name, Price: item.price || 0 };
+              } else {
+                return { ID: 0, Name: item.name, Price: item.price || 0 };
+              }
+            }
           });
         } catch (e) {
           console.log('addonRender', e);
         }
         return rs;
-      }
+      };
       const params = {
         motelid: motelid,
         motelname: state.motelName,
         address: state.address,
         description: state.description,
-        addons: JSON.stringify(addonRender())
+        addons: JSON.stringify(addonRender()),
       };
-      isAddMotel && ( delete params.motelid );
+      isAddMotel && delete params.motelid;
       console.log('_onSubmit params', params);
       let res = null;
-      if(!!isAddMotel){
+      setSpinner(true);
+      if (!!isAddMotel) {
         // add new
-        res = await  createMotelOne(params);
-
+        res = await createMotelOne(params);
       } else {
         // update
         res = await updateMotel(params);
-
       }
-
-      if(res.Code === 1 ){
-        Alert.alert('Thông báo', `${ isAddMotel ? `Thêm mới`: `Cập nhật` }  thành công !!`, [
-          {
-            text: 'Trở về',
-            onPress: () => {
-              getListMotels();
-              navigation.pop();
+      setSpinner(false);
+      await new Promise((a) => setTimeout(a, 300));
+      if (!!!res) {
+        Alert.alert('Lỗi', 'Dữ liệu  lỗi vui lòng liên hệ nhà cung cấp');
+        return false;
+      }
+      if (res.Code === 1) {
+        Alert.alert(
+          'Thông báo',
+          `${isAddMotel ? `Thêm mới` : `Cập nhật`}  thành công !!`,
+          [
+            {
+              text: 'Trở về',
+              onPress: () => {
+                getListMotels();
+                navigation.pop();
+              },
             },
-          },
-        ]);
-      } else if( res.Code === 0 ){
+          ]
+        );
+      } else if (res.Code === 0) {
         Alert.alert('Oops!!', JSON.stringify(res));
-      } else if( res.Code === 2 ){
+      } else if (res.Code === 2) {
         signOut();
-        Alert.alert('Phiên làm việc của bạn đã hết, vui lòng đăng nhập lại !!','');
+        Alert.alert(
+          'Phiên làm việc của bạn đã hết, vui lòng đăng nhập lại !!',
+          ''
+        );
       } else {
         Alert.alert('Lỗi', 'Dữ liệu  lỗi vui lòng liên hệ nhà cung cấp');
       }
-
     } catch (error) {
-      console.log( '_onSubmit' , error);
+      console.log('_onSubmit', error);
       Alert.alert('Lỗi', JSON.stringify(error));
     }
   };
 
   const loadData = async () => {
-
     try {
-      const res = await  getMotelById({motelid});
+      const res = await getMotelById({ motelid });
       if (res.Code === 2) {
-        Alert.alert('Thông báo', 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!');
+        Alert.alert(
+          'Thông báo',
+          'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại !!'
+        );
       } else if (res.Code === 1 && !!res.Data) {
-        const { Data }  =  res;
+        const { Data } = res;
         updateState({
           address: Data?.Address ?? '',
           description: Data?.Description ?? '',
-          motelName: Data?.MotelName ?? ''
+          motelName: Data?.MotelName ?? '',
+          addons: Data?.addons ?? [],
         });
       } else if (res.Code === 0) {
         Alert.alert('Oops!!', JSON.stringify(res));
@@ -172,16 +270,15 @@ const SettingHouseDetailScreen = () => {
     }
   };
   const _onRefresh = async () => {
-
     setRefresh(true);
-    if( !!isAddMotel ){
-      await new Promise(a => setTimeout(a,300));
+    if (!!isAddMotel) {
+      await new Promise((a) => setTimeout(a, 300));
       setRefresh(false);
       return updateState({
-        address:  '',
-        description:  '',
-        motelName:  '',
-        addons: []
+        address: '',
+        description: '',
+        motelName: '',
+        addons: [],
       });
     } else {
       await loadData();
@@ -197,9 +294,9 @@ const SettingHouseDetailScreen = () => {
   const _onChangeServices = (services) => {
     console.log('_onChangeServices', services);
     updateState({
-      addons: services
-    })
-  }
+      addons: services,
+    });
+  };
   return (
     <View style={styles.container}>
       {!!state.isLogout && <LogoutRender />}
@@ -216,86 +313,86 @@ const SettingHouseDetailScreen = () => {
             <RefreshControl onRefresh={_onRefresh} refreshing={isRefresh} />
           }>
           <>
-          {/*<View style={styles.secWrap}>*/}
-          {/*  <View style={styles.formGroup}>*/}
-          {/*    <Text>*/}
-          {/*      có 2 loại chính chủ/thuê lại, nếu là "thuê lại" có thêm field:*/}
-          {/*      Tên chủ nhà, sdt chủ nhà, giá thuê gốc, giá điện /kw, giá nước*/}
-          {/*      /m3*/}
-          {/*      /!* owner: "",*/}
-          {/*      ownerPhone: "",*/}
-          {/*      preWaterPrice: "",*/}
-          {/*      preElectricPrice: "" *!/*/}
-          {/*    </Text>*/}
-          {/*  </View>*/}
-          {/*  <View style={styles.formGroup}>*/}
-          {/*    <Input*/}
-          {/*      label={(props) => (*/}
-          {/*        <Text {...props} style={[...props.style, styles.lbInput]}>*/}
-          {/*          Tên chủ nhà:*/}
-          {/*        </Text>*/}
-          {/*      )}*/}
-          {/*      placeholder="0"*/}
-          {/*      style={styles.inputControl}*/}
-          {/*      textStyle={styles.inputText}*/}
-          {/*      value={state.owner}*/}
-          {/*      onChangeText={(value) => updateState({ owner: value })}*/}
-          {/*    />*/}
-          {/*  </View>*/}
-          {/*  <View style={styles.formGroup}>*/}
-          {/*    <Input*/}
-          {/*      label={(props) => (*/}
-          {/*        <Text {...props} style={[...props.style, styles.lbInput]}>*/}
-          {/*          Số Phone chủ nhà:*/}
-          {/*        </Text>*/}
-          {/*      )}*/}
-          {/*      placeholder="0"*/}
-          {/*      style={styles.inputControl}*/}
-          {/*      textStyle={styles.inputText}*/}
-          {/*      value={state.ownerPhone}*/}
-          {/*      onChangeText={(value) => updateState({ ownerPhone: value })}*/}
-          {/*      keyboardType={'number-pad'}*/}
-          {/*    />*/}
-          {/*  </View>*/}
-          {/*  <View style={styles.formGroup}>*/}
-          {/*    <Input*/}
-          {/*      label={(props) => (*/}
-          {/*        <Text {...props} style={[...props.style, styles.lbInput]}>*/}
-          {/*          Giá điện thuê lại:*/}
-          {/*        </Text>*/}
-          {/*      )}*/}
-          {/*      placeholder="0"*/}
-          {/*      style={styles.inputControl}*/}
-          {/*      textStyle={styles.inputText}*/}
-          {/*      value={state.preElectricPrice}*/}
-          {/*      onChangeText={(value) =>*/}
-          {/*        updateState({ preElectricPrice: value })*/}
-          {/*      }*/}
-          {/*      keyboardType={'number-pad'}*/}
-          {/*    />*/}
-          {/*  </View>*/}
-          {/*  <View style={styles.formGroup}>*/}
-          {/*    <Input*/}
-          {/*      label={(props) => (*/}
-          {/*        <Text {...props} style={[...props.style, styles.lbInput]}>*/}
-          {/*          Giá nước thuê lại:*/}
-          {/*        </Text>*/}
-          {/*      )}*/}
-          {/*      placeholder="0"*/}
-          {/*      style={styles.inputControl}*/}
-          {/*      textStyle={styles.inputText}*/}
-          {/*      value={state.preWaterPrice}*/}
-          {/*      onChangeText={(value) => updateState({ preWaterPrice: value })}*/}
-          {/*      keyboardType={'number-pad'}*/}
-          {/*    />*/}
-          {/*  </View>*/}
-          {/*  <View style={[styles.formGroup, { paddingBottom: 15 }]} />*/}
-          {/*</View>*/}
+            {/*<View style={styles.secWrap}>*/}
+            {/*  <View style={styles.formGroup}>*/}
+            {/*    <Text>*/}
+            {/*      có 2 loại chính chủ/thuê lại, nếu là "thuê lại" có thêm field:*/}
+            {/*      Tên chủ nhà, sdt chủ nhà, giá thuê gốc, giá điện /kw, giá nước*/}
+            {/*      /m3*/}
+            {/*      /!* owner: "",*/}
+            {/*      ownerPhone: "",*/}
+            {/*      preWaterPrice: "",*/}
+            {/*      preElectricPrice: "" *!/*/}
+            {/*    </Text>*/}
+            {/*  </View>*/}
+            {/*  <View style={styles.formGroup}>*/}
+            {/*    <Input*/}
+            {/*      label={(props) => (*/}
+            {/*        <Text {...props} style={[...props.style, styles.lbInput]}>*/}
+            {/*          Tên chủ nhà:*/}
+            {/*        </Text>*/}
+            {/*      )}*/}
+            {/*      placeholder="0"*/}
+            {/*      style={styles.inputControl}*/}
+            {/*      textStyle={styles.inputText}*/}
+            {/*      value={state.owner}*/}
+            {/*      onChangeText={(value) => updateState({ owner: value })}*/}
+            {/*    />*/}
+            {/*  </View>*/}
+            {/*  <View style={styles.formGroup}>*/}
+            {/*    <Input*/}
+            {/*      label={(props) => (*/}
+            {/*        <Text {...props} style={[...props.style, styles.lbInput]}>*/}
+            {/*          Số Phone chủ nhà:*/}
+            {/*        </Text>*/}
+            {/*      )}*/}
+            {/*      placeholder="0"*/}
+            {/*      style={styles.inputControl}*/}
+            {/*      textStyle={styles.inputText}*/}
+            {/*      value={state.ownerPhone}*/}
+            {/*      onChangeText={(value) => updateState({ ownerPhone: value })}*/}
+            {/*      keyboardType={'number-pad'}*/}
+            {/*    />*/}
+            {/*  </View>*/}
+            {/*  <View style={styles.formGroup}>*/}
+            {/*    <Input*/}
+            {/*      label={(props) => (*/}
+            {/*        <Text {...props} style={[...props.style, styles.lbInput]}>*/}
+            {/*          Giá điện thuê lại:*/}
+            {/*        </Text>*/}
+            {/*      )}*/}
+            {/*      placeholder="0"*/}
+            {/*      style={styles.inputControl}*/}
+            {/*      textStyle={styles.inputText}*/}
+            {/*      value={state.preElectricPrice}*/}
+            {/*      onChangeText={(value) =>*/}
+            {/*        updateState({ preElectricPrice: value })*/}
+            {/*      }*/}
+            {/*      keyboardType={'number-pad'}*/}
+            {/*    />*/}
+            {/*  </View>*/}
+            {/*  <View style={styles.formGroup}>*/}
+            {/*    <Input*/}
+            {/*      label={(props) => (*/}
+            {/*        <Text {...props} style={[...props.style, styles.lbInput]}>*/}
+            {/*          Giá nước thuê lại:*/}
+            {/*        </Text>*/}
+            {/*      )}*/}
+            {/*      placeholder="0"*/}
+            {/*      style={styles.inputControl}*/}
+            {/*      textStyle={styles.inputText}*/}
+            {/*      value={state.preWaterPrice}*/}
+            {/*      onChangeText={(value) => updateState({ preWaterPrice: value })}*/}
+            {/*      keyboardType={'number-pad'}*/}
+            {/*    />*/}
+            {/*  </View>*/}
+            {/*  <View style={[styles.formGroup, { paddingBottom: 15 }]} />*/}
+            {/*</View>*/}
           </>
           <View style={styles.secWrap}>
             <View style={styles.formGroup}>
               <Input
-                returnKeyType={"done"}
+                returnKeyType={'done'}
                 label={(props) => (
                   <Text {...props} style={[...props.style, styles.lbInput]}>
                     Tên nhà trọ:
@@ -310,7 +407,7 @@ const SettingHouseDetailScreen = () => {
             </View>
             <View style={styles.formGroup}>
               <Input
-                returnKeyType={"done"}
+                returnKeyType={'done'}
                 label={(props) => (
                   <Text {...props} style={[...props.style, styles.lbInput]}>
                     Địa chỉ nhà:
@@ -323,10 +420,10 @@ const SettingHouseDetailScreen = () => {
                 onChangeText={(value) => updateState({ address: value })}
               />
             </View>
-            <View style={[styles.formGroup, { marginBottom: 10}]}>
+            <View style={[styles.formGroup, { marginBottom: 10 }]}>
               <Input
                 multiline={true}
-                returnKeyType={"done"}
+                returnKeyType={'done'}
                 label={(props) => (
                   <Text {...props} style={[...props.style, styles.lbInput]}>
                     Mô tả:
@@ -385,39 +482,48 @@ const SettingHouseDetailScreen = () => {
             {/*    onChangeText={(value) => updateState({ electricPrice: value })}*/}
             {/*  />*/}
             {/*</View>*/}
-
           </View>
           <View style={styles.submitActions} />
-          {
-            isAddMotel && !isRefresh && <ServiceList onChange={_onChangeServices}  />
-          }
-          {
-            !isAddMotel && <ServiceList onChange={_onChangeServices}  />
-          }
+          {isAddMotel && !isRefresh && (
+            <ServiceList
+              onChange={_onChangeServices}
+              serviceList={state.addons}
+            />
+          )}
+          {!isAddMotel && !isRefresh && (
+            <ServiceList
+              onChange={_onChangeServices}
+              serviceList={state.addons}
+            />
+          )}
         </KeyboardAwareScrollView>
       )}
       {!!!isLoading && (
         <View style={[{ paddingVertical: 15 }]}>
           <Button
             onPress={_onSubmit}
-            accessoryLeft={() => !!isAddMotel ? ( <Icon
-              name="plus"
-              fill={color.whiteColor}
-              style={sizes.iconButtonSize}
-            /> ) : (
-              <Icon
-                name="sync"
-                fill={color.whiteColor}
-                style={sizes.iconButtonSize}
-              />
-            )}
+            accessoryLeft={() =>
+              !!isAddMotel ? (
+                <Icon
+                  name="plus"
+                  fill={color.whiteColor}
+                  style={sizes.iconButtonSize}
+                />
+              ) : (
+                <Icon
+                  name="sync"
+                  fill={color.whiteColor}
+                  style={sizes.iconButtonSize}
+                />
+              )
+            }
             style={styles.submitButton}
             textStyle={{ fontSize: 18 }}>
-            { !!isAddMotel ? 'Thêm nhà' : 'Cập nhật' }
+            {!!isAddMotel ? 'Thêm nhà' : 'Cập nhật'}
           </Button>
         </View>
       )}
-
+      <Spinner visible={spinner} />
     </View>
   );
 };

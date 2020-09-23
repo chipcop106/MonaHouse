@@ -35,14 +35,14 @@ const Service = ({
           returnKeyType={"done"}
           textStyle={styles.textInput}
           placeholder="Số tiền"
-          value={cf(priceState)}
+          value={`${cf(priceState)}`}
           onChangeText={(nextValue) => {
             setPriceState(nextValue.replace(/[^0-9\-]/g, ''));
           }}
           onBlur={(nextValue) =>
             onChangeValue({
               name: nameState,
-              price: priceState.replace(/[^0-9\-]/g, ''),
+              price: priceState,
             })
           }
           textContentType="none"

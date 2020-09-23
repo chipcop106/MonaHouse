@@ -86,7 +86,7 @@ export const deleteMotel = async (params) => {
         token,
       },
     });
-    return res;
+    return res.data;
   } catch (error) {
     return error.message;
   }

@@ -54,12 +54,16 @@ const HomeScreen = () => {
   useEffect(() => {
     console.log('motelState', motelState);
     setLoading(motelState.loading);
-    !!motelState?.listMotels &&
-      motelState?.listMotels.length > 0 &&
+    if(!!motelState?.listMotels &&
+      motelState?.listMotels.length > 0 ){
       setPickerData([
         'Tất cả nhà',
         ...motelState.listMotels.map((item) => item.MotelName),
       ]);
+    } else {
+      setPickerData(['Tất cả nhà']);
+    }
+
   }, [motelState.listMotels]);
   const action_loadOverviewData = async (motelId) => {
     try {

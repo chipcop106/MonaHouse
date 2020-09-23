@@ -44,8 +44,8 @@ const ElectricCard = ({ roomInfo, handleValueChange }) => {
             priceDisplay={false}
             handleValueChange={handleValueChange}
             initialState={{
-              electrictNumber: roomInfo?.electricNumber ?? 0,
-              electrictImage: roomInfo.electricImg || '' ,
+              electricNumber: roomInfo?.electricNumber ?? 0,
+              electricImage: roomInfo.electricImg || '' ,
               waterNumber: roomInfo?.waterNumber ?? 0,
               waterImage: roomInfo.waterImg || '',
             }}

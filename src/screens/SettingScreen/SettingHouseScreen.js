@@ -67,7 +67,7 @@ const SettingHouseScreen = () => {
       )}
       description={(TextProps) => (
         <Text {...TextProps} style={[...TextProps.style, { fontSize: 14 }]}>
-          {item.Description}
+          {item.Address}
         </Text>
       )}
     />

@@ -395,7 +395,7 @@ function IncludeElectricWater({
               textStyle={styles.textInput}
               label="Số điện lúc dọn vào"
               placeholder="0"
-              value={String(state.electricNumber)}
+              value={`${ state.electricNumber }`}
               onChangeText={(nextValue) =>
                 onChange('electricNumber', nextValue)
               }
