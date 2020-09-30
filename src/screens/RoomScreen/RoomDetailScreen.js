@@ -415,6 +415,10 @@ const RoomDetailScreen = ({ navigation, route }) => {
                       color: color.primary,
                     }}
                     routeName="RentHistory"
+                    params={ {
+                      roomId,
+                      motelid: room.MotelID,
+                    } }
                   />
                   <NavLink
                     containerStyle={styles.navLink}
@@ -424,6 +428,10 @@ const RoomDetailScreen = ({ navigation, route }) => {
                       color: color.primary,
                     }}
                     routeName="DetailElectrictHistory"
+                    params={ {
+                      roomId,
+                      motelid: room.MotelID,
+                    } }
                   />
                   <NavLink
                     containerStyle={styles.navLink}
@@ -433,6 +441,10 @@ const RoomDetailScreen = ({ navigation, route }) => {
                       color: color.primary,
                     }}
                     routeName="DetailMoneyHistory"
+                    params={ {
+                      roomId,
+                      motelid: room.MotelID,
+                    } }
                   />
                 </View>
               </View>

@@ -5,7 +5,7 @@ const path = `/ReportApi`;
 export const getTypeRoomByMotelID = async (params) => {
   try {
     const token = await getAccessToken();
-    let res = await instance.get(`${path}/ReportTypeRoom`, {
+    let res = await instance.get(`${path}/ReportRoomType`, {
       params: {
         ...params,
         token,
@@ -76,6 +76,28 @@ export const revenueInYear = async (params = { motelId: '' }) => {
   try {
     const token = await getAccessToken();
     let res = await instance.get(`${path}/ReportRevenueInYear`, {
+      params: {
+        ...params,
+        token,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+// string token,
+// int motelId = 0,
+// int roomId=0,
+// string search="",
+// int pageIndex =1
+export const getHistoryRenter = async (
+  params = { motelId: 0, roomId: 0, search: '', pageIndex: 1 }
+) => {
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(`${path}/GetListOldRenter`, {
       params: {
         ...params,
         token,

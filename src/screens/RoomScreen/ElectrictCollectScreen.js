@@ -15,8 +15,8 @@ import gbStyle from '~/GlobalStyleSheet';
 import { getRoomById, updateWaterElectric } from '~/api/MotelAPI';
 import Moment from 'moment';
 const initialState = {
-  electrictNumber: '',
-  electrictImage: null,
+  electricNumber: '',
+  electricImage: null,
   waterNumber: '',
   waterImage: null,
   oldElectrict: '',

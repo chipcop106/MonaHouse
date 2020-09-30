@@ -1,17 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Text, StyleSheet, View } from "react-native";
 import { Input, Select, SelectItem, Divider, CheckBox } from "@ui-kitten/components";
-import { color } from "../../config";
+import { color } from "~/config";
 import { Context as RoomGoInContext } from "../../context/RoomGoInContext";
-import { pad } from "../../utils";
-import { currencyFormat as cf } from "~/utils";
+import { currencyFormat as cf, pad } from "~/utils";
 import { getPaymentMethod as getPaymentAPI } from "~/api/CollectMoneyAPI";
 import moment from "moment";
 const prePaymentTime = [];
 for (let i = 1; i < 13; i += 1) {
   prePaymentTime.push(`${i} tháng`);
 }
-
 const preDepositTime = prePaymentTime.map(
   (item, index) => `${pad(index + 1)} tháng`
 );
@@ -140,7 +138,7 @@ const CheckoutInfoForm = () => {
             </View>
             <View style={[styles.formRow, styles.fullWidth]}>
               <Select
-                label="Trả trước"
+                label="Cọc trước"
                 value={
                   preDepositTime[stateCheckout.preDepositTimeIndex.row] ||
                   "Thời gian trả trước"

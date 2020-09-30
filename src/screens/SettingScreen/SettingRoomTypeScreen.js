@@ -4,8 +4,8 @@ import {
   View,
   processColor,
   Dimensions,
-  ScrollView,
-} from "react-native";
+  ScrollView, Alert,
+} from 'react-native'
 import { Text } from "@ui-kitten/components";
 import { color, shadowStyle } from "~/config";
 import ModalizeSelect from "~/components/common/ModalizeSelect";
@@ -95,8 +95,8 @@ const SettingRoomTypeScreen = () => {
     dispatch({ type: "SET_MOTEL", payload: index });
   };
 
-  const setChartData = (key, value) => {
-    dispatch({ type: "SET_CHART_DATA", payload: { key, value } });
+  const setChartData = (value) => {
+    dispatch({ type: "SET_CHART_DATA", payload: value });
   };
 
   const setLoading = (value) => {
@@ -112,10 +112,24 @@ const SettingRoomTypeScreen = () => {
             ? 0
             : motelState.listMotels[state.activeMotel - 1].ID,
       });
-      res.Code === 1 && setChartData(res.Data);
-      res.Code === 0 && signOut();
+      console.log(res);
+      if(res.Code === 1) {
+        const chartData = res.Data.map(item => {
+          return  { value: item.total, label: item.name, rented: item.rented }
+        })
+        console.log(chartData);
+        setChartData(chartData);
+      } if(res.Code === 0) {
+        Alert.alert('Oops!!', JSON.stringify(res));
+      } if(res.Code === 2) {
+
+      } else {
+
+      }
+      // res.Code === 1 && setChartData(res.Data);
+      // res.Code === 0 && signOut();
     } catch (e) {
-      console.log(e?.message ?? "Lỗi gọi api loại phòng !!");
+      console.log( 'fetchRoomByMotelID error:', e);
     }
     setLoading(false);
   };
@@ -158,7 +172,7 @@ const SettingRoomTypeScreen = () => {
               data={{
                 dataSets: [
                   {
-                    values: state?.chartData ?? [],
+                    values: state?.chartData,
                     label: "",
                     config: {
                       colors: [

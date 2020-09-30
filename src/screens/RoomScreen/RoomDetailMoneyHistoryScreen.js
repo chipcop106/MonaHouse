@@ -1,12 +1,15 @@
-import React, { useState, useContext } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react'
+import { StyleSheet, View, ScrollView, Alert, RefreshControl } from 'react-native'
 import { Text, IndexPath, List, Icon } from '@ui-kitten/components';
-import HistoryRecord from '~/components/HistoryRecord';
+import HistoryRecord from './ListItems/HistoryMoney';
 import FilterHeader from './FilterHeaderTime';
-import { Context as RoomContext } from '~/context/RoomContext';
-import { Context as MotelContext } from '~/context/MotelContext';
 import { Context as AuthContext } from '~/context/AuthContext';
-import { color } from '~/config';
+import { color, settings } from '~/config'
+import { historyCollectMoney } from '~/api/CollectMoneyAPI'
+import moment from 'moment'
+import { useRoute } from '@react-navigation/native'
+import Loading from '~/components/common/Loading'
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -91,65 +94,91 @@ const history = StyleSheet.create({
 });
 
 const RoomDetailMoneyHistoryScreen = () => {
-  const { state: roomState, getElectricHistory } = useContext(RoomContext);
-  const { state: motelState } = useContext(MotelContext);
-  const { signOut } = useContext(AuthContext);
-  const { listElectricHistory, filterStateDefault } = roomState;
 
-  const onFilterChange = (filter) => {
-    const { selectedMonthIndex, selectedMotelIndex } = filter;
+  const { signOut } = useContext(AuthContext);
+  const route = useRoute();
+
+  const [listHistory, setListHistory] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [filterState, setFilterState] = useState({
+    selectedMonthIndex:
+      settings?.monthLists?.findIndex(
+        (item) => moment().format('M') === `${item.replace('Tháng', '').trim()}`
+      )  ?? 0,
+    selectedYearIndex:
+      settings?.yearLists?.findIndex(
+        (item) => moment().format('YYYY') === `${item}`
+      ) ?? 0,
+  });
+
+  useEffect(() => {
+    // (async () => {
+    //   setIsLoading(true);
+    //   await loadData(filterState);
+    //   setIsLoading(false);
+    // })();
+  }, []);
+
+  const loadData = async (newFilter) =>{
+    const { selectedMonthIndex, selectedYearIndex } = newFilter;
+    const params = {
+      month: selectedMonthIndex + 1,
+      year: `${settings?.yearLists[selectedYearIndex]}`,
+      sort: 1,
+      ...route.params
+    };
     try {
-      //console.log(listMotels);
-      getElectrictHistory(
-        {
-          motelid: motelState.listMotels[selectedMotelIndex - 1]?.ID ?? 0,
-          month: selectedMonthIndex + 1,
-        },
-        signOut
-      );
-    } catch (error) {
-      console.log(error);
+      const res = await historyCollectMoney( params );
+
+      if (res.Code === 2) {
+        signOut();
+        Alert.alert('Phiên làm việc của bạn đã hết');
+      } else if (res.Code === 0) {
+        Alert.alert('Oops!!', JSON.stringify(rs));
+      } else if (res.Code === 1) {
+        setListHistory(res.Data);
+      } else {
+        Alert.alert('Oops!!', JSON.stringify(rs));
+      }
+    } catch (e) {
+
     }
+  }
+
+  const onFilterChange = async (filter) => {
+    setFilterState(filter);
+    setIsLoading(true);
+    await loadData(filter);
+
+    setIsLoading(false);
+  };
+  const _onRefresh = async () => {
+    setRefreshing(true);
+    await loadData(filterState);
+    setRefreshing(false);
   };
 
   return (
     <>
       <FilterHeader
         onValueChange={onFilterChange}
-        initialState={filterStateDefault}
+        initialState={filterState}
         advanceFilter={false}
       />
-      <List
-        contentContainerStyle={styles.contentCard}
-        style={styles.container}
-        data={listElectricHistory}
-        keyExtractor={(item) => item.id}
-        renderItem={(item) => (
-          <View style={history.container}>
-            <View style={history.flexRow}>
-              <View style={history.leftPart}>
-                <View style={history.roundIcon}>
-                  <Icon
-                    name="credit-card"
-                    fill={color.darkColor}
-                    style={history.iconLeft}
-                  />
-                </View>
-              </View>
-              <View style={history.rightPart}>
-                <Text style={history.title}>
-                  Thanh toán tiền nhà tháng 5 hanh toán tiền nhà tháng 5 hanh
-                  toán tiền nhà tháng 5
-                </Text>
-                <View style={history.meta}>
-                  <Text style={history.money}>3.000.000</Text>
-                  <Text style={history.date}>20/10/2020 10:30</Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        )}
-      />
+      {!isLoading ? (
+        <List
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={_onRefresh} />
+          }
+          contentContainerStyle={styles.contentCard}
+          style={styles.container}
+          data={listHistory}
+          keyExtractor={(item, index) => `${index}-${item.ID}`}
+          renderItem={({item}) => ( <HistoryRecord data={item} />)}
+        />
+      ) : <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><Loading /></View>}
+
     </>
   );
 };

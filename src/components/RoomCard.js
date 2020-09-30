@@ -349,7 +349,6 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
               )}
             </View>
             {!!item.RenterDateOut && (
-              <>
                 <View style={[styles.status, {}]}>
                   <LinearGradient
                     colors={color.gradients.danger}
@@ -360,31 +359,30 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
                       }>{`Dọn ra ngày ${item.RenterDateOut}`}</Text>
                   </LinearGradient>
                 </View>
-                {!!!item.RenterDepositID ? (
-                  <View style={[styles.status, {}]}>
-                    <LinearGradient
-                      colors={color.gradients.danger}
-                      style={styles.badge}>
-                      <Text
-                        style={
-                          styles.badgeText
-                        }>{`Chưa có ngưởi đặt cọc`}</Text>
-                    </LinearGradient>
-                  </View>
-                ) : (
-                  <View style={[styles.status, {}]}>
-                    <LinearGradient
-                      colors={color.gradients.success}
-                      style={styles.badge}>
-                      <Text
-                        style={
-                          styles.badgeText
-                        }>{`Đặt cọc ngày ${item.RenterDepositDateIn}`}</Text>
-                    </LinearGradient>
-                  </View>
-                )}
-              </>
             )}
+	          {!!!item.RenterDepositID ? (
+		          !!!item.Renter && <View style={[styles.status, {}]}>
+			          <LinearGradient
+				          colors={color.gradients.danger}
+				          style={styles.badge}>
+				          <Text
+					          style={
+						          styles.badgeText
+					          }>{`Chưa có ngưởi đặt cọc`}</Text>
+			          </LinearGradient>
+		          </View>
+	          ) : (
+		          <View style={[styles.status, {}]}>
+			          <LinearGradient
+				          colors={color.gradients.success}
+				          style={styles.badge}>
+				          <Text
+					          style={
+						          styles.badgeText
+					          }>{`Đặt cọc ngày ${item.RenterDepositDateIn}`}</Text>
+			          </LinearGradient>
+		          </View>
+	          )}
           </View>
           {!!item.Renter && (
             <View style={[styles.balanceInfo]}>

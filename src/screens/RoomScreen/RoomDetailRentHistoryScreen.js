@@ -1,23 +1,111 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  RefreshControl,
+  Alert,
+} from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import { Text, IndexPath, List, Spinner } from '@ui-kitten/components';
-import HistoryRecord from '~/components/HistoryRecord';
+import moment from 'moment';
+
+import { Context as AuthContext } from '~/context/AuthContext';
+
+import HistoryRecord from './ListItems/HistoryRenter';
 import FilterHeader from './FilterHeaderTime';
+import { settings } from '~/config';
+
+import { getHistoryRenter } from '~/api/ReportAPI';
 
 const RoomDetailRentHistoryScreen = () => {
-  const [filterState, setfilterState] = useState({
-    selectedMonthIndex: new IndexPath(0),
-    selectedYearIndex: new IndexPath(0),
+  const route = useRoute();
+  const { signOut } = useContext(AuthContext);
+  const [filterState, setFilterState] = useState({
+    selectedMonthIndex:
+      settings?.monthLists?.findIndex(
+        (item) => moment().format('M') === `${item.replace('Tháng', '').trim()}`
+      )  ?? 0,
+    selectedYearIndex:
+      settings?.yearLists?.findIndex(
+        (item) => moment().format('YYYY') === `${item}`
+      ) ?? 0,
   });
-  const [isLoading, setIsLoading] = useState(true);
+
+  const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [listHistory, setListHistory] = useState(null);
 
-  const onFilterChange = (filter) => {
-    setListHistory([{ id: 1 }, { id: 2 }]);
-    setfilterState(filter);
+  useEffect(() => {
+    (async () => {
+      setIsLoading(true);
+      await loadData(filterState);
+      setIsLoading(false);
+    })();
+  }, []);
+
+  const loadData = async (newFilter) => {
+    const { selectedMonthIndex, selectedYearIndex } = newFilter;
+    const params = {
+      fromdate: `01/${
+        selectedMonthIndex + 1 >= 10 ? selectedMonthIndex + 1 : `0${selectedMonthIndex + 1}`
+      }/${settings?.yearLists[selectedYearIndex]}`,
+      todate: `${moment().format('DD/MM/YYYY')}`,
+    };
+
+    console.log(params, route);
+
+    try {
+      const res = await getHistoryRenter({ ...params, ...route.params });
+      console.log(res);
+      if (res.Code === 1) {
+        setListHistory(res.Data?.data ?? []);
+      } else if (res.Code === 0) {
+        Alert.alert('Oops!!', JSON.stringify(res));
+      } else if (res.Code === 2) {
+        signOut();
+        Alert.alert('Phiên đăng nhập đã hết, vui lòng đăng nhập lại !!');
+      }
+    } catch (e) {
+      console.log('loadData error', e);
+      Alert.alert('Oops!!', JSON.stringify(e));
+    }
+  };
+  const onFilterChange = async (filter) => {
+    const { selectedMonthIndex, selectedYearIndex } = filter;
+    if (
+      selectedYearIndex === filterState.selectedYearIndex &&
+      selectedMonthIndex === filterState.selectedMonthIndex
+    ) {
+      return '';
+    }
+    console.log('onFilterChange');
+    setFilterState(filter);
+    setIsLoading(true);
+    await loadData(filter);
     setIsLoading(false);
   };
 
+  const _onRefresh = async () => {
+    setRefreshing(true);
+    await loadData(filterState);
+    setRefreshing(false);
+  };
+  const rdListHeaderComponent = () => {
+    const { selectedMonthIndex, selectedYearIndex } = filterState;
+    return (
+      <Text style={{paddingBottom: 0, paddingTop: 10}}>
+        <Text>Từ: </Text>
+        <Text style={{fontWeight: 'bold'}}>{`01/${
+          selectedMonthIndex + 1 > 10 ? selectedMonthIndex + 1 : `0${selectedMonthIndex + 1}`
+        }/${settings?.yearLists[selectedYearIndex]}`}</Text>
+        <Text> đến </Text>
+        <Text style={{fontWeight: 'bold'}}>{moment().format(
+          'DD/MM/YYYY'
+        )}</Text>
+      </Text>
+    );
+  };
   return (
     <>
       <FilterHeader
@@ -29,18 +117,23 @@ const RoomDetailRentHistoryScreen = () => {
       />
       {!isLoading ? (
         <List
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={_onRefresh} />
+          }
+          ListHeaderComponent={rdListHeaderComponent}
           contentContainerStyle={styles.contentCard}
           style={styles.listContainer}
           data={listHistory}
-          keyExtractor={(item) => `${item.id}`}
-          renderItem={() => (
-            <HistoryRecord
-              style={styles.card}
-              renterInfo={true}
-              title="Người thuê 1"
-            />
+          keyExtractor={(item, index) => `${index}-${item.ID}`}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <HistoryRecord
+                data={item}
+                renterInfo={true}
+                title="Người thuê 1"
+              />
+            </View>
           )}
-          style={styles.container}
         />
       ) : (
         <View

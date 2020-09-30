@@ -16,16 +16,16 @@ const initialState = {
 			timeRent: '12',
 			timeTypeIndex: new IndexPath(1),
 			roomInfo: {
-				electrictNumber: '',
-				electrictPrice: '',
-				electrictPriceInclude: '',
-				electrictImage: null,
+				electricNumber: '',
+				electricPrice: '',
+				electricPriceInclude: '',
+				electricImage: null,
 				waterNumber: '',
 				waterPrice: '',
 				waterPriceInclude: '',
 				waterImage: null,
 			},
-			electrictIndex: new IndexPath(0),
+			electricIndex: new IndexPath(0),
 			services: [],
 		},
 		{
@@ -230,10 +230,10 @@ const loadRoomInfo = (dispatch) => async (value) => {
 					timeRent: '12',
 					timeTypeIndex: new IndexPath(1),
 					roomInfo: {
-						electrictNumber: `${electric.number || 0}`,
-						electrictPrice: `${room.PriceElectric || 0}`,
-						electrictPriceInclude: `${electric.PriceElectric || 0}`,
-						electrictImage: !!electric.image_thumbnails
+						electricNumber: `${electric.number || 0}`,
+						electricPrice: `${room.PriceElectric || 0}`,
+						electricPriceInclude: `${electric.PriceElectric || 0}`,
+						electricImage: !!electric.image_thumbnails
 							? `${electric.image_thumbnails}`
 							: null,
 						waterNumber: `${water.number || 0}`,
@@ -246,7 +246,7 @@ const loadRoomInfo = (dispatch) => async (value) => {
 					renter: renter?.renter ?? '',
 					renterDeposit: renterDeposit?.renter ?? '',
 					renterDepositImages: renterDeposit?.renterimage ?? [],
-					electrictIndex: new IndexPath(0),
+					electricIndex: new IndexPath(0),
 					services: !!room.addonsdefault ? room.addonsdefault : [], // [{"ID":1,"Name":"Wifi","Price":100000}]
 				},
 			});
@@ -285,16 +285,16 @@ export const { Context, Provider } = CreateDataContext(
 				timeRent: '12',
 				timeTypeIndex: new IndexPath(1),
 				roomInfo: {
-					electrictNumber: '',
-					electrictPrice: '',
-					electrictPriceInclude: '',
-					electrictImage: null,
+					electricNumber: '',
+					electricPrice: '',
+					electricPriceInclude: '',
+					electricImage: null,
 					waterNumber: '',
 					waterPrice: '',
 					waterPriceInclude: '',
 					waterImage: null,
 				},
-				electrictIndex: new IndexPath(0),
+				electricIndex: new IndexPath(0),
 				services: [],
 			},
 			{

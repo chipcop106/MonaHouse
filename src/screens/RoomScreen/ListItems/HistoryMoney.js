@@ -95,7 +95,7 @@ const HistoryRecord = ({
           <Text style={history.name}>{data.NameRoom}</Text>
           <Text style={history.title}>{data.Note}</Text>
           <View style={history.meta}>
-            <Text style={history.money}>{currencyFormat(data.Paid)}</Text>
+            <Text style={[history.money, data.Paid > 0 ? { color: color.primary } : { color: color.redColor }]}>{currencyFormat(data.Paid)}</Text>
             <Text style={history.date}>{`${ moment(data.CreatedDate).format('DD/MM/YY hh:mm') }`}</Text>
           </View>
         </View>

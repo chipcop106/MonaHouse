@@ -20,7 +20,7 @@ import { color, sizes } from "./config";
 import ElectrictCollectScreen from "./screens/RoomScreen/ElectrictCollectScreen";
 import MoneyCollectScreen from "./screens/RoomScreen/MoneyCollectScreen";
 import RoomManagementScreen from "./screens/RoomScreen/RoomManagementScreen";
-import SettingScreen from "./screens/MainScreen/SettingScreen";
+
 import RoomGoOutScreen from "./screens/RoomScreen/RoomGoOutScreen";
 import RoomGoInScreen from "./screens/RoomScreen/RoomGoInScreen";
 import RoomDetailScreen from "./screens/RoomScreen/RoomDetailScreen";
@@ -34,6 +34,10 @@ import EditRoomScreen from "~/screens/RoomScreen/EditRoomScreen";
 import { Host } from "react-native-portalize";
 import ElectrictHistoryScreen from "~/screens/RoomScreen/ElectrictHistoryScreen";
 import MoneyHistoryScreen from "~/screens/RoomScreen/MoneyHistoryScreen";
+
+import SettingScreen from "./screens/MainScreen/SettingScreen";
+import SettingRecharge from "./screens/RechargeScreen";
+import SettingRechargeHistory from "./screens/RechargeScreen/RechargeHistoryScreen";
 import SettingUserDetailScreen from "~/screens/SettingScreen/SettingUserDetailScreen";
 import SettingNotificationScreen from "~/screens/SettingScreen/SettingNotificationScreen";
 import SettingPremiumPackageScreen from "~/screens/SettingScreen/SettingPremiumPackageScreen";
@@ -52,6 +56,7 @@ import SettingCustomerDebtScreen from "~/screens/SettingScreen/SettingCustomerDe
 import SettingRevenueIncomeScreen from "~/screens/SettingScreen/SettingRevenueIncomeScreen";
 import SettingRevenueNetScreen from "~/screens/SettingScreen/SettingRevenueNetScreen";
 import SettingExpectedProfitScreen from "~/screens/SettingScreen/SettingExpectedProfitScreen";
+
 import SettingCollateralDamageScreen from "~/screens/SettingScreen/SettingCollateralDamageScreen";
 import { Provider as CustomerProvider } from "~/context/CustomerContext";
 import RenterDetailScreen from "~/screens/RoomScreen/RenterDetailScreen";
@@ -440,6 +445,21 @@ const SettingStack = () => {
           title: "Thay đổi mật khẩu",
         }}
       />
+
+      <Stack.Screen
+        name="SettingRecharge"
+        component={SettingRecharge}
+        options={{
+          title: "Wallet",
+        }}
+      />
+	    <Stack.Screen
+		    name="SettingRechargeHistory"
+		    component={SettingRechargeHistory}
+		    options={{
+			    title: "Lịch sử nạp tiền",
+		    }}
+	    />
       <Stack.Screen
         name="SettingSMS"
         component={SettingSMSScreen}

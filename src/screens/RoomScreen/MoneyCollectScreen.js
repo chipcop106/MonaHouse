@@ -18,6 +18,8 @@ import { currencyFormat, renderNumberByArray } from '~/utils';
 import { getRoomById } from '~/api/MotelAPI';
 import { Context as AuthContext } from '~/context/AuthContext';
 import { getBillOneRoom } from '~/api/CollectMoneyAPI';
+import dayjs from 'dayjs';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const paymentMethod = ['Tiền mặt', 'Chuyển khoản'];
 const MoneyCollectScreen = () => {
@@ -26,7 +28,7 @@ const MoneyCollectScreen = () => {
   const [actuallyReceived, setActuallyReceived] = useState('');
   const [userInfo, setUserInfo] = useState(null);
   const [roomInfo, setRoomInfo] = useState(null);
-  const [billInfo, setbillInfo] = useState({
+  const [billInfo, setBillInfo] = useState({
     roomId: 0,
     roomName: "",
     renterId: 0,
@@ -42,7 +44,6 @@ const MoneyCollectScreen = () => {
     Services: [], // renderNumberByArray(item.Services, 'servicePrice')
     FeeIncurred: [], // renderNumberByArray(item.FeeIncurred, 'feePrice')
   });
-  const [isChange, setIsChange] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const route = useRoute();
   const { roomId, data } = route.params;
@@ -73,7 +74,7 @@ const MoneyCollectScreen = () => {
   const loadBillInfo = async () => {
     try {
       const res = await getBillOneRoom({ roomid: roomId });
-      res.Code === 1 && setbillInfo(res.Data);
+      res.Code === 1 && setBillInfo(res.Data);
       res.Code === 0 && Alert.alert('Lỗi !!', `${JSON.stringify(res)}`);
       res.Code === 2 &&
       (() => {
@@ -110,14 +111,16 @@ const MoneyCollectScreen = () => {
       } catch (err) {
         alert(JSON.stringify(err));
       }
+
     })();
 
   }, []);
 
   return (
     <>
-      <ScrollView
-        style={{ padding: 15 }}
+      <KeyboardAwareScrollView
+	      extraScrollHeight={80}
+        style={{ padding: 15, flex: 1 }}
         refreshControl={
           <RefreshControl onRefresh={_onRefresh} refreshing={isRefreshing} />
         }>
@@ -136,7 +139,7 @@ const MoneyCollectScreen = () => {
               </Text>
               <View style={[styles.formWrap]}>
                 <View style={[styles.formRow, styles.rowInfo]}>
-                  <Text style={styles.rowLabel}>Tiền phòng:</Text>
+                  <Text style={styles.rowLabel}>Tiền phòng tháng { dayjs().format('MM') }:</Text>
                   <Text
                     status="basic"
                     style={[styles.rowValue, { fontWeight: '600' }]}>
@@ -145,24 +148,27 @@ const MoneyCollectScreen = () => {
                       : currencyFormat(roomInfo.room.PriceRoom || 0)}
                   </Text>
                 </View>
+	              {/*<View style={[styles.formRow, styles.rowInfo]}>*/}
+		            {/*  <Text>Tiền điện, nước tính từ lần ghi cuối</Text>*/}
+	              {/*</View>*/}
                 <View style={[styles.formRow, styles.rowInfo]}>
-                  <Text style={styles.rowLabel}>Điện tháng này:</Text>
+                  <Text style={styles.rowLabel}>Tiền điện đã dùng: { billInfo.electricUsed } x { currencyFormat(billInfo.electricPrice) }</Text>
                   <Text
                     status="basic"
                     style={[styles.rowValue, { fontWeight: '600' }]}>
-                    {roomInfo.electric.number}
+                    {`${ billInfo.electricUsed *  billInfo.electricPrice}`}
                   </Text>
                 </View>
                 <View style={[styles.formRow, styles.rowInfo]}>
-                  <Text style={styles.rowLabel}>Nước tháng này:</Text>
+                  <Text style={styles.rowLabel}>Tiền nước đã dùng: { billInfo.waterUsed } x { currencyFormat(billInfo.waterPrice) }</Text>
                   <Text
                     status="basic"
                     style={[styles.rowValue, { fontWeight: '600' }]}>
-                    {roomInfo.water.number}
+	                  {`${ billInfo.waterUsed *  billInfo.waterPrice}`}
                   </Text>
                 </View>
                 <View style={[styles.formRow, styles.rowInfo]}>
-                  <Text style={styles.rowLabel}>Phí dịch vụ:</Text>
+                  <Text style={styles.rowLabel}>Tiền dịch vụ hằng tháng:</Text>
                   <Text
                     status="basic"
                     style={[styles.rowValue, { fontWeight: '600' }]}>
@@ -177,19 +183,25 @@ const MoneyCollectScreen = () => {
                       : 0}
                   </Text>
                 </View>
+	              <View style={[styles.formRow, styles.rowInfo]}>
+		              <Text style={styles.rowLabel}>Tiền phí phát sinh khác:</Text>
+		              <Text
+			              status="basic"
+			              style={[styles.rowValue, { fontWeight: '600' }]}>
+
+		              </Text>
+	              </View>
                 <View style={[styles.formRow, styles.rowInfo]}>
-                  <Text style={styles.rowLabel}>Tiền dư:</Text>
+                  <Text style={styles.rowLabel}>Tiền Nợ:</Text>
                   <Text
                     status="basic"
                     style={[
                       styles.rowValue,
                       { fontWeight: '600' },
-                      roomInfo.dept > 0
-                        ? { color: color.redColor }
-                        : { color: color.greenColor },
                     ]}>
-                    {roomInfo.dept > 0 ? `Nợ` : `Dư`}{' '}
-                    {currencyFormat(Math.abs(roomInfo.dept))}
+	                  {`${currencyFormat(
+		                  billInfo?.dept ?? 0
+	                  )}`}
                   </Text>
                 </View>
                 <Divider style={styles.divider} />
@@ -198,7 +210,7 @@ const MoneyCollectScreen = () => {
                   <Text
                     status="basic"
                     style={[styles.rowValue, { fontWeight: '600' }]}>
-                    3.000.000
+	                  {currencyFormat(billInfo?.totalCollect ?? 0)}
                   </Text>
                 </View>
 
@@ -255,11 +267,12 @@ const MoneyCollectScreen = () => {
               padding: 15,
               justifyContent: 'center',
               alignItems: 'center',
+	            flex: 1,
             }}>
             <Loading />
           </View>
         )}
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </>
   );
 };

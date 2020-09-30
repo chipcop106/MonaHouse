@@ -153,7 +153,7 @@ const initialState = {
     },
   ],
   activeMotel: 0,
-  activeYear: 5,
+  activeYear: yearOptions.length - 1,
   selectedMonth: new Date().getMonth(),
 };
 

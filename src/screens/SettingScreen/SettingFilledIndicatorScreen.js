@@ -4,7 +4,7 @@ import React, {
   useState,
   useContext,
   memo,
-} from "react";
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -12,23 +12,21 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
-} from "react-native";
-import { Text, Input, Button, Icon } from "@ui-kitten/components";
-import { color, sizes, shadowStyle, yearOptions } from "~/config";
-import gbStyle from "~/GlobalStyleSheet";
-import ModalizeSelect from "~/components/common/ModalizeSelect";
-import { Context as MotelContext } from "~context/MotelContext";
-import { LineChart } from "react-native-charts-wrapper";
-import { randomDataChart } from "~/utils";
-import { FlatList } from "react-native-gesture-handler";
-import { getRoomsByMotelId } from "~api/MotelAPI";
-import Loading from "~components/common/Loading";
-import dayjs from "dayjs";
-import Svg, { Path } from "react-native-svg";
-import { getReportOccupancyRatio } from "~/api/ReportAPI";
+} from 'react-native';
+import { Text, Input, Button, Icon } from '@ui-kitten/components';
+import { color, sizes, shadowStyle, yearOptions } from '~/config';
+import ModalizeSelect from '~/components/common/ModalizeSelect';
+import { Context as MotelContext } from '~context/MotelContext';
+import { LineChart } from 'react-native-charts-wrapper';
+import { FlatList } from 'react-native-gesture-handler';
+import { getRoomsByMotelId } from '~api/MotelAPI';
+import Loading from '~components/common/Loading';
+import dayjs from 'dayjs';
+import Svg, { Path } from 'react-native-svg';
+import { getReportOccupancyRatio } from '~/api/ReportAPI';
 
 let nowDayjs = dayjs();
-const { width, height } = Dimensions.get("window");
+const { width, height } = Dimensions.get('window');
 const initialState = {
   motelLists: [],
   roomLoading: true,
@@ -40,7 +38,7 @@ const initialState = {
       total: 16,
       rented: 9,
       empty: 7,
-      marker: "Tỉ lệ 47%",
+      marker: 'Tỉ lệ 47%',
     },
     {
       y: 34,
@@ -48,7 +46,7 @@ const initialState = {
       total: 16,
       rented: 9,
       empty: 7,
-      marker: "Tỉ lệ 34%",
+      marker: 'Tỉ lệ 34%',
     },
     {
       y: 47,
@@ -56,7 +54,7 @@ const initialState = {
       total: 16,
       rented: 9,
       empty: 7,
-      marker: "Tỉ lệ 47%",
+      marker: 'Tỉ lệ 47%',
     },
     {
       y: 74,
@@ -64,7 +62,7 @@ const initialState = {
       total: 16,
       rented: 9,
       empty: 7,
-      marker: "Tỉ lệ 74%",
+      marker: 'Tỉ lệ 74%',
     },
     {
       y: 24,
@@ -72,7 +70,7 @@ const initialState = {
       total: 16,
       rented: 9,
       empty: 7,
-      marker: "Tỉ lệ 24%",
+      marker: 'Tỉ lệ 24%',
     },
     {
       y: 65,
@@ -80,7 +78,7 @@ const initialState = {
       total: 16,
       rented: 9,
       empty: 7,
-      marker: "Tỉ lệ 65%",
+      marker: 'Tỉ lệ 65%',
     },
     {
       y: 45,
@@ -88,7 +86,7 @@ const initialState = {
       total: 16,
       rented: 9,
       empty: 7,
-      marker: "Tỉ lệ 45%",
+      marker: 'Tỉ lệ 45%',
     },
     {
       y: 55,
@@ -96,7 +94,7 @@ const initialState = {
       total: 16,
       rented: 9,
       empty: 7,
-      marker: "Tỉ lệ 55%",
+      marker: 'Tỉ lệ 55%',
     },
     {
       y: 100,
@@ -104,7 +102,7 @@ const initialState = {
       total: 16,
       rented: 9,
       empty: 7,
-      marker: "Tỉ lệ 100%",
+      marker: 'Tỉ lệ 100%',
     },
     {
       y: 56,
@@ -112,7 +110,7 @@ const initialState = {
       total: 16,
       rented: 9,
       empty: 7,
-      marker: "Tỉ lệ 56%",
+      marker: 'Tỉ lệ 56%',
     },
     {
       y: 35,
@@ -120,7 +118,7 @@ const initialState = {
       total: 16,
       rented: 9,
       empty: 7,
-      marker: "Tỉ lệ 76%",
+      marker: 'Tỉ lệ 76%',
     },
     {
       y: 33,
@@ -128,37 +126,37 @@ const initialState = {
       total: 16,
       rented: 5,
       empty: 11,
-      marker: "Tỉ lệ 33%",
+      marker: 'Tỉ lệ 33%',
     },
   ],
   activeTab: 1,
   activeMotel: 0,
-  selectedMonth: nowDayjs.get("month"),
-  activeYear: 5,
+  selectedMonth: nowDayjs.get('month'),
+  activeYear: yearOptions.length - 1,
   thisMonthRoom: [],
   lastMonthRoom: [],
   nextThreeMonthRoom: [],
 };
 
-const greenBlue = "rgba(72, 70, 109, 0.5)";
-const petrel = "rgba(72, 70, 109, .05)";
+const greenBlue = 'rgba(72, 70, 109, 0.5)';
+const petrel = 'rgba(72, 70, 109, .05)';
 
 const xAxisConfig = {
   valueFormatter: [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Oct",
-    "Sep",
-    "Nov",
-    "Dec",
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Oct',
+    'Sep',
+    'Nov',
+    'Dec',
   ],
-  position: "BOTTOM",
+  position: 'BOTTOM',
   textSize: 10,
   granularityEnabled: true,
   granularity: 1,
@@ -184,58 +182,58 @@ const yAxisConfig = {
 
 const reducer = (prevState, { type, payload }) => {
   switch (type) {
-    case "UPDATE_MOTEL": {
+    case 'UPDATE_MOTEL': {
       return {
         ...prevState,
         motelLists: payload,
-        isLoading: true,
+        isLoading: false,
       };
     }
-    case "SET_MOTEL": {
+    case 'SET_MOTEL': {
       return {
         ...prevState,
         activeMotel: payload,
       };
     }
-    case "SET_ROOM": {
+    case 'SET_ROOM': {
       return {
         ...prevState,
         [payload.key]: payload.value,
       };
     }
-    case "SELECTED_MONTH": {
+    case 'SELECTED_MONTH': {
       return {
         ...prevState,
         selectedMonth: payload,
       };
     }
-    case "SET_LOADING": {
+    case 'SET_LOADING': {
       return {
         ...prevState,
         [payload.key]: payload.value,
       };
     }
-    case "SET_ACTIVE_TAB": {
+    case 'SET_ACTIVE_TAB': {
       return {
         ...prevState,
         activeTab: payload,
       };
     }
-    case "SET_HOUSE": {
+    case 'SET_HOUSE': {
       return {
         ...prevState,
         selectedHouse: payload,
       };
     }
 
-    case "SET_CHART_DATA": {
+    case 'SET_CHART_DATA': {
       return {
         ...prevState,
         chartData: payload,
       };
     }
 
-    case "SET_ACTIVE_YEAR": {
+    case 'SET_ACTIVE_YEAR': {
       return {
         ...prevState,
         activeYear: payload,
@@ -251,8 +249,7 @@ const RenderListRoom = memo(({ isLoading, data }) => {
     <>
       {isLoading ? (
         <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Loading />
         </View>
       ) : (
@@ -265,8 +262,7 @@ const RenderListRoom = memo(({ isLoading, data }) => {
           renderItem={({ item, index, seperators }) => (
             <View style={styles.roomWrap}>
               <View
-                style={{ paddingRight: 30, flexGrow: 1, flexDirection: "row" }}
-              >
+                style={{ paddingRight: 30, flexGrow: 1, flexDirection: 'row' }}>
                 <Icon
                   style={sizes.iconButtonSize}
                   fill={color.darkColor}
@@ -275,19 +271,17 @@ const RenderListRoom = memo(({ isLoading, data }) => {
                 <Text
                   ellipsizeMode="tail"
                   numberOfLines={1}
-                  style={styles.roomName}
-                >
-                  {item?.RoomName ?? ""}
+                  style={styles.roomName}>
+                  {item?.RoomName ?? ''}
                 </Text>
               </View>
 
               <Text
                 style={{
                   ...styles.roomStatus,
-                  color: item?.StatusRoomID === 1 ? "red" : "green",
-                }}
-              >
-                {item?.StatusRoomID === 1 ? "Trống" : "Đang thuê"}
+                  color: item?.StatusRoomID === 1 ? 'red' : 'green',
+                }}>
+                {item?.StatusRoomID === 1 ? 'Trống' : 'Đang thuê'}
               </Text>
             </View>
           )}
@@ -301,41 +295,41 @@ const SettingFilledIndicatorScreen = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { state: motelState } = useContext(MotelContext);
   const _onMotelChange = (index, selected) => {
-    dispatch({ type: "SET_MOTEL", payload: index });
+    dispatch({ type: 'SET_MOTEL', payload: index });
   };
   const setRoomData = (key, value) => {
-    dispatch({ type: "SET_ROOM", payload: { key, value } });
+    dispatch({ type: 'SET_ROOM', payload: { key, value } });
   };
 
   const setLoading = (key, value) => {
-    dispatch({ type: "SET_LOADING", payload: { key, value } });
+    dispatch({ type: 'SET_LOADING', payload: { key, value } });
   };
 
   const setActiveTab = (value) => {
-    dispatch({ type: "SET_ACTIVE_TAB", payload: value });
+    dispatch({ type: 'SET_ACTIVE_TAB', payload: value });
   };
 
   const _onYearChange = (index, selected) => {
-    dispatch({ type: "SET_ACTIVE_YEAR", payload: index });
+    dispatch({ type: 'SET_ACTIVE_YEAR', payload: index });
   };
 
   const setChartData = (arr) => {
-    dispatch({ type: "SET_CHART_DATA", payload: arr });
+    dispatch({ type: 'SET_CHART_DATA', payload: arr });
   };
 
   const getPrevOrNextRoomByMonth = async (number) => {
     const newDateJS =
       number < 0
-        ? nowDayjs.subtract(Math.abs(number), "month")
-        : nowDayjs.add(number, "month");
+        ? nowDayjs.subtract(Math.abs(number), 'month')
+        : nowDayjs.add(number, 'month');
     try {
       const params = {
         motelid:
           state.activeMotel === 0
             ? 0
             : motelState.listMotels[state.activeMotel - 1].ID,
-        month: newDateJS.get("month") + 1,
-        qsearch: "",
+        month: newDateJS.get('month') + 1,
+        qsearch: '',
         sortby: 1,
         status: 0,
         year: yearOptions[state.activeYear],
@@ -343,7 +337,7 @@ const SettingFilledIndicatorScreen = () => {
       const res = await getRoomsByMotelId(params);
       return res.Data;
     } catch (error) {
-      console.log(error?.message ?? "Lỗi call api, xem lại api hoặc params !");
+      console.log(error?.message ?? 'Lỗi call api, xem lại api hoặc params !');
     }
     return [];
   };
@@ -352,32 +346,32 @@ const SettingFilledIndicatorScreen = () => {
     const entry = event.nativeEvent;
     console.log(entry);
     if (entry === null || entry.data === undefined) {
-      dispatch({ type: "SELECTED_MONTH", payload: nowDayjs.get("month") });
+      dispatch({ type: 'SELECTED_MONTH', payload: nowDayjs.get('month') });
     } else {
-      dispatch({ type: "SELECTED_MONTH", payload: entry.x });
+      dispatch({ type: 'SELECTED_MONTH', payload: entry.x });
     }
   };
 
   const fetchRoomByMotelID = async () => {
-    setLoading("roomLoading", true);
+    setLoading('roomLoading', true);
     try {
       const [last, now, nextThreeMonth] = await Promise.all([
         getPrevOrNextRoomByMonth(-1),
         getPrevOrNextRoomByMonth(0),
         getPrevOrNextRoomByMonth(3),
       ]);
-      setRoomData("thisMonthRoom", now);
-      setRoomData("lastMonthRoom", last);
-      setRoomData("nextThreeMonthRoom", nextThreeMonth);
+      setRoomData('thisMonthRoom', now);
+      setRoomData('lastMonthRoom', last);
+      setRoomData('nextThreeMonthRoom', nextThreeMonth);
     } catch (e) {
-      console.log(error?.message ?? "Lỗi call fetchRoomByMotelID !");
-      setLoading("roomLoading", false);
+      console.log(error?.message ?? 'Lỗi call fetchRoomByMotelID !');
+      setLoading('roomLoading', false);
     }
-    setLoading("roomLoading", false);
+    setLoading('roomLoading', false);
   };
 
   const getChartData = async () => {
-    setLoading("chartLoading", true);
+    setLoading('chartLoading', true);
     try {
       const res = await getReportOccupancyRatio({
         MotelID:
@@ -400,17 +394,17 @@ const SettingFilledIndicatorScreen = () => {
           }))
         );
     } catch (e) {
-      console.log(e?.message ?? "Lỗi gọi api, vui lòng check lại params !!");
+      console.log(e?.message ?? 'Lỗi gọi api, vui lòng check lại params !!');
     }
-    setLoading("chartLoading", false);
+    setLoading('chartLoading', false);
   };
 
   useEffect(() => {
-    setLoading("chartLoading", true);
+    setLoading('chartLoading', true);
     !!motelState.listMotels &&
       motelState.listMotels.length > 0 &&
       dispatch({
-        type: "UPDATE_MOTEL",
+        type: 'UPDATE_MOTEL',
         payload: motelState.listMotels.map((item) => item.MotelName),
       });
   }, [motelState.listMotels]);
@@ -427,9 +421,9 @@ const SettingFilledIndicatorScreen = () => {
         <View style={[styles.col, { flexGrow: 1, marginRight: 10 }]}>
           <ModalizeSelect
             onChange={_onMotelChange}
-            pickerData={["Tất cả nhà trọ", ...state?.motelLists] ?? []}
+            pickerData={['Tất cả nhà trọ', ...state?.motelLists] ?? []}
             selectedValue={
-              ["Tất cả nhà trọ", ...state?.motelLists][state.activeMotel]
+              ['Tất cả nhà trọ', ...state?.motelLists][state.activeMotel]
             }
             leftIcon="home"
             disabled={state?.roomLoading}
@@ -450,11 +444,10 @@ const SettingFilledIndicatorScreen = () => {
           {state.chartLoading ? (
             <View
               style={{
-                alignItems: "center",
-                justifyContent: "center",
+                alignItems: 'center',
+                justifyContent: 'center',
                 flex: 1,
-              }}
-            >
+              }}>
               <Loading />
             </View>
           ) : (
@@ -464,23 +457,23 @@ const SettingFilledIndicatorScreen = () => {
                 dataSets: [
                   {
                     values: state.chartData,
-                    label: "Tỉ lệ lấp đầy",
+                    label: 'Tỉ lệ lấp đầy',
                     config: {
-                      mode: "CUBIC_BEZIER",
+                      mode: 'CUBIC_BEZIER',
                       drawValues: false,
                       lineWidth: 2,
                       drawCircles: true,
                       circleColor: processColor(greenBlue),
                       drawCircleHole: false,
                       circleRadius: 4,
-                      highlightColor: processColor("transparent"),
+                      highlightColor: processColor('transparent'),
                       color: processColor(petrel),
                       drawFilled: true,
                       fillGradient: {
                         colors: [processColor(petrel), processColor(greenBlue)],
                         positions: [0, 0.5],
                         angle: 90,
-                        orientation: "TOP_BOTTOM",
+                        orientation: 'TOP_BOTTOM',
                       },
                       fillAlpha: 1000,
                       valueTextSize: 10,
@@ -491,7 +484,7 @@ const SettingFilledIndicatorScreen = () => {
               animation={{
                 durationX: 0,
                 durationY: 1500,
-                easingY: "EaseInOutQuart",
+                easingY: 'EaseInOutQuart',
               }}
               xAxis={xAxisConfig}
               legend={{
@@ -500,7 +493,7 @@ const SettingFilledIndicatorScreen = () => {
               marker={{
                 enabled: true,
                 markerColor: processColor(color.darkColor),
-                textColor: processColor("white"),
+                textColor: processColor('white'),
               }}
               yAxis={yAxisConfig}
               drawGridBackground={false}
@@ -565,8 +558,7 @@ const SettingFilledIndicatorScreen = () => {
                   style={[
                     styles.tabLink,
                     state.activeTab === 0 && styles.tabActive,
-                  ]}
-                >
+                  ]}>
                   <Text style={styles.link}>Tháng trước</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -574,8 +566,7 @@ const SettingFilledIndicatorScreen = () => {
                   style={[
                     styles.tabLink,
                     state.activeTab === 1 && styles.tabActive,
-                  ]}
-                >
+                  ]}>
                   <Text style={styles.link}>Tháng này</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -583,8 +574,7 @@ const SettingFilledIndicatorScreen = () => {
                   style={[
                     styles.tabLink,
                     state.activeTab === 2 && styles.tabActive,
-                  ]}
-                >
+                  ]}>
                   <Text style={styles.link}>3 tháng sau</Text>
                 </TouchableOpacity>
               </View>
@@ -625,35 +615,35 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     paddingVertical: 15,
     paddingHorizontal: 15,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     ...shadowStyle,
   },
   filterWrap: {
     paddingVertical: 10,
     paddingHorizontal: 15,
     backgroundColor: color.darkColor,
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   chart: {
     flex: 1,
-    position: "relative",
+    position: 'relative',
   },
   chartWrap: {
-    width: "100%",
+    width: '100%',
     height: height / 5,
     // aspectRatio: 1,
     paddingHorizontal: 5,
-    position: "relative",
+    position: 'relative',
     marginTop: 10,
   },
   summaryBox: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   box: {
     borderRightWidth: 1,
-    borderRightColor: "#e1e1e1",
+    borderRightColor: '#e1e1e1',
     flex: 1,
-    alignItems: "center",
+    alignItems: 'center',
   },
   label: {
     marginBottom: 5,
@@ -662,32 +652,32 @@ const styles = StyleSheet.create({
   value: {
     color: color.darkColor,
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   title: {
     paddingHorizontal: 15,
     marginBottom: 10,
     fontSize: 16,
-    color: "#3C3C43",
-    textTransform: "uppercase",
+    color: '#3C3C43',
+    textTransform: 'uppercase',
     opacity: 0.6,
   },
   tabLinkWrap: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginBottom: 15,
   },
   tabLink: {
     paddingVertical: 10,
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   tabActive: {
     borderBottomColor: color.primary,
     borderBottomWidth: 2,
   },
   link: {
-    fontWeight: "600",
+    fontWeight: '600',
   },
   tabContainer: {
     flex: 1,
@@ -696,10 +686,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   roomWrap: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     padding: 10,
-    borderBottomColor: "#e1e1e1",
+    borderBottomColor: '#e1e1e1',
     borderBottomWidth: 1,
   },
   roomName: {

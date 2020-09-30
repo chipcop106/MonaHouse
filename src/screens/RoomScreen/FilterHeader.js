@@ -10,11 +10,6 @@ import { Icon, Input } from "@ui-kitten/components";
 import { color, settings } from "~/config";
 import { Context as MotelContext } from "~/context/MotelContext";
 import ModalizeSelect from "~/components/common/ModalizeSelect";
-// const initialState = {
-//     selectedMonthIndex: new IndexPath(0),
-//     selectedMotelIndex: new IndexPath(0),
-//     searchValue: "",
-// }
 
 const reducer = (prevstate, { type, payload }) => {
   switch (type) {

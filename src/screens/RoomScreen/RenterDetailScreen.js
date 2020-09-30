@@ -202,7 +202,7 @@ const RenterModal = forwardRef(
           </Text>
           <View style={styles.formRow}>
             <Input
-              returnKeyType={"done"}
+              returnKeyType={'done'}
               textStyle={styles.textInput}
               label="Họ và tên"
               placeholder="Họ tên"
@@ -213,7 +213,7 @@ const RenterModal = forwardRef(
           </View>
           <View style={styles.formRow}>
             <Input
-              returnKeyType={"done"}
+              returnKeyType={'done'}
               textStyle={styles.textInput}
               label="Số điện thoại"
               placeholder="VD: 0969xxxxx"
@@ -496,7 +496,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
       const res = await updateRenterOnRoom({
         renterid: state.renterID,
         phone: state?.phoneNumber ?? '',
-        fullname: state?.FullName ?? '',
+        fullname: state?.fullName ?? '',
         quantity: state.otherRenters?.length ?? 0,
         relationship: relationLists[state.relationshipIndex.row].id,
         cityid: cityLists[state.relationshipIndex.row].ID,
@@ -545,7 +545,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
           <View style={styles.formWrap}>
             <View style={[styles.formRow]}>
               <Input
-                returnKeyType={"done"}
+                returnKeyType={'done'}
                 textStyle={styles.textInput}
                 label="Họ và tên"
                 placeholder=""
@@ -560,7 +560,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
             </View>
             <View style={[styles.formRow]}>
               <Input
-                returnKeyType={"done"}
+                returnKeyType={'done'}
                 textStyle={styles.textInput}
                 label="Số điện thoại"
                 placeholder="09xxxxxx"
@@ -588,7 +588,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
                         </View> */}
             <View style={[styles.formRow]}>
               <Input
-                returnKeyType={"done"}
+                returnKeyType={'done'}
                 textStyle={styles.textInput}
                 label="Công việc hiện tại"
                 placeholder="Văn phòng, sinh viên, phổ thông, khác"
@@ -646,7 +646,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
             </View>
             <View style={[styles.formRow]}>
               <Input
-                returnKeyType={"done"}
+                returnKeyType={'done'}
                 textStyle={styles.textInput}
                 label="Ghi chú"
                 placeholder=""

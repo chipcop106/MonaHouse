@@ -62,7 +62,7 @@ const monthOptions = [
 
 export const yearOptions = [];
 
-for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+for (let i = currentYear - 10; i <= currentYear ; i++) {
   yearOptions.push(`${i}`);
 }
 

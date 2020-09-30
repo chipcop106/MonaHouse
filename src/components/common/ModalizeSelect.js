@@ -29,13 +29,14 @@ const ModalizeSelect = (props) => {
     onClose,
     leftIcon,
     disabled,
+    iconFill
   } = props;
-  const { state: motelState , getListMotels} = useContext(MotelContext);
+
   const [selected, setSelected] = useState(selectedValue || pickerData[0]);
   const modalPickerRef = useRef();
 
   useEffect(() => {
-    if(!!!motelState.motelLists) getListMotels();
+
   }, []);
   const _onValueSelectChange = (itemValue, itemIndex) => {
     if (selected !== itemValue) {
@@ -64,15 +65,18 @@ const ModalizeSelect = (props) => {
     <View>
       <TouchableOpacity onPress={_onPress} disabled={disabled}>
         <View style={[styles.selectTouch, {}]}>
-          <Icon
-            name={leftIcon}
-            fill={color.whiteColor}
-            style={[styles.iconStyle, { position: "absolute", top: -10 }]}
-          />
+          {
+            !!leftIcon && <Icon
+              name={leftIcon}
+              fill={iconFill || color.whiteColor}
+              style={[styles.iconStyle, { position: "absolute", top: -10 }]}
+            />
+          }
           <Text
             style={[
               styles.selectedtxt,
               { flexGrow: 1, paddingRight: 15, backgroundColor: "transparent" },
+              !!!leftIcon && { paddingLeft: 0 }
             ]}
             numberOfLines={1}
           >

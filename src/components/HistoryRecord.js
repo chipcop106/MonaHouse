@@ -114,11 +114,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const HistoryRecord = ({ style, renterInfo = false, title = "Phòng 01" }) => {
+const HistoryRecord = ({ style, renterInfo = false, title = "Phòng 01", data = {} }) => {
   const [visible, setVisible] = React.useState(false);
+  console.log(data);
   return (
     <>
-      <View style={style}>
+      <View style={{}}>
         <View style={styles.wrapCard}>
           {!renterInfo && (
             <View style={styles.datetime}>

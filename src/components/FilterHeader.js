@@ -133,7 +133,6 @@ const FilterHeader = ({
               pickerData={settings.yearLists}
               selectedValue={settings.yearLists[selectedYearIndex || 0]}
               leftIcon="calendar"
-              disabled={loading}
             />
           </View>
         )}

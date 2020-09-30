@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from "react";
-import { Text, StyleSheet, View, ActivityIndicator } from "react-native";
+import { Text, StyleSheet, View, ActivityIndicator, ImageBackground } from 'react-native'
 import { Context as AuthContext } from "../../context/AuthContext";
 import { settings } from "~/config";
 import { getCity, getPhoneHelp } from "~/api/AccountAPI";
@@ -31,9 +31,13 @@ const WelcomeScreen = ({ navigation }) => {
 
   }, []);
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <ImageBackground
+	    resizeMode={'cover'}
+	    source={ require('~/../assets/launch-screen.png') }
+	    style={{ flex: 1, justifyContent: 'flex-start', alignItems: "center", position: 'relative' }}>
+
       <ActivityIndicator size="large" />
-    </View>
+    </ImageBackground>
   );
 };
 

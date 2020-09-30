@@ -9,7 +9,7 @@ import {
   Icon,
 } from '@ui-kitten/components';
 import Service from './Service';
-import IncludeElectrictWater from '~/components/IncludeElectrictWater';
+import IncludeElectricWater from '~/components/IncludeElectrictWater';
 import { sizes, color, settings } from '../../config';
 import { create_UUID as randomId } from '../../utils';
 import { Context as RoomGoInContext } from '../../context/RoomGoInContext';
@@ -17,7 +17,7 @@ import { currencyFormat as cf } from '~/utils';
 
 const timeType = ['Ngày', 'Tháng', 'Năm'];
 
-const electrictType = [
+const electricType = [
   'Theo số điện nước',
   'Bao điện nước',
   'Bao điện, nước tính theo số',
@@ -43,8 +43,8 @@ const RoomInfoForm = () => {
       },
     ]);
   };
-  const _handleValueChangeIncludeElectrictWater = (value) => {
-    console.log('_handleValueChangeIncludeElectrictWater', value);
+  const _handleValueChangeIncludeElectricWater = (value) => {
+    console.log('_handleValueChangeIncludeElectricWater', value);
     changeStateFormStep('roomInfo', value);
   };
 
@@ -110,22 +110,22 @@ const RoomInfoForm = () => {
             <View style={[styles.formRow, styles.fullWidth]}>
               <Select
                 label="Cách tính điện nước"
-                value={electrictType[stateRoomInfo.electrictIndex.row]}
-                selectedIndex={stateRoomInfo.electrictIndex}
+                value={electricType[stateRoomInfo.electricIndex.row]}
+                selectedIndex={stateRoomInfo.electricIndex}
                 onSelect={(index) =>
-                  changeStateFormStep('electrictIndex', index)
+                  changeStateFormStep('electricIndex', index)
                 }>
-                {electrictType
-                  ? electrictType.map((option) => (
+                {electricType
+                  ? electricType.map((option) => (
                       <SelectItem key={(option) => option} title={option} />
                     ))
                   : null}
               </Select>
             </View>
-            <IncludeElectrictWater
+            <IncludeElectricWater
               initialState={stateRoomInfo.roomInfo}
-              handleValueChange={_handleValueChangeIncludeElectrictWater}
-              index={stateRoomInfo.electrictIndex?.row ?? new IndexPath(0).row}
+              handleValueChange={_handleValueChangeIncludeElectricWater}
+              index={stateRoomInfo.electricIndex?.row ?? new IndexPath(0).row}
             />
           </View>
         </View>
