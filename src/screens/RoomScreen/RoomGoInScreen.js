@@ -135,8 +135,8 @@ const RoomGoInScreen = ({ navigation, route }) => {
     const { actuallyReceived, totalDeposit, totalPrepay } = checkout;
     const serviceArr = [...room.services].map((service) => {
       return {
-        Name: service.value.name,
-        Price: service.value.price,
+        Name: service.AddonName,
+        Price: service.AddonPrice,
       };
     });
     const pageNum = parseInt(actuallyReceived || 0);
@@ -344,9 +344,9 @@ const RoomGoInScreen = ({ navigation, route }) => {
             }
             style={{ flex: 1 }}
             contentContainerStyle={{ paddingBottom: 15 }}
-            extraScrollHeight={headerHeight}
+            extraScrollHeight={ 40 }
             // viewIsInsideTabBar={true}
-            keyboardOpeningTime={150}>
+            keyboardOpeningTime={250}>
             <RenderForm />
             <View style={styles.mainWrap}>
               <View style={styles.btnGroup}>

@@ -6,7 +6,6 @@ import React, {
   useEffect,
   useMemo,
   useLayoutEffect,
-  createContext,
   memo,
 } from 'react';
 import {
@@ -15,20 +14,15 @@ import {
   Alert,
   TouchableOpacity,
   ActivityIndicator,
-  RefreshControl,
-} from 'react-native';
+  RefreshControl, Keyboard,
+} from 'react-native'
 import {
   useNavigation,
   useRoute,
-  useIsFocused,
 } from '@react-navigation/native';
 import {
   Icon,
-  Input,
   List,
-  IndexPath,
-  Text,
-  Modal,
 } from '@ui-kitten/components';
 
 import RoomCard from '~/components/RoomCard';
@@ -45,7 +39,6 @@ import { Context as AuthContext } from '~/context/AuthContext';
 import Loading from '~/components/common/Loading';
 import ModalizeAddMotel from '~/components/ModalizeAddMotel';
 
-import { create_UUID } from '~/utils';
 
 const RoomManagementScreen = () => {
   const { signOut } = useContext(AuthContext);
@@ -56,7 +49,7 @@ const RoomManagementScreen = () => {
   const { listRooms, filterStateDefault, isLoading } = roomState;
   const { listMotels, listSortOptions } = motelState;
   const navigation = useNavigation();
-  // const route = useRoute();
+  const route = useRoute();
   // const isFocused = useIsFocused();
   //local screen state
   // const [loading, setLoading] = useState(false);
@@ -72,6 +65,15 @@ const RoomManagementScreen = () => {
     }
     return () => {};
   }, [roomState.isReload]);
+
+  useEffect(() => {
+    !!route.params?.refresh && _onRefresh();
+    navigation.setParams({
+      ...route.params,
+      refresh: false,
+    });
+  }, [route.params?.refresh])
+
   const _pressAddNewRoom = () => {
     if (Array.isArray(listMotels) && listMotels.length > 0) {
       navigation.navigate('AddNewRoom', {
@@ -159,6 +161,7 @@ const RoomManagementScreen = () => {
 
   const _onModalizeFeeOpen = () => {};
   const _onModalizeFeeClose = () => {
+    Keyboard.dismiss();
     setTimeout(() => {
       setmodelFeeData('');
     }, 10);

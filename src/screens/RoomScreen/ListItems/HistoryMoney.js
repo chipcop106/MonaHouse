@@ -92,7 +92,7 @@ const HistoryRecord = ({
           </View>
         </View>
         <View style={history.rightPart}>
-          <Text style={history.name}>{data.NameRoom}</Text>
+          { !!data.NameRoom && <Text style={history.name}>{data.NameRoom}</Text> }
           <Text style={history.title}>{data.Note}</Text>
           <View style={history.meta}>
             <Text style={[history.money, data.Paid > 0 ? { color: color.primary } : { color: color.redColor }]}>{currencyFormat(data.Paid)}</Text>

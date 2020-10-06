@@ -1,27 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react'
 import {
-	View,
-	Text,
-	StyleSheet,
-	RefreshControl,
-	TouchableOpacity, Linking,
+  View,
+  Text,
+  StyleSheet,
+  RefreshControl,
+  TouchableOpacity, Linking, Alert,
 } from 'react-native'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Button, Icon, ListItem } from '@ui-kitten/components'
+
+import { Context as AuthContext }  from '~/context/AuthContext';
 
 import SliderPackage from './comp/Slider';
 import CollapseMenu from '~/screens/RechargeScreen/comp/CollapseMenu'
 
 import { color, settings, shadowStyle } from '~/config'
 import { currencyFormat } from '~/utils';
+import { getRechargePackage, rechargeAccount } from '~/api/CustomerAPI'
 
 const RechargeIndex = (props) => {
-  const [userData, setUserData] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
+
+  const { signOut } = useContext(AuthContext);
+
+  const [userData, setUserData] = useState('');
+  const [packageData, setPackageData] = useState({
+    isLoading: false,
+    data: [
+      {
+        title: 'Gói ưu đãi nạp tiền 01',
+        text: 'Nạp 500.000đ để nhận ưu đãi trị giá 800.000đ',
+      },
+      {
+        title: 'Gói ưu đãi nạp tiền 02',
+        text: 'Nạp 500.000đ để nhận ưu đãi trị giá 800.000đ',
+      },
+      {
+        title: 'Gói ưu đãi nạp tiền 03',
+        text: 'Nạp 500.000đ để nhận ưu đãi trị giá 800.000đ',
+      },
+    ]
+  });
+
+  const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const { data } = route.params;
   useEffect(() => {
     (async () => {
@@ -32,11 +57,28 @@ const RechargeIndex = (props) => {
   }, []);
 
   const fetchData = async () => {
+
+    console.log( 'user data', JSON.parse(data || '{}'));
     try {
-      console.log(JSON.parse(data || '{}'));
-      await setUserData(JSON.parse(data || '{}'));
+      setUserData(JSON.parse(data || '{}'));
+
+      setPackageData({ ...packageData, isLoading: true });
+      const res = await getRechargePackage();
+      if(res.Code === 0){
+        Alert.alert('Oops!!', JSON.stringify(res));
+      } else if( res.Code === 1 ){
+        setPackageData({ data: res?.Data ?? [], isLoading: false });
+        return '';
+      } else if (res.Code === 2){
+        Alert.alert('Oops!!', 'Phiên đăng nhập của bạn đã hết hạng.');
+        signOut();
+      } else {
+        Alert.alert('Oops!!', JSON.stringify(res));
+      }
+      setPackageData({ ...packageData, isLoading: false });
     } catch (e) {
       console.log('fetchData error', e);
+      setPackageData({ ...packageData, isLoading: false });
     }
   };
   const _onRefresh = async () => {
@@ -93,20 +135,7 @@ const RechargeIndex = (props) => {
           ]}>{`Các gói ưu đãi`}</Text>
         <SliderPackage
           onPress={_handleSliderPackage}
-          carouselItems={[
-            {
-              title: 'Gói ưu đãi nạp tiền 01',
-              text: 'Nạp 500.000đ để nhận ưu đãi trị giá 800.000đ',
-            },
-            {
-              title: 'Gói ưu đãi nạp tiền 02',
-              text: 'Nạp 500.000đ để nhận ưu đãi trị giá 800.000đ',
-            },
-            {
-              title: 'Gói ưu đãi nạp tiền 03',
-              text: 'Nạp 500.000đ để nhận ưu đãi trị giá 800.000đ',
-            },
-          ]}
+          carouselItems={packageData.data}
         />
         <View style={{ height: 20 }} />
       </KeyboardAwareScrollView>
@@ -143,6 +172,7 @@ const RechargeIndex = (props) => {
     </>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: color.bgmain,

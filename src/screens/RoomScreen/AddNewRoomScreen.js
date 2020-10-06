@@ -75,10 +75,8 @@ const AddNewRoomScreen = () => {
       ...state.services,
       {
         id: randomId(),
-        value: {
-          name: '',
-          price: '',
-        },
+        AddOnName: '',
+        Price: '',
       },
     ];
     updateState('services', newServices);
@@ -91,12 +89,14 @@ const AddNewRoomScreen = () => {
     updateState('services', newServices);
   };
 
-  const updateService = (id, nextState) => {
+  const updateService = (id, { name, price }) => {
     const newServices = [...state.services].map((service) => {
       return service.id === id
         ? {
             ...service,
-            value: nextState,
+            ID: 0,
+            AddOnName: name,
+            Price: price,
           }
         : service;
     });
@@ -110,6 +110,7 @@ const AddNewRoomScreen = () => {
     // electricPrice: "",
     // description: "",
     // services: [],
+    console.log(state);
     if (!!!state.roomName) return Alert.alert('Vui lòng nhập tên phòng');
     if (!!!state.roomPrice) return Alert.alert('Vui lòng nhập giá phòng');
 
@@ -124,6 +125,8 @@ const AddNewRoomScreen = () => {
         electricprice: state.electricPrice || 0,
         waterprice: state.waterPrice || 0,
         description: state.description,
+        addons: JSON.stringify(state?.services.map(sv => { delete sv.id; return sv}) ?? []),
+
       });
       if (rs.Code === 2) {
         signOut();
@@ -210,7 +213,7 @@ const AddNewRoomScreen = () => {
             <View style={[styles.formGroup, styles.col]}>
               <Input
                 returnKeyType={'done'}
-                label="Giá điện / kW"
+                label="Giá điện/kW"
                 placeholder="3.500"
                 value={cf(state.electricPrice)}
                 onChangeText={(newValue) =>
@@ -265,15 +268,15 @@ const AddNewRoomScreen = () => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.section}>
+        <View style={[styles.section, { paddingVertical: 0 }]}>
           <View style={[styles.section, styles.serviceWrap]}>
             {state.services && state.services.length > 0 ? (
               state.services.map((service) => (
                 <Service
                   key={`${service.id}`}
                   initialState={{
-                    name: service.value?.name ?? '',
-                    price: service.value?.price ?? '',
+                    name: service?.AddOnName ?? '',
+                    price: service?.Price ?? '',
                   }}
                   onDelete={() => deleteService(service.id)}
                   onChangeValue={(nextState) =>
@@ -348,12 +351,13 @@ const styles = StyleSheet.create({
   },
   serviceWrap: {
     paddingBottom: 0,
-    marginBottom: 15,
+    marginBottom: 0,
     marginHorizontal: -20,
   },
   emptyText: {
     textAlign: 'center',
     color: color.redColor,
     fontWeight: '600',
+    marginBottom: 15
   },
 });

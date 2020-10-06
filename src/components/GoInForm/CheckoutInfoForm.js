@@ -103,9 +103,10 @@ const CheckoutInfoForm = () => {
                   <Text style={styles.rowValue}>
                     {cf(
                       RoomGoInState.dataForm[0].services.reduce((prev, cur) => {
+
                         return (
                           prev +
-                          parseInt(cur.value.price.replace(/[^0-9\-]/g, ""))
+                          parseInt(`${cur.AddonPrice}`.replace(/[^0-9\-]/g, ""))
                         );
                       }, 0)
                     )}

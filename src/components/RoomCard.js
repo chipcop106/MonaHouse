@@ -234,9 +234,19 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
         return null;
     }
   };
+  const _onPressCard = () => {
+    navigation.navigate('RoomDetailStack', {
+      screen: 'RoomDetail',
+      params: {
+        roomId: item.RoomID,
+      },
+    })
+  }
+
   return (
     <View style={styles.item}>
       <Card
+        onPress={_onPressCard}
         style={[{ borderRadius: 9 }]}
         appearance="filled"
         status="basic"
@@ -262,7 +272,8 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
             {item.Renter ? item.Renter : 'Chưa có khách'}
           </Text>
         </View>
-        <View style={styles.cardBody}>
+
+        <View style={styles.cardBody} >
           <View style={[styles.space, styles.infoWrap]}>
             <View style={styles.info}>
               <Text style={styles.infoLabel}>Giá (tháng)</Text>
@@ -349,40 +360,40 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
               )}
             </View>
             {!!item.RenterDateOut && (
+              <View style={[styles.status, {}]}>
+                <LinearGradient
+                  colors={color.gradients.danger}
+                  style={styles.badge}>
+                  <Text
+                    style={
+                      styles.badgeText
+                    }>{`Dọn ra ngày ${item.RenterDateOut}`}</Text>
+                </LinearGradient>
+              </View>
+            )}
+            {!!!item.RenterDepositID ? (
+              !!!item.Renter && (
                 <View style={[styles.status, {}]}>
                   <LinearGradient
                     colors={color.gradients.danger}
                     style={styles.badge}>
                     <Text
-                      style={
-                        styles.badgeText
-                      }>{`Dọn ra ngày ${item.RenterDateOut}`}</Text>
+                      style={styles.badgeText}>{`Chưa có ngưởi đặt cọc`}</Text>
                   </LinearGradient>
                 </View>
+              )
+            ) : (
+              <View style={[styles.status, {}]}>
+                <LinearGradient
+                  colors={color.gradients.success}
+                  style={styles.badge}>
+                  <Text
+                    style={
+                      styles.badgeText
+                    }>{`Đặt cọc ngày ${item.RenterDepositDateIn}`}</Text>
+                </LinearGradient>
+              </View>
             )}
-	          {!!!item.RenterDepositID ? (
-		          !!!item.Renter && <View style={[styles.status, {}]}>
-			          <LinearGradient
-				          colors={color.gradients.danger}
-				          style={styles.badge}>
-				          <Text
-					          style={
-						          styles.badgeText
-					          }>{`Chưa có ngưởi đặt cọc`}</Text>
-			          </LinearGradient>
-		          </View>
-	          ) : (
-		          <View style={[styles.status, {}]}>
-			          <LinearGradient
-				          colors={color.gradients.success}
-				          style={styles.badge}>
-				          <Text
-					          style={
-						          styles.badgeText
-					          }>{`Đặt cọc ngày ${item.RenterDepositDateIn}`}</Text>
-			          </LinearGradient>
-		          </View>
-	          )}
           </View>
           {!!item.Renter && (
             <View style={[styles.balanceInfo]}>
@@ -411,6 +422,7 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
               </TouchableOpacity>
             </View>
           )}
+
         </View>
       </Card>
     </View>

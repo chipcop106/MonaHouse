@@ -46,8 +46,7 @@ const reducer = (state, { type, payload }) => {
             keyID: randomId(),
             RoomID: payload.roomID,
             RenterInfoID: payload.renterID,
-            AddOnName: '',
-            Price: '',
+
           },
         ],
       };
@@ -63,10 +62,26 @@ const reducer = (state, { type, payload }) => {
 const EditRoomScreen = ({ navigation, route }) => {
   const [state, dispatch] = useReducer(reducer, {
     ...route.params.roomInfo,
-    service: route.params.roomInfo?.addons.map((sv) => ({
-      ...sv,
-      keyID: randomId(),
-    })),
+    service: (() => {
+      let svs = [];
+      try {
+        if( route.params.roomInfo?.addons.length > 0  ){
+          svs = route.params.roomInfo?.addons.map((sv) => ({
+            ...sv,
+            keyID: randomId(),
+          }));
+        } else if (route.params.roomInfo?.addonsdefault.length > 0){
+          svs = route.params.roomInfo?.addonsdefault.map((sv) => ({
+            AddOnName: sv.AddonName,
+            Price: sv.AddonPrice,
+            keyID: randomId(),
+          }));
+        }
+      } catch (e) {
+        console.log('get service error: ',e);
+      }
+      return svs;
+    })(),
   });
   const { signOut } = useContext(AuthContext);
   const { state: motelState } = useContext(MotelContext);
@@ -122,6 +137,7 @@ const EditRoomScreen = ({ navigation, route }) => {
   };
 
   const updateRoomInfo = async () => {
+    console.log('updateRoomInfo data', state );
     try {
       const {
         PriceElectric,
@@ -138,7 +154,7 @@ const EditRoomScreen = ({ navigation, route }) => {
           priceroom: PriceRoom,
           electrictprice: PriceElectric,
           waterprice: PriceWater,
-          description: Description,
+          description: !!Description ? Description : '',
           addons: service,
         },
         { navigation, signOut, refreshRoomInfo }
@@ -186,7 +202,7 @@ const EditRoomScreen = ({ navigation, route }) => {
             <View style={[styles.formGroup, styles.col]}>
               <Input
                 returnKeyType={"done"}
-                label="Giá điện / kW"
+                label="Giá điện/kW"
                 placeholder="3.500"
                 value={cf(room.PriceElectric)}
                 onChangeText={(newValue) =>

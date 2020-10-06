@@ -1,7 +1,7 @@
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import CreateDataContext from './CreateDataContext';
-import { loginAccount } from '../api/AccountAPI';
+import { loginAccount } from '~/api/AccountAPI';
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -88,8 +88,10 @@ const signIn = (dispatch) => async (username, password) => {
       });
     } else {
       const { token, account } = res.Data;
+      await AsyncStorage.setItem('username', username);
       await AsyncStorage.setItem('userToken', token);
       await AsyncStorage.setItem('userInfo', JSON.stringify(account));
+
       dispatch({
         type: 'SIGN_IN',
         payload: { userToken: token, userInfo: account },

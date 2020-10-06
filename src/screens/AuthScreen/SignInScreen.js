@@ -3,7 +3,6 @@ import {
   Text,
   StyleSheet,
   View,
-  TextInput,
   ActivityIndicator,
   SafeAreaView,
   Platform,
@@ -17,14 +16,14 @@ import { useNavigation } from '@react-navigation/native';
 import { Button, Input, Icon } from '@ui-kitten/components';
 import {
   ScrollView,
-  TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
-import { Context as AuthContext } from './../../context/AuthContext';
+import { Context as AuthContext } from '~/context/AuthContext';
 import { color } from '~/config';
-import { Formik, useFormikContext } from 'formik';
+import { Formik } from 'formik';
 import { SignInData, SignInSchema } from './data/signinModal';
 import { InputValidate } from '~/components/common/InputValidate';
 import { settings } from '~/config';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const LoadingIndicator = () => <ActivityIndicator color="#fff" />;
 
@@ -35,11 +34,18 @@ const SignInScreen = ({ route }) => {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const [phoneNumber, setphoneNumber] = useState('');
+  const [userName, setUserName] = useState({value: '', isLoad: true});
   navigation.setOptions({
     headerShown: false,
   });
   useEffect(() => {
     setphoneNumber(settings.phoneHelp);
+    ( async () => {
+      const asyUsername = await AsyncStorage.getItem('username');
+      console.log('asyUsername', asyUsername)
+      !!asyUsername && setUserName({value: asyUsername, isLoad: false});
+      !!!asyUsername && setUserName({value: '', isLoad: false});
+    } )();
   }, []);
   useEffect(() => {
     if (!!authState?.errorMessage) {
@@ -66,7 +72,7 @@ const SignInScreen = ({ route }) => {
     }
   };
   const _onFormSubmit = async (values) => {
-    // console.log(values);
+    console.log(values);
     setLoading(true);
     await signIn(values.username, values.password);
     console.log(authState);
@@ -82,6 +88,7 @@ const SignInScreen = ({ route }) => {
                 Username:
               </Text>
             )}
+            name="username"
             id="username"
             // value={username}
             // onChangeText={(value) => setUsername(value)}
@@ -100,6 +107,7 @@ const SignInScreen = ({ route }) => {
                 Password:
               </Text>
             )}
+            name="password"
             id="password"
             // value={password}
             // onChangeText={(value) => setPassword(value)}
@@ -144,12 +152,13 @@ const SignInScreen = ({ route }) => {
             />
           </View>
           <View style={styles.formWrap}>
-            <Formik
-              initialValues={SignInData.empty()}
+            {!!!userName.isLoad && <Formik
+              initialValues={{ username: userName.value, password: '' }}
               validationSchema={SignInSchema}
               onSubmit={_onFormSubmit}>
               {RenderForm}
-            </Formik>
+            </Formik>}
+
           </View>
           <View style={styles.formGroup}>
             <Text style={styles.btmText}>
@@ -161,19 +170,17 @@ const SignInScreen = ({ route }) => {
                   fontWeight: 'bold',
                   textDecorationStyle: 'solid',
                 }}>
-                {' '}
                 Đăng ký mới
               </Text>
             </Text>
           </View>
           <View style={styles.formGroup}>
             <Button style={styles.btnContact} onPress={onPressContact}>
-              {' '}
               {!!!phoneNumber ? (
                 <LoadingIndicator />
               ) : (
                 `Liên hệ với chúng tôi`
-              )}{' '}
+              )}
             </Button>
           </View>
         </ScrollView>

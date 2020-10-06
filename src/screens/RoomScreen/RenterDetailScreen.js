@@ -412,7 +412,7 @@ const RenterDetailScreen = ({ navigation, route }) => {
       await handleIMG_RS(images);
     } catch (error) {
       console.log('ImagePicker.openPicker error', error.message);
-      alert(error.message);
+      // alert(error.message);
       updateLicenses([]);
     }
   };

@@ -127,6 +127,7 @@ const HistoryRW = ({
 }) => {
   const [visible, setVisible] = React.useState(false);
   const { Electrict, Water, NameRoom, Date, ElectricIMGThumbnail, WaterIMGThumbnail} = data;
+  const hasImg = !!ElectricIMGThumbnail || !!WaterIMGThumbnail;
   return (
     <>
       <View style={style}>
@@ -159,7 +160,7 @@ const HistoryRW = ({
                 </View>
             </View>
           </View>
-          <TouchableOpacity
+          {hasImg && <TouchableOpacity
             onPress={() => setVisible(!visible)}
             style={styles.action}>
             <Icon
@@ -178,7 +179,7 @@ const HistoryRW = ({
               }}>
               Ảnh
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity>}
         </View>
       </View>
 

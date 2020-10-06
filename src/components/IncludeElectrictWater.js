@@ -105,7 +105,7 @@ function IncludeElectricWater({
       RBSheetKey = '';
     } catch (error) {
       console.log('ImagePicker.openPicker error', error.message);
-      alert(error.message);
+      // alert(error.message);
       RBSheetKey = '';
     }
   };
@@ -132,7 +132,7 @@ function IncludeElectricWater({
       RBSheetKey = '';
     } catch (error) {
       console.log('ImagePicker.openPicker error', error.message);
-      alert(error.message);
+      // alert(error.message);
       RBSheetKey = '';
     }
   };
@@ -178,7 +178,7 @@ function IncludeElectricWater({
                 <Input
                   returnKeyType={"done"}
                   textStyle={styles.textInput}
-                  label="Giá điện / kW"
+                  label="Giá điện/kW"
                   placeholder="0"
                   value={cf(String(state.electricPrice))}
                   onChangeText={(nextValue) => {

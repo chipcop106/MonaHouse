@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { Text, StyleSheet, View, ActivityIndicator, ImageBackground } from 'react-native'
-import { Context as AuthContext } from "../../context/AuthContext";
+import { Context as AuthContext } from "~/context/AuthContext";
 import { settings } from "~/config";
 import { getCity, getPhoneHelp } from "~/api/AccountAPI";
 import { getRelationships } from "~/api/RenterAPI";
@@ -8,7 +8,7 @@ import { Context as MotelContext } from '~/context/MotelContext'
 
 const WelcomeScreen = ({ navigation }) => {
   const { state, signInLocalToken } = useContext(AuthContext);
-  const { getListMotels, getSortOptions } = useContext(MotelContext);
+  const { getSortOptions } = useContext(MotelContext);
   console.log("AuthContext", state);
 
   const loadOptions = async () => {

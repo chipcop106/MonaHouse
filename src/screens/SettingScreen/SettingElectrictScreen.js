@@ -75,7 +75,7 @@ const SettingElectrictScreen = ({ navigation }) => {
                     <View style={[styles.formGroup, { paddingBottom: 15 }]}>
                         <Input
                           returnKeyType={"done"}
-                            label="Giá điện / kW"
+                            label="Giá điện/kW"
                             placeholder="0"
                             style={styles.inputControl}
                             textStyle={styles.inputText}

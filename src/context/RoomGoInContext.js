@@ -3,8 +3,8 @@ import CreateDataContext from './CreateDataContext';
 import { addRenterOnRoom } from '~/api/RenterAPI';
 import { getRoomById } from '~/api/MotelAPI';
 import { Alert } from 'react-native';
-import { settings } from '~/config'
-
+import { settings } from '~/config';
+import { create_UUID } from '~/utils';
 const initialState = {
 	step: 0,
 	isLoading: false,
@@ -113,11 +113,12 @@ const goInReducer = (prevstate, action) => {
 			const newFormState = prevstate.dataForm.map((item, index) => {
 				if (index === prevstate.step) {
 					const { services } = item;
+					console.log(services, action.payload);
 					return {
 						...item,
 						services: services.map((service) =>
 							service.id === action.payload.id
-								? { ...service, value: action.payload.value }
+								? { ...service, ...action.payload }
 								: service
 						),
 					};
@@ -247,7 +248,7 @@ const loadRoomInfo = (dispatch) => async (value) => {
 					renterDeposit: renterDeposit?.renter ?? '',
 					renterDepositImages: renterDeposit?.renterimage ?? [],
 					electricIndex: new IndexPath(0),
-					services: !!room.addonsdefault ? room.addonsdefault : [], // [{"ID":1,"Name":"Wifi","Price":100000}]
+					services: !!addonsdefault ? addonsdefault.map(sv => { return { ...sv, id: create_UUID() } }) : [], // [{"ID":1,"Name":"Wifi","Price":100000}]
 				},
 			});
 

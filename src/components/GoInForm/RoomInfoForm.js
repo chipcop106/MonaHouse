@@ -36,10 +36,8 @@ const RoomInfoForm = () => {
       ...stateRoomInfo.services,
       {
         id: randomId(),
-        value: {
-          name: '',
-          price: '',
-        },
+        AddonName: '',
+        AddonPrice: '',
       },
     ]);
   };
@@ -123,6 +121,8 @@ const RoomInfoForm = () => {
               </Select>
             </View>
             <IncludeElectricWater
+              waterTitle={'Số nước lúc dọn vào'}
+              electricTitle={'Số điện lúc dọn vào'}
               initialState={stateRoomInfo.roomInfo}
               handleValueChange={_handleValueChangeIncludeElectricWater}
               index={stateRoomInfo.electricIndex?.row ?? new IndexPath(0).row}
@@ -149,10 +149,10 @@ const RoomInfoForm = () => {
           {!!stateRoomInfo.services && stateRoomInfo.services.length > 0 ? (
             stateRoomInfo.services.map((service) => (
               <Service
-                key={`${service.id}`}
+                key={`${service.ID}-${service.id}`}
                 initialState={{
-                  name: service.value?.name ?? '',
-                  price: service.value?.price ?? '',
+                  name: service?.AddonName ?? '',
+                  price: service?.AddonPrice ?? '',
                 }}
                 onDelete={() =>
                   changeStateFormStep(
@@ -162,11 +162,14 @@ const RoomInfoForm = () => {
                     )
                   )
                 }
-                onChangeValue={(nextState) =>
+                onChangeValue={(nextState) =>{
                   onChangeService({
                     id: service.id,
-                    value: nextState,
+                    AddonName: nextState?.name ?? '',
+                    AddonPrice: nextState?.price ?? ''
                   })
+                }
+
                 }
               />
             ))

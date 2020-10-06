@@ -73,6 +73,10 @@ const RoomDetailScreen = ({ navigation, route }) => {
       navigation.setOptions({
         headerTitle: res.Data?.room.NameRoom ?? 'Chi tiết phòng null',
       });
+      if(res.Code === 2) {
+        Alert.alert('Phiên đăng nhập của bạn đã hết hạng, vui lòng đăng nhập lại');
+        return '';
+      }
       dispatch({
         type: 'STATE_CHANGE',
         payload: { key: 'roomInfo', value: res.Data },
@@ -319,9 +323,18 @@ const RoomDetailScreen = ({ navigation, route }) => {
                     roomInfo.addons.map((item) => (
                       <View
                         style={{ ...styles.rowInfo, marginBottom: 15 }}
-                        key={`${ item.ID }`}>
+                        key={`${item.ID}`}>
                         <Text style={styles.label}>{item.AddOnName}</Text>
                         <Text style={styles.value}>{cf(item.Price)}</Text>
+                      </View>
+                    ))
+                  ) : roomInfo.addonsdefault.length > 0 ? (
+                    roomInfo.addonsdefault.map((item) => (
+                      <View
+                        style={{ ...styles.rowInfo, marginBottom: 15 }}
+                        key={`${item.ID}`}>
+                        <Text style={styles.label}>{item.AddonName}</Text>
+                        <Text style={styles.value}>{cf(item.AddonPrice)}</Text>
                       </View>
                     ))
                   ) : (
@@ -337,74 +350,76 @@ const RoomDetailScreen = ({ navigation, route }) => {
                 </View>
 
                 {!!renter?.renter?.ID && (
-                  <View
-                    style={{
-                      ...styles.sec,
-                      backgroundColor: 'transparent',
-                      paddingHorizontal: 0,
-                    }}>
+                  <>
                     <View
                       style={{
-                        ...styles.flexRow,
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
+                        ...styles.sec,
+                        backgroundColor: 'transparent',
+                        paddingHorizontal: 0,
                       }}>
-                      <Text
+                      <View
                         style={{
-                          ...styles.secTitle,
-                          marginBottom: 0,
+                          ...styles.flexRow,
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
                         }}>
-                        Người thuê
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() =>
-                          navigation.navigate('RenterDetail', {
-                            roomInfo,
-                          })
-                        }>
-                        <View style={styles.flexRow}>
-                          <Icon
-                            name="edit-2"
-                            fill={color.primary}
-                            style={{
-                              width: 25,
-                              height: 25,
-                              marginLeft: 15,
-                              marginRight: 5,
-                            }}
-                          />
-                          <Text status="primary" category="s1">
-                            Chỉnh sửa
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
+                        <Text
+                          style={{
+                            ...styles.secTitle,
+                            marginBottom: 0,
+                          }}>
+                          Người thuê
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() =>
+                            navigation.navigate('RenterDetail', {
+                              roomInfo,
+                            })
+                          }>
+                          <View style={styles.flexRow}>
+                            <Icon
+                              name="edit-2"
+                              fill={color.primary}
+                              style={{
+                                width: 25,
+                                height: 25,
+                                marginLeft: 15,
+                                marginRight: 5,
+                              }}
+                            />
+                            <Text status="primary" category="s1">
+                              Chỉnh sửa
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={{ marginTop: 15 }}>
+                        <UserInfo
+                          name={
+                            roomInfo.renter.renter.FullName
+                              ? roomInfo.renter.renter.FullName
+                              : 'Chưa có khách'
+                          }
+                          phone={roomInfo.renter.renter.Phone}
+                          styleCard={styles.peopleCard}
+                          styleContainer={{ marginBottom: 10 }}
+                        />
+                      </View>
+                      {roomInfo?.OtherRenters?.length > 0 &&
+                        [...roomInfo.OtherRenters].map((people, index) => {
+                          return (
+                            <UserInfo
+                              key={`${index}`}
+                              avatar={null}
+                              phone={people?.Phone ?? ''}
+                              name={people?.FullName ?? 'Chưa có tên'}
+                              styleContainer={styles.peopleContainer}
+                              styleCard={styles.peopleCard}
+                            />
+                          );
+                        })}
                     </View>
-                    <View style={{ marginTop: 15 }}>
-                      <UserInfo
-                        name={
-                          roomInfo.renter.renter.FullName
-                            ? roomInfo.renter.renter.FullName
-                            : 'Chưa có khách'
-                        }
-                        phone={roomInfo.renter.renter.Phone}
-                        styleCard={styles.peopleCard}
-                        styleContainer={{ marginBottom: 10 }}
-                      />
-                    </View>
-                    {roomInfo?.OtherRenters?.length > 0 &&
-                      [...roomInfo.OtherRenters].map((people, index) => {
-                        return (
-                          <UserInfo
-                            key={`${index}`}
-                            avatar={null}
-                            phone={people?.Phone ?? ''}
-                            name={people?.FullName ?? 'Chưa có tên'}
-                            styleContainer={styles.peopleContainer}
-                            styleCard={styles.peopleCard}
-                          />
-                        );
-                      })}
-                  </View>
+                  </>
                 )}
                 <View style={styles.menuWrap}>
                   <NavLink
@@ -415,10 +430,10 @@ const RoomDetailScreen = ({ navigation, route }) => {
                       color: color.primary,
                     }}
                     routeName="RentHistory"
-                    params={ {
+                    params={{
                       roomId,
                       motelid: room.MotelID,
-                    } }
+                    }}
                   />
                   <NavLink
                     containerStyle={styles.navLink}
@@ -428,10 +443,10 @@ const RoomDetailScreen = ({ navigation, route }) => {
                       color: color.primary,
                     }}
                     routeName="DetailElectrictHistory"
-                    params={ {
+                    params={{
                       roomId,
                       motelid: room.MotelID,
-                    } }
+                    }}
                   />
                   <NavLink
                     containerStyle={styles.navLink}
@@ -441,10 +456,10 @@ const RoomDetailScreen = ({ navigation, route }) => {
                       color: color.primary,
                     }}
                     routeName="DetailMoneyHistory"
-                    params={ {
+                    params={{
                       roomId,
                       motelid: room.MotelID,
-                    } }
+                    }}
                   />
                 </View>
               </View>

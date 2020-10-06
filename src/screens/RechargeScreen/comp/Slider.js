@@ -57,6 +57,8 @@ const Slider = (props) => {
 export default Slider;
 const SliderItem = (props) => {
   const { isActive, typeColor, item } = props;
+  item?.title ||  (item.title =  item?.packageName ?? '');
+  item?.text ||  (item.text =  item?.packageShortDescription ?? '');
   return (
     <View style={[styles.ptbWrap, isActive && shadowStyle]}>
       <View style={[styles.ptbHeader, { backgroundColor: typeColor }]}>

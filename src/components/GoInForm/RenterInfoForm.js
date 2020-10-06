@@ -7,6 +7,8 @@ import {
   Button,
   Icon,
   IndexPath,
+  Autocomplete,
+  AutocompleteItem,
 } from '@ui-kitten/components';
 import ImagePicker from 'react-native-image-crop-picker';
 import { sizes, color, settings } from '~/config';
@@ -16,6 +18,13 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import { uploadRenterImage } from '~/api/RenterAPI';
 import ProgressiveImage from '~/components/common/ProgressiveImage';
 
+function removeAccents(str) {
+  return str.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+}
+const filter = (item, query) =>
+  removeAccents(item.CityName).toLowerCase().includes(removeAccents(query).toLowerCase());
 const RenterInfoForm = () => {
   const { state: RoomGoInState, changeStateFormStep } = useContext(
     RoomGoInContext
@@ -24,7 +33,8 @@ const RenterInfoForm = () => {
   const { cityLists, relationLists } = stateRenterInfo;
   const roomInfo = RoomGoInState.dataForm[0];
   const { renterDeposit } = roomInfo;
-
+  const [cityInput, setCityInput] = useState('');
+  const [cityData, setCityData] = useState(cityLists);
   // const loadData = () => {
   //   changeStateFormStep("cityLists", settings.cityLists);
   //   changeStateFormStep("relationLists", settings.relationLists);
@@ -135,7 +145,7 @@ const RenterInfoForm = () => {
       await handleIMG_RS(images);
     } catch (error) {
       console.log('ImagePicker.openPicker error', error.message);
-      alert(error.message);
+      // alert(error.message);
       changeStateFormStep(RBSheetKey, []);
     }
     RBSheetKey = '';
@@ -179,7 +189,7 @@ const RenterInfoForm = () => {
           <View style={styles.formWrap}>
             <View style={[styles.formRow]}>
               <Input
-                returnKeyType={"done"}
+                returnKeyType={'done'}
                 textStyle={styles.textInput}
                 label="Họ và tên"
                 placeholder=""
@@ -193,7 +203,7 @@ const RenterInfoForm = () => {
             </View>
             <View style={[styles.formRow]}>
               <Input
-                returnKeyType={"done"}
+                returnKeyType={'done'}
                 textStyle={styles.textInput}
                 label="Số điện thoại"
                 placeholder="09xxxxxx"
@@ -221,7 +231,7 @@ const RenterInfoForm = () => {
             </View> */}
             <View style={[styles.formRow]}>
               <Input
-                returnKeyType={"done"}
+                returnKeyType={'done'}
                 textStyle={styles.textInput}
                 label="Công việc hiện tại"
                 placeholder="Văn phòng, sinh viên, phổ thông, khác"
@@ -250,10 +260,33 @@ const RenterInfoForm = () => {
                     ))
                   : null}
               </Select>
+              {/*<Autocomplete*/}
+              {/*  label="Quê quán"*/}
+              {/*  value={cityInput}*/}
+              {/*  onSelect={(index) =>*/}
+              {/*    changeStateFormStep('provinceIndex', index)*/}
+              {/*  }*/}
+              {/*  onChangeText={(query) => {*/}
+              {/*    setCityInput(query);*/}
+              {/*    setCityData(*/}
+              {/*      cityLists.filter((item) => {*/}
+              {/*        return filter(item, query);*/}
+              {/*      })*/}
+              {/*    );*/}
+              {/*  }}>*/}
+              {/*  {!!cityData*/}
+              {/*    ? cityData.map((option) => (*/}
+              {/*        <AutocompleteItem*/}
+              {/*          key={option.ID}*/}
+              {/*          title={option.CityName}*/}
+              {/*        />*/}
+              {/*      ))*/}
+              {/*    : null}*/}
+              {/*</Autocomplete>*/}
             </View>
             <View style={[styles.formRow, styles.halfCol]}>
               <Input
-                returnKeyType={"done"}
+                returnKeyType={'done'}
                 textStyle={styles.textInput}
                 label="Số người ở"
                 placeholder="0"
@@ -285,7 +318,7 @@ const RenterInfoForm = () => {
             </View>
             <View style={[styles.formRow]}>
               <Input
-                returnKeyType={"done"}
+                returnKeyType={'done'}
                 textStyle={styles.textInput}
                 label="Ghi chú"
                 placeholder=""

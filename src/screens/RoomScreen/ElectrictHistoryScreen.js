@@ -12,6 +12,7 @@ import FilterHeader from '~/components/FilterHeader';
 import { Context as RoomContext } from '~/context/RoomContext';
 import { Context as MotelContext } from '~/context/MotelContext';
 import { Context as AuthContext } from '~/context/AuthContext';
+import Loading from '~/components/common/Loading';
 const ElectricHistoryScreen = () => {
   //share state
   const { state: roomState, getElectricHistory } = useContext(RoomContext);
@@ -72,16 +73,23 @@ const ElectricHistoryScreen = () => {
         initialState={filterStateDefault}
         advanceFilter={false}
       />
-      <List
-        refreshControl={
-          <RefreshControl onRefresh={_onRefresh} refreshing={isRefresh} />
-        }
-        contentContainerStyle={styles.contentCard}
-        data={listElectricHistory}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
-        renderItem={() => <HistoryRecord style={styles.card} />}
-        style={styles.container}
-      />
+      {!!isLoading ? (
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Loading />
+        </View>
+      ) : (
+        <List
+          refreshControl={
+            <RefreshControl onRefresh={_onRefresh} refreshing={isRefresh} />
+          }
+          contentContainerStyle={styles.contentCard}
+          data={listElectricHistory}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          renderItem={({item}) => <HistoryRecord style={styles.card} data={item}/>}
+          style={styles.container}
+        />
+      )}
     </>
   );
 };

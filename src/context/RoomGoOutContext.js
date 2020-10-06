@@ -16,11 +16,11 @@ const defaultState = {
       dateGoOut: "",
       constract: "20/10/2020",
       roomInfo: {
-        electrictNumber: "",
-        electrictPrice: "5000",
-        electrictPriceInclude: "",
-        electrictImage: null,
-          electrictImageID: '',
+        electricNumber: "",
+        electricPrice: "5000",
+        electricPriceInclude: "",
+        electricImage: null,
+          electricImageID: '',
         waterNumber: "",
         waterPrice: "3000",
         waterPriceInclude: "",
@@ -199,15 +199,15 @@ const loadDataForm = (dispatch) => async (data) => {
           )}/${contractDate.getFullYear()}` || "",
         roomInfo: {
           ...room,
-          electrictNumber: electric?.number ?? 0,
-          electrictPrice: renter?.renter?.ElectrictPrice ?? 0,
-          electrictPriceInclude: "",
-          electrictImage: electric.image_thumbnails || "",
+          electricNumber: electric?.number ?? 0,
+          electricPrice: renter?.renter?.ElectricPrice ?? 0,
+          electricPriceInclude: "",
+          electricImage: electric.image_thumbnails || "",
           waterNumber: water?.number ?? 0,
           waterPrice: renter?.renter?.WaterPrice ?? 0,
           waterPriceInclude: "",
           waterImage: water.image_thumbnails || "",
-          oldElectrictNumber: electric?.number ?? 0,
+          oldElectricNumber: electric?.number ?? 0,
           oldWaterNumber: water?.number ?? 0,
           StatusRoomID: data?.StatusRoomID ?? 0,
           StatusCollectID: data?.StatusCollectID ?? 0,
@@ -246,8 +246,8 @@ const loadDataBill = (dispatch) => async (data) => {
       }
       return rs
     })();
-    const priceAddon  = renderNumberByArray(data?.dichVu ?? [], 'servicePrice')
-    const incurredFee = renderNumberByArray(data?.phiPhatSinh ?? [], 'feePrice');
+    const priceAddon  = renderNumberByArray(data?.dichVu ?? [], 'Price')
+    const incurredFee = renderNumberByArray(data?.phiPhatSinh ?? [], 'Price');
 
     const dataBill = [
       {
@@ -279,9 +279,9 @@ const informElectrictWater = async (data) => {
   try {
     const {
       waterNumber,
-      electrictNumber,
+      electricNumber,
       waterImage,
-      electrictImage,
+      electricImage,
     } = data[0]?.roomInfo;
     const { roomId } = data;
 
@@ -295,8 +295,8 @@ const informElectrictWater = async (data) => {
           RoomID: roomId,
           WaterNumber: parseInt(waterNumber) || 0,
           WaterIMG: parseInt(waterImage) || 0,
-          ElectricNumber: parseInt(electrictNumber) || 0,
-          ElectricIMG: parseInt(electrictImage) || 0,
+          ElectricNumber: parseInt(electricNumber) || 0,
+          ElectricIMG: parseInt(electricImage) || 0,
         },
       ]),
     });

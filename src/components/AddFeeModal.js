@@ -19,8 +19,9 @@ import Loading from '~/components/common/Loading';
 import { insertRoomFee } from '~/api/MotelAPI';
 import Moment from 'moment';
 import { currencyFormat } from '~/utils';
+import InputMoney from '~/components/InputMoney'
 const AddFeeModal = (props) => {
-  const [money, setMoney] = useState('500');
+  const [money, setMoney] = useState('50000');
   const [note, setNote] = useState('');
   const [spinner, setSpinner] = useState(false);
   const { data } = props;
@@ -76,15 +77,14 @@ const AddFeeModal = (props) => {
           </View>
 
           <View style={[styles.formGroup]}>
-            <Input
+            <InputMoney
               returnKeyType={'done'}
               autoFocus={true}
               label="Tiền phí phát sinh"
-              placeholder="0"
-              keyboardType="numeric"
-              value={currencyFormat(money)}
+              placeholder="50.000đ"
+              value={money}
               onChangeText={(nextValue) =>
-                setMoney(nextValue.replace(/\./g, ''))
+                setMoney(nextValue.replace(/[^0-9\-]/g, ''))
               }
             />
           </View>
