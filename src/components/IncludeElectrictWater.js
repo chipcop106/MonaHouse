@@ -42,7 +42,7 @@ export const uploadIMG = async (file) => {
   }
   return result;
 };
-
+let inputs = [];
 function IncludeElectricWater({
   index,
   waterTitle,
@@ -51,6 +51,9 @@ function IncludeElectricWater({
   handleValueChange,
   initialState,
   roomData,
+  onFocusInput,
+  kbStatus,
+  hasReturnKey = true
 }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -148,7 +151,8 @@ function IncludeElectricWater({
         <>
           <View style={[styles.formRow, styles.halfCol]}>
             <Input
-              returnKeyType={"done"}
+              ref={inputs[0]}
+              returnKeyType={ hasReturnKey ? "done" : "default"}
               textStyle={styles.textInput}
               label={electricTitle}
               placeholder="0"
@@ -162,7 +166,7 @@ function IncludeElectricWater({
           </View>
           <View style={[styles.formRow, styles.halfCol]}>
             <Input
-              returnKeyType={"done"}
+              returnKeyType={ hasReturnKey ? "done" : "default"}
               textStyle={styles.textInput}
               label={waterTitle}
               placeholder="0"
@@ -176,7 +180,7 @@ function IncludeElectricWater({
             <>
               <View style={[styles.formRow, styles.halfCol]}>
                 <Input
-                  returnKeyType={"done"}
+                  returnKeyType={ hasReturnKey ? "done" : "default"}
                   textStyle={styles.textInput}
                   label="Giá điện/kW"
                   placeholder="0"
@@ -194,7 +198,7 @@ function IncludeElectricWater({
               </View>
               <View style={[styles.formRow, styles.halfCol]}>
                 <Input
-                  returnKeyType={"done"}
+                  returnKeyType={ hasReturnKey ? "done" : "default"}
                   textStyle={styles.textInput}
                   label="Giá nước / m3"
                   placeholder="0"
@@ -263,7 +267,7 @@ function IncludeElectricWater({
         <>
           <View style={[styles.formRow, styles.halfCol]}>
             <Input
-              returnKeyType={"done"}
+              returnKeyType={ hasReturnKey ? "done" : "default"}
               textStyle={styles.textInput}
               label="Tiền trọn gói điện"
               placeholder="0"
@@ -280,7 +284,7 @@ function IncludeElectricWater({
           </View>
           <View style={[styles.formRow, styles.halfCol]}>
             <Input
-              returnKeyType={"done"}
+              returnKeyType={ hasReturnKey ? "done" : "default"}
               textStyle={styles.textInput}
               label="Tiền trọn gói nước"
               placeholder="0"
@@ -302,7 +306,7 @@ function IncludeElectricWater({
         <>
           <View style={[styles.formRow]}>
             <Input
-              returnKeyType={"done"}
+              returnKeyType={ hasReturnKey ? "done" : "default"}
               textStyle={styles.textInput}
               label="Tiền trọn gói điện"
               placeholder="0"
@@ -319,7 +323,7 @@ function IncludeElectricWater({
           </View>
           <View style={[styles.formRow]}>
             <Input
-              returnKeyType={"done"}
+              returnKeyType={ hasReturnKey ? "done" : "default"}
               textStyle={styles.textInput}
               label="Số nước lúc dọn vào"
               placeholder="0"
@@ -331,7 +335,7 @@ function IncludeElectricWater({
           </View>
           <View style={[styles.formRow]}>
             <Input
-              returnKeyType={"done"}
+              returnKeyType={ hasReturnKey ? "done" : "default"}
               textStyle={styles.textInput}
               label="Tiền nước theo m3"
               placeholder="0"
@@ -374,7 +378,7 @@ function IncludeElectricWater({
         <>
           <View style={[styles.formRow]}>
             <Input
-              returnKeyType={"done"}
+              returnKeyType={ hasReturnKey ? "done" : "default"}
               textStyle={styles.textInput}
               label="Tiền trọn gói nước"
               placeholder="0"
@@ -391,7 +395,7 @@ function IncludeElectricWater({
           </View>
           <View style={[styles.formRow]}>
             <Input
-              returnKeyType={"done"}
+              returnKeyType={ hasReturnKey ? "done" : "default"}
               textStyle={styles.textInput}
               label="Số điện lúc dọn vào"
               placeholder="0"
@@ -406,7 +410,7 @@ function IncludeElectricWater({
 
           <View style={[styles.formRow]}>
             <Input
-              returnKeyType={"done"}
+              returnKeyType={ hasReturnKey ? "done" : "default"}
               textStyle={styles.textInput}
               label="Tiền điện theo kw"
               placeholder="0"

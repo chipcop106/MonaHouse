@@ -169,6 +169,7 @@ const changeStepForm = (dispatch) => (stepValueChange) => {
 };
 
 const changeStateFormStep = (dispatch) => (field, value) => {
+	console.log(field, value);
 	dispatch({ type: 'STEP_STATE_CHANGE', payload: { field, value } });
 };
 

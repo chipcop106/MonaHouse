@@ -10,9 +10,10 @@ const prePaymentTime = [];
 for (let i = 1; i < 13; i += 1) {
   prePaymentTime.push(`${i} tháng`);
 }
-const preDepositTime = prePaymentTime.map(
-  (item, index) => `${pad(index + 1)} tháng`
-);
+const preDepositTime = [];
+for (let i = 0; i < 13; i += 1) {
+  preDepositTime.push(`${i} tháng`);
+}
 
 const depositType = ["Cọc giữ tới hết hạn hợp đồng"];
 
@@ -32,11 +33,11 @@ const CheckoutInfoForm = () => {
   useEffect(() => {
     changeStateFormStep(
       "totalDeposit",
-      `${roomInfo.roomPrice * parseInt(stateCheckout.preDepositTimeIndex)}`
+      `${roomInfo.roomPrice * parseInt(stateCheckout.preDepositTimeIndex.row)}`
     );
     changeStateFormStep(
       "totalPrepay",
-      `${roomInfo.roomPrice * parseInt(stateCheckout.prePaymentTimeIndex)}`
+      `${roomInfo.roomPrice * parseInt(stateCheckout.prePaymentTimeIndex.row + 1)}`
     );
     getPaymentMethod();
     console.log({ roomInfo, stateCheckout });
@@ -52,18 +53,19 @@ const CheckoutInfoForm = () => {
   }, [])
   const renderOffsetPrice = () => {
     try {
-      return Math.ceil( Math.round(offsetDays * pricePerDay) * 0.001) * 1000;
+      return Math.ceil( Math.round(offsetDays * pricePerDay) * 0.05) * 500;
     } catch (error) {
       return 0;
     }
    
   }
   const _onSelectPreDeposit = (nextIndex) => {
+    console.log('_onSelectPreDeposit', nextIndex);
     changeStateFormStep("preDepositTimeIndex", nextIndex);
-    console.log({ nextIndex });
+
     changeStateFormStep(
       "totalDeposit",
-      `${roomInfo.roomPrice * parseInt(nextIndex)}`
+      `${roomInfo.roomPrice * parseInt(nextIndex.row)}`
     );
   };
 
@@ -71,7 +73,7 @@ const CheckoutInfoForm = () => {
     changeStateFormStep("prePaymentTimeIndex", nextIndex);
     changeStateFormStep(
       "totalPrepay",
-      `${roomInfo.roomPrice * parseInt(nextIndex)}`
+      `${roomInfo.roomPrice * parseInt(nextIndex.row + 1)}`
     );
   };
 
@@ -144,7 +146,7 @@ const CheckoutInfoForm = () => {
                   preDepositTime[stateCheckout.preDepositTimeIndex.row] ||
                   "Thời gian trả trước"
                 }
-                selectedIndex={stateCheckout.preDepositTimeIndex}
+                selectedIndex={stateCheckout?.preDepositTimeIndex }
                 onSelect={_onSelectPreDeposit}
               >
                 {preDepositTime
@@ -162,7 +164,7 @@ const CheckoutInfoForm = () => {
                 accessoryLeft={() => (
                   <View style={styles.leftInput}>
                     <Text>
-                      {`${pad(stateCheckout.preDepositTimeIndex)} tháng`}
+                      {`${stateCheckout.preDepositTimeIndex.row} tháng`}
                     </Text>
                   </View>
                 )}
@@ -287,7 +289,7 @@ const CheckoutInfoForm = () => {
               </Text>
             </View>
             <View style={[styles.formRow, styles.rowInfo]}>
-              <Text style={styles.rowLabel}>Tiền bù</Text>
+              <Text style={styles.rowLabel}>Tiền nhà tháng này </Text>
               <Text style={styles.rowValue}>
                 {" "}
                 { hasOffsetPrice ? cf(renderOffsetPrice()) : 0 || "0"}

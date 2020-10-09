@@ -12,7 +12,7 @@ import ModalizeSelect from "~/components/common/ModalizeSelect";
 import { Context as MotelContext } from "~context/MotelContext";
 import { currencyFormat, nonAccentVietnamese } from "~/utils";
 import Loading from "~/components/common/Loading";
-import { Context as CustomerContext } from "~context/CustomerContext";
+import { Context as CustomerContext } from "~/context/CustomerContext";
 import { useNavigation } from "@react-navigation/native";
 
 const SearchBox = ({ defaultValue = "" }) => {

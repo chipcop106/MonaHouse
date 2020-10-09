@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import React, { useContext, useEffect, useState } from 'react'
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { Icon } from "@ui-kitten/components";
@@ -10,7 +10,7 @@ import SignUpScreen from "./screens/AuthScreen/SignUpScreen";
 import ForgotPass from "./screens/AuthScreen/ForgotPass";
 import HomeScreen from "./screens/MainScreen/HomeScreen";
 import ReportDebtScreen from "./screens/MainScreen/ReportDebtScreen";
-import ReportElectrictScreen from "./screens/MainScreen/ReportElectrictScreen";
+import ReportElectricScreen from "./screens/MainScreen/ReportElectrictScreen";
 import ReportFillRateScreen from "./screens/MainScreen/ReportFillRateScreen";
 import ReportRoomTypeScreen from "./screens/MainScreen/ReportRoomTypeScreen";
 import WelcomeScreen from "./screens/AuthScreen/WelcomeScreen";
@@ -141,6 +141,7 @@ const headerOptions = {
 // Home stack
 const HomeStack = () => {
   const Stack = createStackNavigator();
+  const navigation = useNavigation()
   return (
     <Stack.Navigator
       screenOptions={{
@@ -149,6 +150,31 @@ const HomeStack = () => {
         headerTitleStyle: {
           color: "#fff",
         },
+        headerLeft: () => (
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginLeft: 10,
+            }}
+            onPress={() => navigation.pop()}
+          >
+            <Icon
+              name="arrow-back-outline"
+              fill={color.primary}
+              style={sizes.iconButtonSize}
+            />
+            <Text
+              style={{
+                color: color.primary,
+                marginLeft: 5,
+                fontSize: 16,
+              }}
+            >
+              Back
+            </Text>
+          </TouchableOpacity>
+        ),
       }}
     >
       <Stack.Screen
@@ -167,9 +193,10 @@ const HomeStack = () => {
       />
       <Stack.Screen
         name="ReportElectrict"
-        component={ReportElectrictScreen}
+        component={ReportElectricScreen}
         options={{
           title: "Thống kê điện nước",
+
         }}
       />
       <Stack.Screen

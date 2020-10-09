@@ -67,7 +67,7 @@ for (let i = currentYear - 10; i <= currentYear ; i++) {
 }
 
 export const settings = {
-  oneSignalKey: "92eed1ed-9a7c-4b5f-a73f-2178b8e994c5",
+  oneSignalKey: "6b8b363f-d915-489d-9591-4db9be6ea424",
   deviceOS: ["", "ios", "android"].indexOf(Platform.OS).toString(),
   key: "VnVOQG0zODlNb25hRGV2",
   formatDateService: new NativeDateService("en", "DD/MM/YYYY"),

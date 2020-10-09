@@ -13,7 +13,6 @@ import {
 import { BarChart } from 'react-native-charts-wrapper';
 import NavLink from '../../components/common/NavLink';
 import SummaryCard from '../../components/SummaryCard';
-import motelBarChart from './homeComp/BarChart'
 
 import { color } from '~/config';
 import { currencyFormat, randomDataChart, renderNumberByArray } from '~/utils'
@@ -262,7 +261,7 @@ const HomeScreen = () => {
           />
           <NavLink
             routeName="ReportDebt"
-            title="Thống kê nợ"
+            title="Doanh thu"
             imageUrl={require('../../../assets/debt-chart.png')}
             borderBottom
           />

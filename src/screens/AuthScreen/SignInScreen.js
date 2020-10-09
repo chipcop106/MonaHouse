@@ -162,7 +162,7 @@ const SignInScreen = ({ route }) => {
           </View>
           <View style={styles.formGroup}>
             <Text style={styles.btmText}>
-              Bạn chưa có tài khoản?
+              Bạn chưa có tài khoản? {' '}
               <Text
                 onPress={_onPressRegister}
                 style={{
@@ -170,7 +170,7 @@ const SignInScreen = ({ route }) => {
                   fontWeight: 'bold',
                   textDecorationStyle: 'solid',
                 }}>
-                Đăng ký mới
+                 Đăng ký mới
               </Text>
             </Text>
           </View>

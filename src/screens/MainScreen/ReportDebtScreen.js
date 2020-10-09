@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, StyleSheet, View } from 'react-native';
-
-const ReportDebtScreen = () => <View><Text>Hello ReportDebtScreen</Text></View>;
+import SettingRevenueIncomeScreen from '~/screens/SettingScreen/SettingRevenueIncomeScreen'
+const ReportDebtScreen = () => <SettingRevenueIncomeScreen />;
 
 const styles = StyleSheet.create({
 

@@ -14,6 +14,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import { color, shadowStyle } from '~/config';
 import { useNavigation } from '@react-navigation/native';
 import { currencyFormat } from '~/utils';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import dayjs from 'dayjs';
+dayjs.extend(customParseFormat);
 
 const noImageSrc = require('../../assets/user.png');
 
@@ -207,9 +210,14 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
           </LinearGradient>
         );
       case 2:
+        let dateOut = item.RenterDateOut || item?.RenterDateOutContract;
+        dateOut = dayjs(dateOut, 'DD/MM/YYYY');
         return (
           <LinearGradient colors={color.gradients.success} style={styles.badge}>
-            <Text style={styles.badgeText}>{'Đang thuê'}</Text>
+            <Text style={styles.badgeText}>{`HĐ: còn ${dateOut.diff(
+              dayjs(),
+              'month'
+            )} tháng`}</Text>
           </LinearGradient>
         );
       case 3:
@@ -240,8 +248,8 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
       params: {
         roomId: item.RoomID,
       },
-    })
-  }
+    });
+  };
 
   return (
     <View style={styles.item}>
@@ -273,7 +281,7 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
           </Text>
         </View>
 
-        <View style={styles.cardBody} >
+        <View style={styles.cardBody}>
           <View style={[styles.space, styles.infoWrap]}>
             <View style={styles.info}>
               <Text style={styles.infoLabel}>Giá (tháng)</Text>
@@ -297,7 +305,7 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
                 <LinearGradient
                   colors={color.gradients.danger}
                   style={styles.badge}>
-                  <Text style={styles.badgeText}>Chưa thu tiền</Text>
+                  <Text style={styles.badgeText}>Thu tiền</Text>
                 </LinearGradient>
               )}
               {item.StatusRoomID !== 1 && item.StatusCollectID === 6 && (
@@ -313,14 +321,14 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
                 <LinearGradient
                   colors={color.gradients.danger}
                   style={styles.badge}>
-                  <Text style={styles.badgeText}>Chưa ghi điện nước</Text>
+                  <Text style={styles.badgeText}>Ghi Đ/Nc</Text>
                 </LinearGradient>
               )}
               {item.StatusWEID === 8 && (
                 <LinearGradient
                   colors={color.gradients.success}
                   style={styles.badge}>
-                  <Text style={styles.badgeText}>Đã ghi điện nước</Text>
+                  <Text style={styles.badgeText}>Đã ghi đ/nc</Text>
                 </LinearGradient>
               )}
               {item.StatusWEID === 9 && (
@@ -396,33 +404,46 @@ const RoomCard = ({ roomInfo, onPressaddFee }) => {
             )}
           </View>
           {!!item.Renter && (
-            <View style={[styles.balanceInfo]}>
-              <View style={styles.balance}>
-                <Text style={styles.balanceText}>
-                  {item.MoneyDebtID > 0 ? 'Dư:' : 'Nợ:'}
-                  <Text
-                    style={[
-                      styles.balanceValue,
-                      item.MoneyDebtID < 0 && { color: color.redColor },
-                    ]}>
-                    {' '}
-                    {currencyFormat(Math.abs(item.MoneyDebtID))} đ
+            <>
+              <View style={[styles.balanceInfo]}>
+                <View style={styles.balance}>
+                  <Text style={styles.balanceText}>
+                    {item.MoneyDebtID > 0 ? 'Dư:' : 'Nợ:'}
+                    <Text
+                      style={[
+                        styles.balanceValue,
+                        item.MoneyDebtID < 0 && { color: color.redColor },
+                      ]}>
+                      {' '}
+                      {currencyFormat(Math.abs(item.MoneyDebtID))} đ
+                    </Text>
                   </Text>
-                </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={onPressaddFee}
+                  style={styles.touchButton}>
+                  <Icon
+                    name="plus-circle-outline"
+                    fill={color.darkColor}
+                    style={styles.iconButton}
+                  />
+                  <Text style={styles.textButton}>Thêm phí</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                onPress={onPressaddFee}
-                style={styles.touchButton}>
-                <Icon
-                  name="plus-circle-outline"
-                  fill={color.darkColor}
-                  style={styles.iconButton}
-                />
-                <Text style={styles.textButton}>Thêm phí</Text>
-              </TouchableOpacity>
-            </View>
-          )}
 
+              {!!item.fee && item.fee.length > 0 && (
+                <View style={{marginHorizontal: -2, paddingTop: 5, flexDirection: 'row', flexWrap: "wrap"}}>
+                  {item.fee.map((item, index) => (
+                      <View style={styles.status} key={`${index}`}>
+                        <Text style={{paddingRight: 5}}>{item.feename}: <Text style={{color: color.redColor}}>{currencyFormat(
+                          item.price
+                        )}đ</Text></Text>
+                      </View>
+                  ))}
+                </View>
+              )}
+            </>
+          )}
         </View>
       </Card>
     </View>

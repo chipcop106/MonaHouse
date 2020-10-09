@@ -17,6 +17,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { uploadRenterImage } from '~/api/RenterAPI';
 import ProgressiveImage from '~/components/common/ProgressiveImage';
+import { KeyboardAccessoryNavigation } from 'react-native-keyboard-accessory';
 
 function removeAccents(str) {
   return str.normalize('NFD')
@@ -25,7 +26,12 @@ function removeAccents(str) {
 }
 const filter = (item, query) =>
   removeAccents(item.CityName).toLowerCase().includes(removeAccents(query).toLowerCase());
-const RenterInfoForm = () => {
+
+let inputs = [];
+for (let i = 0; i < 5; i++) {
+  inputs.push( React.createRef() );
+}
+const RenterInfoForm = ({ onFocusInput,  kbStatus }) => {
   const { state: RoomGoInState, changeStateFormStep } = useContext(
     RoomGoInContext
   );
@@ -35,45 +41,17 @@ const RenterInfoForm = () => {
   const { renterDeposit } = roomInfo;
   const [cityInput, setCityInput] = useState('');
   const [cityData, setCityData] = useState(cityLists);
-  // const loadData = () => {
-  //   changeStateFormStep("cityLists", settings.cityLists);
-  //   changeStateFormStep("relationLists", settings.relationLists);
-  // };
 
-  // const handleChoosePhoto = async (key) => {
-  //     // const options = {
-  //     //     cropping: true,
-  //     //     cropperToolbarTitle: 'Chỉnh sửa ảnh',
-  //     //     maxFiles: 10,
-  //     //     compressImageMaxWidth: 1280,
-  //     //     compressImageMaxHeight: 768,
-  //     //     mediaType: 'photo',
-  //     // };
-  //     // ImagePicker.openPicker(options).then((images) => {
-  //     //     dispatch({ field: key, value: images });
-  //     // });
-  //     const options = {
-  //         multiple: true,
-  //         maxFiles: 10,
-  //         compressImageMaxWidth: 1280,
-  //         compressImageMaxHeight: 768,
-  //         mediaType: "photo",
-  //     };
-  //     try {
-  //         const images = await ImagePicker.openPicker(options);
-  //         if (!!images && Array.isArray(images)) {
-  //             const res = await uploadRenterImage(images);
-  //             changeStateFormStep(key, res.Data);
-  //         }
-  //     } catch (error) {
-  //         //alert(JSON.stringify(error.message));
-  //         changeStateFormStep(key, []);
-  //     }
-  // };
 
-  // useEffect(() => {
-  //   loadData();
-  // }, []);
+  useEffect(() => {
+    console.log('useEffect kbStatus:', kbStatus);
+    inputs[kbStatus.index]?.current?.focus();
+    console.log(inputs, inputs[kbStatus.index]);
+  }, [ kbStatus ])
+  const _handleFocus = (index) => {
+    onFocusInput(index)
+  }
+
   const _onPressUseDepositInfo = () => {
     console.log('_onPressUseDepositInfo', renterDeposit);
     changeStateFormStep('fullName', renterDeposit.FullName);
@@ -181,6 +159,7 @@ const RenterInfoForm = () => {
     RBSheetKey = key;
     refRBSheet.current?.open();
   };
+
   return (
     <>
       <View style={styles.mainWrap}>
@@ -189,7 +168,8 @@ const RenterInfoForm = () => {
           <View style={styles.formWrap}>
             <View style={[styles.formRow]}>
               <Input
-                returnKeyType={'done'}
+                ref={inputs[0]}
+                onFocus={()=>_handleFocus(0)}
                 textStyle={styles.textInput}
                 label="Họ và tên"
                 placeholder=""
@@ -199,11 +179,13 @@ const RenterInfoForm = () => {
                 }
                 textContentType="none"
                 keyboardType="default"
+
               />
             </View>
             <View style={[styles.formRow]}>
               <Input
-                returnKeyType={'done'}
+                ref={inputs[1]}
+                onFocus={()=>_handleFocus(1)}
                 textStyle={styles.textInput}
                 label="Số điện thoại"
                 placeholder="09xxxxxx"
@@ -213,6 +195,7 @@ const RenterInfoForm = () => {
                 }
                 textContentType="none"
                 keyboardType="numeric"
+
               />
             </View>
             {/* <View style={[styles.formRow]}>
@@ -231,7 +214,8 @@ const RenterInfoForm = () => {
             </View> */}
             <View style={[styles.formRow]}>
               <Input
-                returnKeyType={'done'}
+                ref={inputs[2]}
+                onFocus={()=>_handleFocus(2)}
                 textStyle={styles.textInput}
                 label="Công việc hiện tại"
                 placeholder="Văn phòng, sinh viên, phổ thông, khác"
@@ -286,7 +270,8 @@ const RenterInfoForm = () => {
             </View>
             <View style={[styles.formRow, styles.halfCol]}>
               <Input
-                returnKeyType={'done'}
+                ref={inputs[3]}
+                onFocus={()=>_handleFocus(3)}
                 textStyle={styles.textInput}
                 label="Số người ở"
                 placeholder="0"
@@ -318,7 +303,8 @@ const RenterInfoForm = () => {
             </View>
             <View style={[styles.formRow]}>
               <Input
-                returnKeyType={'done'}
+                ref={inputs[4]}
+                onFocus={()=>_handleFocus(4)}
                 textStyle={styles.textInput}
                 label="Ghi chú"
                 placeholder=""

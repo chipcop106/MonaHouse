@@ -21,7 +21,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -40,7 +40,7 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>Allow MonaHouse to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow MonaHouse to use the camera</string>
+	<string>Cho phép MonaHouse sử dụng camera của bạn để chụp ảnh đại diện, ảnh đồng hồ điện/Nc</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow MonaHouse experiences to access your contacts</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
@@ -54,11 +54,15 @@
 	<key>NSMotionUsageDescription</key>
 	<string>Allow MonaHouse to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Give MonaHouse periences permission to save photos</string>
+	<string>Cấp cho MonaHouse quyền lưu ảnh chụp đại diện, ảnh đồng hồ điện/Nc</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Give MonaHouse periences permission to access your photos</string>
+	<string>Cho phép MonaHouse quyền truy cập kho hình ảnh để lưu ảnh đại diện, đồng hồ điện/Nc </string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow MonaHouse to access your reminders</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>MyLaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

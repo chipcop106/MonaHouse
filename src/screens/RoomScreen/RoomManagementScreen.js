@@ -157,6 +157,9 @@ const RoomManagementScreen = () => {
   };
   const _onSuccessFee = () => {
     bsFee.current?.close();
+    //reload ?
+    console.log('_onSuccessFee', modelFeeData);
+    _onRefresh();
   };
 
   const _onModalizeFeeOpen = () => {};

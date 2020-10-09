@@ -1,7 +1,9 @@
 import React from 'react';
 import { Text, StyleSheet, View } from 'react-native';
+import SettingFilledIndicatorScreen from '~/screens/SettingScreen/SettingFilledIndicatorScreen'
 
-const ReportFillRateScreen = () => <View><Text>Hello ReportFillRateScreen</Text></View>;
+
+const ReportFillRateScreen = () => <SettingFilledIndicatorScreen />;
 
 const styles = StyleSheet.create({
 

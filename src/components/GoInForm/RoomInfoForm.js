@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
 import {
   Input,
@@ -10,10 +10,11 @@ import {
 } from '@ui-kitten/components';
 import Service from './Service';
 import IncludeElectricWater from '~/components/IncludeElectrictWater';
-import { sizes, color, settings } from '../../config';
+import { sizes, color, settings } from '~/config';
 import { create_UUID as randomId } from '../../utils';
 import { Context as RoomGoInContext } from '../../context/RoomGoInContext';
 import { currencyFormat as cf } from '~/utils';
+import InputMoney from '~/components/InputMoney'
 
 const timeType = ['Ngày', 'Tháng', 'Năm'];
 
@@ -23,8 +24,12 @@ const electricType = [
   'Bao điện, nước tính theo số',
   'Bao nước, điện tính theo số',
 ];
+let inputs = [];
+for (let i = 0; i < 2; i++) {
+  inputs.push( React.createRef() );
+}
+const RoomInfoForm = ({ onFocusInput,  kbStatus }) => {
 
-const RoomInfoForm = () => {
   const {
     state: RoomGoInState,
     changeStateFormStep,
@@ -46,6 +51,21 @@ const RoomInfoForm = () => {
     changeStateFormStep('roomInfo', value);
   };
 
+  useEffect(() => {
+    console.log('useEffect kbStatus:', kbStatus);
+    inputs[kbStatus.index]?.current?.focus();
+    console.log(inputs, inputs[kbStatus.index]);
+  }, [ kbStatus ])
+
+  const _handleFocus = (index) => {
+      // nextFocusDisabled: index === 5,
+      // previousFocusDisabled: index === 0,
+      // index: index,
+
+    onFocusInput(index)
+  }
+
+
   return (
     <>
       <View style={styles.mainWrap}>
@@ -53,8 +73,8 @@ const RoomInfoForm = () => {
         <View style={styles.section}>
           <View style={[styles.formWrap]}>
             <View style={[styles.formRow, styles.halfCol]}>
-              <Input
-                returnKeyType={"done"}
+              <InputMoney
+                ref={inputs[0]}
                 textStyle={styles.textInput}
                 label="Giá thuê / tháng"
                 placeholder="0"
@@ -64,6 +84,7 @@ const RoomInfoForm = () => {
                 }
                 textContentType="none"
                 keyboardType="numeric"
+                onFocus={()=>_handleFocus(0)}
               />
             </View>
             <View style={[styles.formRow, styles.halfCol]}>
@@ -93,7 +114,7 @@ const RoomInfoForm = () => {
             </View>
             <View style={[styles.formRow, styles.halfCol]}>
               <Input
-                returnKeyType={"done"}
+                ref={inputs[1]}
                 textStyle={styles.textInput}
                 label="Thời gian thuê"
                 placeholder="0"
@@ -103,6 +124,7 @@ const RoomInfoForm = () => {
                 }
                 textContentType="none"
                 keyboardType="numeric"
+                onFocus={()=>_handleFocus(1)}
               />
             </View>
             <View style={[styles.formRow, styles.fullWidth]}>
@@ -121,6 +143,9 @@ const RoomInfoForm = () => {
               </Select>
             </View>
             <IncludeElectricWater
+              hasReturnKey={false}
+              onFocusInput={onFocusInput}
+              kbStatus={kbStatus}
               waterTitle={'Số nước lúc dọn vào'}
               electricTitle={'Số điện lúc dọn vào'}
               initialState={stateRoomInfo.roomInfo}

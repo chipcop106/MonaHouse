@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   RefreshControl, StatusBar, SafeAreaView,
+  ScrollView, Dimensions, Keyboard
 } from 'react-native'
 import { Layout, Button, Icon } from '@ui-kitten/components';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -23,6 +24,7 @@ import { Context as AuthContext } from '../../context/AuthContext';
 import { Context as RoomContext } from '~/context/RoomContext';
 import Loading from '~/components/common/Loading';
 import { currencyFormat } from '~/utils';
+import { KeyboardAccessoryNavigation, KeyboardAwareTabBarComponent } from 'react-native-keyboard-accessory'
 
 const customStyles = {
   stepIndicatorSize: 25,
@@ -66,22 +68,29 @@ const RenderForm = (props) => {
   //   changeStateFormStep("cityLists", settings.cityLists);
   //   changeStateFormStep("relationLists", settings.relationLists);
   // }
+
   return (
     <>
       {step === 0 && (
         <RoomInfoForm
+          kbStatus={props.kbStatus}
+          onFocusInput={props.onFocusInput}
           onChangeState={changeStateFormStep}
           initialState={dataForm[step]}
         />
       )}
       {step === 1 && (
         <RenterInfoForm
+          kbStatus={props.kbStatus}
+          onFocusInput={props.onFocusInput}
           onChangeState={changeStateFormStep}
           initialState={dataForm[step]}
         />
       )}
       {step === 2 && (
         <CheckoutInfoForm
+          kbStatus={props.kbStatus}
+          onFocusInput={props.onFocusInput}
           onChangeState={stepStateChange}
           initialState={dataForm[step]}
         />
@@ -103,6 +112,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
   } = useContext(RoomGoInContext);
   const { step, dataForm } = RoomGoinState;
   const { updateState: updateState_Room } = useContext(RoomContext);
+
   useEffect(() => {
     console.log('RoomGoinState', RoomGoinState);
     (async () => {
@@ -112,21 +122,26 @@ const RoomGoInScreen = ({ navigation, route }) => {
       resetState();
     };
   }, []);
+  useLayoutEffect(() => {
+    !RoomGoinState.isLoading &&
+    navigation.setOptions({
+      headerShown: false,
+      headerLeft: () => null,
+      gesturesEnabled: false,
+      // headerTitle: titleHeader[RoomGoinState.step],
+    });
+  }, [RoomGoinState]);
   const headerHeight = useHeaderHeight();
   const [refreshing, setRefreshing] = useState(false);
-
+  const [kbStatus, setKbStatus] =  useState({
+    index: 0,
+    nextFocusDisabled: false,
+    previousFocusDisabled: false,
+  });
   const onPress_headerLeft = () => {
     step === 0 ? navigation.pop() : changeStepForm(-1);
   };
-  useLayoutEffect(() => {
-    !RoomGoinState.isLoading &&
-      navigation.setOptions({
-        headerShown: false,
-        headerLeft: () => null,
-        gesturesEnabled: false,
-        // headerTitle: titleHeader[RoomGoinState.step],
-      });
-  }, [RoomGoinState]);
+
 
   const sendFormData = async () => {
     const room = dataForm[0];
@@ -141,7 +156,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
     });
     const pageNum = parseInt(actuallyReceived || 0);
     if (route.params?.isDeposit) {
-      // dat coc choi cho vui
+      // dat coc
     } else {
       if (pageNum < parseInt(totalDeposit) + parseInt(0)) {
         return Alert.alert(
@@ -292,6 +307,7 @@ const RoomGoInScreen = ({ navigation, route }) => {
   const changeNextStep = () => {
     const { dataForm, step } = RoomGoinState;
     const dataStep = dataForm[step];
+
     switch (step) {
       case 0:
         console.log(dataStep);
@@ -308,12 +324,112 @@ const RoomGoInScreen = ({ navigation, route }) => {
         break;
     }
     changeStepForm(1);
+    setKbStatus({
+      ...kbStatus,
+      index: 0,
+    });
   };
   const _onRefresh = async () => {
     setRefreshing(true);
-    await loadRoomInfo(route.params?.roomId);
+    // await loadRoomInfo(route.params?.roomId);
     setRefreshing(false);
   };
+  const refScrollView = React.useRef();
+  useEffect(() => {
+    Keyboard.addListener("keyboardDidShow", _keyboardDidShow);
+    Keyboard.addListener("keyboardDidHide", _keyboardDidHide);
+
+    // cleanup function
+    return () => {
+      Keyboard.removeListener("keyboardDidShow", _keyboardDidShow);
+      Keyboard.removeListener("keyboardDidHide", _keyboardDidHide);
+    };
+  }, []);
+  const _keyboardDidShow = (e) => {
+      console.log('keyboard h:', e.startCoordinates.height);
+      console.log('scrollView  h:', Dimensions.get('window').height - e.startCoordinates.height - headerHeight)
+  };
+
+  const _keyboardDidHide = () => {};
+  const _onDoneKeyboard = () => {}
+  const _onNextKeyboard = () => {
+    const { nextFocusDisabled, index } = kbStatus;
+    if (nextFocusDisabled) {
+      return;
+    }
+    switch (step) {
+      case 0:
+        setKbStatus({
+          nextFocusDisabled: index === 1,
+          previousFocusDisabled: index === 0,
+          index: index + 1,
+        });
+        return;
+      case 1:
+        setKbStatus({
+          nextFocusDisabled: index === 5,
+          previousFocusDisabled: index === 0,
+          index: index + 1,
+        });
+        return;
+      case 2:
+        return;
+      default:
+        return
+    }
+
+  }
+  const _onPreviousKeyboard = () => {
+    const { previousFocusDisabled, index } = kbStatus;
+    if (previousFocusDisabled) {
+      return;
+    }
+    switch (step) {
+      case 0:
+        setKbStatus({
+          nextFocusDisabled: index === 1,
+          previousFocusDisabled: index === 0,
+          index: index - 1,
+        });
+        return;
+      case 1:
+        setKbStatus({
+          nextFocusDisabled: index === 5,
+          previousFocusDisabled: index === 0,
+          index: index - 1,
+        });
+        return;
+      case 2:
+        return;
+      default:
+        return
+    }
+  }
+
+ const _handleFocusInput = ( index ) => {
+    console.log('current step', step);
+    console.log('child index:', index);
+    switch (step) {
+      case 0:
+        setKbStatus({
+          nextFocusDisabled: index === 1,
+          previousFocusDisabled: index === 0,
+          index: index,
+        })
+        return;
+      case 1:
+        setKbStatus({
+          nextFocusDisabled: index === 5,
+          previousFocusDisabled: index === 0,
+          index: index,
+        })
+        return;
+      case 2:
+        return;
+      default:
+        return
+    }
+ }
   return (
     <Layout style={styles.container} level="3">
       <StatusBar barStyle='dark-content' />
@@ -339,15 +455,14 @@ const RoomGoInScreen = ({ navigation, route }) => {
             />
           </View>
           <KeyboardAwareScrollView
+            ref={refScrollView}
             refreshControl={
               <RefreshControl onRefresh={_onRefresh} refreshing={refreshing} />
             }
             style={{ flex: 1 }}
             contentContainerStyle={{ paddingBottom: 15 }}
-            extraScrollHeight={ 40 }
-            // viewIsInsideTabBar={true}
-            keyboardOpeningTime={250}>
-            <RenderForm />
+            extraScrollHeight={ 90 }>
+            <RenderForm  onFocusInput={_handleFocusInput} kbStatus={kbStatus} />
             <View style={styles.mainWrap}>
               <View style={styles.btnGroup}>
                 <Button
@@ -396,9 +511,19 @@ const RoomGoInScreen = ({ navigation, route }) => {
                 )}
               </View>
             </View>
+
           </KeyboardAwareScrollView>
+
         </>
       )}
+      <KeyboardAccessoryNavigation
+        nextDisabled={kbStatus.nextFocusDisabled}
+        previousDisabled={kbStatus.previousFocusDisabled}
+        onDone={_onDoneKeyboard}
+        onNext={_onNextKeyboard}
+        onPrevious={_onPreviousKeyboard}
+        avoidKeyboard={false}
+        androidAdjustResize={true} children={null}/>
     </Layout>
   );
 };

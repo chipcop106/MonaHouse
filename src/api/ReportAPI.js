@@ -108,3 +108,23 @@ export const getHistoryRenter = async (
     return error.message;
   }
 };
+
+// string token,
+// int motelId,
+// int year
+export const getReportElectricWater = async (
+  params = { motelId: 0, year: 0 }
+) => {
+  try {
+    const token = await getAccessToken();
+    let res = await instance.get(`${path}/chartReportElectricWater`, {
+      params: {
+        ...params,
+        token,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error.message;
+  }
+};
