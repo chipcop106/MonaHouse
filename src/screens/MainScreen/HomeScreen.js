@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-color-literals */
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, { useContext, useEffect, useState, useRef, useLayoutEffect } from 'react'
 import {
   Text,
   StyleSheet,
@@ -8,9 +8,9 @@ import {
   ScrollView,
   RefreshControl,
   ActivityIndicator,
-  Alert,
-} from 'react-native';
-import { BarChart } from 'react-native-charts-wrapper';
+  Alert, Platform,
+} from 'react-native'
+import { useNavigation } from '@react-navigation/native';
 import NavLink from '../../components/common/NavLink';
 import SummaryCard from '../../components/SummaryCard';
 
@@ -31,6 +31,8 @@ const pad = (n) => (n >= 10 ? n : `0${n}`);
 
 //screen
 const HomeScreen = () => {
+  const navigation = useNavigation();
+
   const { signOut } = useContext(AuthContext);
   const { state: motelState, getListMotels } = useContext(MotelContext);
   const [pickerData, setPickerData] = useState('');
@@ -64,6 +66,11 @@ const HomeScreen = () => {
     }
 
   }, [motelState.listMotels]);
+  useLayoutEffect(()=>{
+    Platform.OS === 'android' && navigation.setOptions({
+      headerLeft: null
+    });
+  }, [])
   const action_loadOverviewData = async (motelId) => {
     try {
       const rs = await getOverview({ motelid: motelId ?? 0 });

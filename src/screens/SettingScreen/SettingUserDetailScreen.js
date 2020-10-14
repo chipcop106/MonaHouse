@@ -34,10 +34,10 @@ const initialState = {
   loading: false,
 	imageUploading: false,
   avatar: null,
-  fullName: 'Lê Chân',
-  phoneNumber: '0886706289',
-  email: 'vietdat106@gmail.com',
-  address: '319 c16, Lý Thường Kiệt, Phường 15, quậ 11, tp HCM',
+  fullName: 'Chưa có',
+  phoneNumber: '',
+  email: '',
+  address: '',
   birthday: new Date(),
   cityName: '',
   cityId: '',
@@ -305,7 +305,7 @@ const SettingUserDetailScreen = ({ navigation, route }) => {
                 label="Ngày sinh"
                 date={moment(state.birthday, 'DD/MM/YYYY').toDate()}
                 max={new Date()}
-                // min={  }
+                min={new Date(1900,1,1)}
                 dataService={settings.formatDateService}
                 onSelect={(nextDate) =>
                   updateState('birthday', moment(nextDate).format('DD/MM/YYYY'))

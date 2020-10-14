@@ -95,6 +95,7 @@ const headerOptions = {
   headerStyle: styles.headerStyle,
   headerTitleStyle: {
     color: "#fff",
+    paddingHorizontal: 5
   },
   headerBackTitle: "Back",
   headerBackTitleStyle: {
@@ -149,6 +150,7 @@ const HomeStack = () => {
         headerStyle: styles.headerStyle,
         headerTitleStyle: {
           color: "#fff",
+          paddingHorizontal: 5
         },
         headerLeft: () => (
           <TouchableOpacity
