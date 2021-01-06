@@ -21,7 +21,7 @@
         "@ui-kitten/components": "^5.0.0-alpha.1",
         "@ui-kitten/eva-icons": "^5.0.0-alpha.1",
         "@ui-kitten/moment": "^5.0.0",
-        "axios": "^0.19.2",
+        "axios": "^0.21.1",
         "dayjs": "^1.8.33",
         "elements": "^0.6.0",
         "expo": "~37.0.3",
